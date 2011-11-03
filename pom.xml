@@ -44,7 +44,7 @@
                     <configuration>
                         <archive>
                             <manifest>
-                                <mainClass>com.github.canbabel.canio.ui.FileChooser</mainClass>
+                                <mainClass>com.github.canbabel.canio.ui.MainFrame</mainClass>
                             </manifest>
                         </archive>
                     </configuration>
