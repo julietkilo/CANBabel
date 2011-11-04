@@ -33,9 +33,9 @@ import com.github.canbabel.canio.kcd.Value;
 
 /**
  * Reads industry widespread CAN database (*.dbc) format.
- * 
+ *
  * @author julietkilo
- * 
+ *
  */
 public class DbcReader {
 
@@ -60,92 +60,91 @@ public class DbcReader {
 	private MuxGroup muxgroup = null;
 	private TreeMap<String, String> muxed = new TreeMap<String, String>();
 
-	/**
-	 * Reads and parse the given
-	 * <p>
-	 * file
-	 * </p>
-	 * 
-	 * @param file
-	 *            File to read and parse.
-	 */
-	public DbcReader(File file) {
-
-		try {
-			context = JAXBContext
-					.newInstance(new Class[] { com.github.canbabel.canio.kcd.NetworkDefinition.class });
-			marshaller = context.createMarshaller();
-
-			factory = new ObjectFactory();
-			network = (NetworkDefinition) (factory.createNetworkDefinition());
-			network.setVersion(MAJOR_VERSION + "." + MINOR_VERSION);
-			bus = (Bus) (factory.createBus());
-			bus.setName("Private");
-
-		} catch (JAXBException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		try {
-
-			if ((file.canRead() && file.exists()))
-				this.setReadable(true);
-
-			StringBuffer contents = new StringBuffer();
-			BufferedReader reader = null;
-
-			try {
-				reader = new BufferedReader(new FileReader(file));
-				String text = null;
-				boolean isFirstLine = true;
-
-				while ((text = reader.readLine()) != null) {
-					if (startsWithKeyword(text) && !isFirstLine) {
-						processLine(contents);
-						contents.delete(0, contents.length());
-					}
-					contents.append(text);
-					isFirstLine = false;
-				}
-				network.getBus().add(bus);
-				printResult();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (reader != null) {
-						reader.close();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public boolean parseFile(File file) {
-		//TODO parse file
-		System.exit(0);
-		return true;
-	}
+            try {
+                context = JAXBContext.newInstance(new Class[]{com.github.canbabel.canio.kcd.NetworkDefinition.class});
+                marshaller = context.createMarshaller();
+
+                factory = new ObjectFactory();
+                network = (NetworkDefinition) (factory.createNetworkDefinition());
+                network.setVersion(MAJOR_VERSION + "." + MINOR_VERSION);
+                bus = (Bus) (factory.createBus());
+                bus.setName("Private");
+
+            } catch (JAXBException e1) {
+                return false;
+            }
+
+            try {
+
+                if ((file.canRead() && file.exists())) {
+                    this.setReadable(true);
+                }
+
+                StringBuffer contents = new StringBuffer();
+                BufferedReader reader = null;
+
+                try {
+                    reader = new BufferedReader(new FileReader(file));
+                    String text = null;
+                    boolean isFirstLine = true;
+
+                    while ((text = reader.readLine()) != null) {
+                        if (startsWithKeyword(text) && !isFirstLine) {
+                            processLine(contents);
+                            contents.delete(0, contents.length());
+                        }
+                        contents.append(text);
+                        isFirstLine = false;
+                    }
+                    network.getBus().add(bus);
+                } catch (FileNotFoundException e) {
+                    return false;
+                } catch (IOException e) {
+                    return false;
+                } finally {
+                    try {
+                        if (reader != null) {
+                            reader.close();
+                        }
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+
+            } catch (Exception e) {
+                return false;
+            }
+
+            return true;
+        }
 
 	/**
 	 * Produces a file in KCD format.
-	 * 
+	 *
 	 * @param file
 	 *            File to save.
 	 * @return True, if operation successful.
 	 */
-	public boolean writeKcdFile(File file) {
-		// TODO write file
-		return true;
-	}
+	 public boolean writeKcdFile(File file) {
+            Writer w = null;
+            try {
+                w = new FileWriter(file);
+                marshaller.marshal(network, w);
+            } catch (JAXBException jxbe) {
+                return false;
+            } catch (IOException ioe) {
+                return false;
+            } finally {
+                try {
+                w.close();
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
 	public boolean isReadable() {
 		return this.isReadable;
@@ -153,7 +152,7 @@ public class DbcReader {
 
 	/**
 	 * Returns the available network nodes as set.
-	 * 
+	 *
 	 * @return
 	 */
 	public List<String> getNodes() {
@@ -167,7 +166,7 @@ public class DbcReader {
 	 * KEYWORDS
 	 * </p>
 	 * .
-	 * 
+	 *
 	 * @param line
 	 *            String to check for Keyword
 	 * @return true, if line starts with a keyword.
@@ -185,8 +184,8 @@ public class DbcReader {
 	/**
 	 * Several lines of a DBC-File, which begins with a keyword
 	 * will be sorted here for further processing.
-	 * 
-	 * @param line Related parts of a dbc-file will be passed over to the 
+	 *
+	 * @param line Related parts of a dbc-file will be passed over to the
 	 * suitable handling method.
 	 */
 	private void processLine(StringBuffer line) {
@@ -231,7 +230,7 @@ public class DbcReader {
 
 	/**
 	 * Handling method for network node starting by a line that begins with BU_.
-	 * 
+	 *
 	 * @param line line from dbc-file to handle.
 	 */
 	private void parseNetworkNode(StringBuffer line) {
@@ -253,9 +252,9 @@ public class DbcReader {
 
 	/**
 	 * Handling method for message transmitter starting by a line that begins with BO_TX_BU_.
-	 * 
+	 *
 	 * @param line line from dbc-file to handle.
-	 * 
+	 *
 	 */
 	private static void parseMessageTransmitter(StringBuffer line) {
 		System.out.println("Message transmitter: " + line.toString());
@@ -264,7 +263,7 @@ public class DbcReader {
 
 	/**
 	 * Handling method for message transmitter starting by a line that begins with CM_.
-	 * 
+	 *
 	 * @param line line from dbc-file to handle.
 	 */
 	private static void parseComment(StringBuffer line) {
@@ -273,7 +272,7 @@ public class DbcReader {
 
 	/**
 	 * Handling method for attributes starting by a line that begins with BA_.
-	 * 
+	 *
 	 * @param line line from dbc-file to handle.
 	 */
 	private static void parseAttribute(StringBuffer line) {
@@ -283,7 +282,7 @@ public class DbcReader {
 
 	/**
 	 * Handling method for value description starting by a line that begins with VAL_.
-	 * 
+	 *
 	 * @param line line from dbc-file to handle.
 	 */
 	private static void parseValueDescription(StringBuffer line) {
@@ -293,8 +292,8 @@ public class DbcReader {
 
 	/**
 	 * Handling method for message definition starting by a line that begins with BO_ {decimal}.
-	 * 
-	 * @param line passed over buffer of the line (starting with BO_ including 
+	 *
+	 * @param line passed over buffer of the line (starting with BO_ including
 	 * all corresponding signals.
 	 */
 	private void parseMessageDefinition(StringBuffer line) {
@@ -344,7 +343,7 @@ public class DbcReader {
 	/**
 	 * Parses a dbc file signal line without the SG_ header. Parses also signal
 	 * lines with multiplexed signals (e.g. m2) and multiplexors (M).
-	 * 
+	 *
 	 * @param message
 	 *            message object where the signal line belongs to and shall
 	 *            append to.
@@ -430,7 +429,7 @@ public class DbcReader {
 	/**
 	 * Check for character classes. Returns true if the checked character is a
 	 * digit.
-	 * 
+	 *
 	 * @param c
 	 *            Character to check
 	 * @return True, if the character is a digit.
@@ -442,7 +441,7 @@ public class DbcReader {
 	/**
 	 * Check for character classes. Returns true if the checked character is a
 	 * devider.
-	 * 
+	 *
 	 * @param c
 	 *            Character to check
 	 * @return True, if the character is a devider.
@@ -455,7 +454,7 @@ public class DbcReader {
 	/**
 	 * Check for character classes. Returns true if the checked character is a
 	 * symbol.
-	 * 
+	 *
 	 * @param c
 	 *            Character to check
 	 * @return True, if the character is a symbol.
@@ -467,7 +466,7 @@ public class DbcReader {
 	/**
 	 * Check for character classes. Returns true if the checked character is a
 	 * quotation.
-	 * 
+	 *
 	 * @param c
 	 *            Character to check
 	 * @return True, if the character is a quotation.
@@ -479,7 +478,7 @@ public class DbcReader {
 	/**
 	 * Check for character classes. Returns true if the checked character is a
 	 * whitespace.
-	 * 
+	 *
 	 * @param c
 	 *            Character to check
 	 * @return True, if the character is a whitespace.
@@ -491,7 +490,7 @@ public class DbcReader {
 	/**
 	 * Check for character classes. Returns true if the checked character is
 	 * alphabet char.
-	 * 
+	 *
 	 * @param c
 	 *            Character to check
 	 * @return True, if the character is alphabet char.
@@ -503,13 +502,13 @@ public class DbcReader {
 
 	/**
 	 * Method to split a signal string in fields. A typical string looks like
-	 * 
+	 *
 	 * 56|8@1+ (1,0) [0|255] "km/h" Motor Brake Gearbox
-	 * 
+	 *
 	 * Returned array looks like
-	 * 
+	 *
 	 * {"56","8","1","1","0","0","255",""km/h"","Motor","Brake","Gearbox"}
-	 * 
+	 *
 	 * @param s
 	 *            String to split in fields
 	 * @return String array containing the seperated value elements in ascending
@@ -561,26 +560,5 @@ public class DbcReader {
 		this.isReadable = isReadable;
 	}
 
-	private void printResult() {
-		Writer w = null;
-		try {
-			try {
-				// TODO output is generated into test-jaxb.xml. Add to save file dialog. 
-				w = new FileWriter("test-jaxb.xml");
-				marshaller.marshal(network, w);
-			} catch (JAXBException jxbe) {
-				jxbe.printStackTrace();
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
-
-		} finally {
-			try {
-				w.close();
-			} catch (Exception e) {
-			}
-		}
-
-	}
 
 }
