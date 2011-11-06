@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -20,6 +22,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import com.github.canbabel.canio.kcd.Bus;
+import com.github.canbabel.canio.kcd.Document;
 import com.github.canbabel.canio.kcd.Message;
 import com.github.canbabel.canio.kcd.Multiplex;
 import com.github.canbabel.canio.kcd.MuxGroup;
@@ -40,7 +43,7 @@ import com.github.canbabel.canio.kcd.Value;
 public class DbcReader {
 
 	private static final String MAJOR_VERSION = "0";
-	private static final String MINOR_VERSION = "3";
+	private static final String MINOR_VERSION = "4";
 
 	final private static String[] KEYWORDS = { "VERSION ", "NS_ : ", "BS_:",
 			"BU_: ", "BO_ ", "SG_ ", "BO_TX_BU_ ", "CM_ ", "CM_ BO_ ",
@@ -48,11 +51,13 @@ public class DbcReader {
 			"BA_DEF_ SG_ ", "BA_DEF_DEF_ ", "BA_DEF_DEF_REL_ ", "BA_ ", "VAL_ " };
 
 	private static final String NOT_DEFINED = "Vector__XXX";
+	private static final String DOC_CONTENT = "Converted with CANBabel (https://github.com/julietkilo/CANBabel)";
 	private boolean isReadable;
 	private Collection<String> nodes = new ArrayList<String>();
 	private JAXBContext context = null;
 	private ObjectFactory factory = null;
 	private NetworkDefinition network = null;
+	private Document document = null;
 	private Bus bus = null;
 	private Marshaller marshaller = null;
 	private Signal signal = null;
@@ -68,6 +73,13 @@ public class DbcReader {
                 factory = new ObjectFactory();
                 network = (NetworkDefinition) (factory.createNetworkDefinition());
                 network.setVersion(MAJOR_VERSION + "." + MINOR_VERSION);
+                document = (Document) (factory.createDocument());
+				document.setContent(DOC_CONTENT);
+				document.setName(file.getName());
+				Date now = Calendar.getInstance().getTime();
+				document.setDate(now.toString());
+                network.setDocument(document);
+                
                 bus = (Bus) (factory.createBus());
                 bus.setName("Private");
 
@@ -316,7 +328,7 @@ public class DbcReader {
 
 		Message message = (Message) factory.createMessage();
 		message.setId("0x"
-				+ Integer.toHexString(Integer.parseInt(messageArray[0])));
+				+ Integer.toHexString(Integer.parseInt(messageArray[0])).toUpperCase());
 		message.setName(messageArray[1].replace(":", ""));
 		message.setLength(messageArray[2]);
 		if (!messageArray[3].contains(NOT_DEFINED)) {
@@ -419,7 +431,11 @@ public class DbcReader {
 				if (intercept != 0.0)
 					value.setIntercept((double) intercept);
 
-				signal.setValue(value);
+				// Omit empty value elements
+				if ((intercept != 0.0) || (slope != 1.0)){
+					signal.setValue(value);
+				}
+					
 			}
 			message.getSignal().add(signal);
 		}
