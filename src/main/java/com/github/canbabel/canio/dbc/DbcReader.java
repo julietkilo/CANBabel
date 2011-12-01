@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
@@ -367,24 +368,24 @@ public class DbcReader {
 		Multiplex mux = null;
 		// Split signalname and mux coding from rest of line
 		String[] lineArray = line.split(":");
+		String signalName = lineArray[0].toString().trim();
 		// Check if this is a multiplex
 		if (Pattern.compile("\\w+\\s+\\w+").matcher(lineArray[0]).find()) {
 			/* line is multiplexer or multiplexed signal */
 
-			if (lineArray[0].toString().trim().endsWith("M")) {
-				/* line is multiplexor */
-				/* FIN_11 m2 : 0|8@1+ (1,0) [0|255] "" Motor */
-
+			if (signalName.endsWith("M")) {
+				/* signal type is multiplexor */
+				/* FIN_MUX M : 0|2@1+ (1,0) [0|255] "" Motor */
 				System.out.println("###Multiplexor: " + lineArray[0]);
 				mux = (Multiplex) factory.createMultiplex();
-				mux.setName(lineArray[0].toString().replace(" M", "").trim());
+				mux.setName(signalName.replace(" M", "").trim());
 				message.getMultiplex().add(mux);
 			} else {
-				/* line is multiplex */
+				/* signal type is multiplex */
 				/* Signal: FIN17 m2 : 43|8@1+ (1,0) [0|255] "" YBOX,CO2,Clima */
 
 				System.out.println("###Multiplex: "
-						+ lineArray[0].toString().trim());
+						+ signalName);
 				muxgroup = (MuxGroup) factory.createMuxGroup();
 				muxgroup.setCount(0);
 
@@ -397,51 +398,66 @@ public class DbcReader {
 			}
 
 		} else {
-			/* line is plain signal */
-			/* Velocity_Kmh : 39|16@0+ (0.01852,0) [0|1213.7082] "Km/h" VBOX_II */
-			/* LineArray[1] = 39|16@0+ (0.01852,0) [0|1213.7008] "km/h" VBOX_II */
-
-			signal = (Signal) factory.createSignal();
-			// signal.setName(lineArray[0].replaceAll("\\w+", ""));
-
-			String[] splitted = null;
-
-			splitted = splitString(lineArray[1].toString().trim());
-
-			signal.setName(lineArray[0].toString().trim());
-			if (splitted != null) {
-				signal.setOffset(Integer.parseInt(splitted[0]));
-
-				// Omit length == "1" (default)
-				if (!splitted[1].equals("1"))
-					signal.setLength(Integer.parseInt(splitted[1]));
-
-				// find big endian signals, little is default
-				if (splitted[2].equals("0"))
-					signal.setEndianess("big");
-
-				value = (Value) factory.createValue();
-				Double slope = Double.valueOf(splitted[3]);
-				Double intercept = Double.valueOf(splitted[4]);
-				// Omit default slope = 1.0
-				if (slope != 1.0)
-					value.setSlope((double) slope);
-
-				// Omit default intercept = 0.0
-				if (intercept != 0.0)
-					value.setIntercept((double) intercept);
-
-				// Omit empty value elements
-				if ((intercept != 0.0) || (slope != 1.0)){
-					signal.setValue(value);
-				}
-					
-			}
-			message.getSignal().add(signal);
+			/* signal type is plain */
+			parsePlainSignal(message, signalName, lineArray[1].toString().trim());
 		}
-
+		/* printMuxed(); */
 	}
 
+	
+	/**
+	 * Parses a plain signal that is not a multiplexor or muxed signal.
+	 * 
+	 * @param message message object where the signal line belongs to and shall
+	 *            append to.
+	 * @param line signal line String to parse
+	 */
+	private void parsePlainSignal(Message message, String signalName, String line) {	
+		/* line e.g. "39|16@0+ (0.01,0) [0|655.35] "Km/h" ECU3" */
+		
+		//** Debug *//
+		System.out.println("@@@Signalname::" + signalName + "Line:" + line);
+		
+		signal = (Signal) factory.createSignal();
+		// signal.setName(lineArray[0].replaceAll("\\w+", ""));
+
+		String[] splitted = null;
+
+		splitted = splitString(line);
+
+		signal.setName(signalName);
+		if (splitted != null) {
+			signal.setOffset(Integer.parseInt(splitted[0]));
+
+			// Omit length == "1" (default)
+			if (!splitted[1].equals("1"))
+				signal.setLength(Integer.parseInt(splitted[1]));
+
+			// find big endian signals, little is default
+			if (splitted[2].equals("0"))
+				signal.setEndianess("big");
+
+			value = (Value) factory.createValue();
+			Double slope = Double.valueOf(splitted[3]);
+			Double intercept = Double.valueOf(splitted[4]);
+			// Omit default slope = 1.0
+			if (slope != 1.0)
+				value.setSlope((double) slope);
+
+			// Omit default intercept = 0.0
+			if (intercept != 0.0)
+				value.setIntercept((double) intercept);
+
+			// Omit empty value elements
+			if ((intercept != 0.0) || (slope != 1.0)){
+				signal.setValue(value);
+			}
+				
+		}
+		message.getSignal().add(signal);
+	
+	}
+		
 	/**
 	 * Check for character classes. Returns true if the checked character is a
 	 * digit.
@@ -576,5 +592,15 @@ public class DbcReader {
 		this.isReadable = isReadable;
 	}
 
-
+	/** 
+	 * Debugging method
+	 */
+	private void printMuxed(){
+		System.out.println("###Inhalt von Muxed:");
+		for (Map.Entry<String,String> entry : muxed.entrySet()) {
+			String value = entry.getValue();
+		    String key = entry.getKey();
+		    System.out.println(key + "=" + value);    
+		}
+	}
 }
