@@ -323,13 +323,17 @@ public class DbcReader {
 		line.replace(0, 4, "");
 		line.trimToSize();
 		String[] lineArray = line.toString().split("\\s+SG_\\s+");
-		// System.out.println("Message: " + lineArray[0]);
+		//System.out.println("Message: " + lineArray[0]);
 
 		String[] messageArray = lineArray[0].split("\\s+");
-
 		Message message = (Message) factory.createMessage();
-		message.setId("0x"
-				+ Integer.toHexString(Integer.parseInt(messageArray[0])).toUpperCase());
+		int messageIdDecimal = getCanIdFromString(messageArray[0]);
+		                       
+		message.setId("0x" + Integer.toString(messageIdDecimal,16).toUpperCase() );
+		if (isExtendedFrameFormat(messageArray[0]))
+			message.setFormat("extended");
+		
+		
 		message.setName(messageArray[1].replace(":", ""));
 		message.setLength(messageArray[2]);
 		if (!messageArray[3].contains(NOT_DEFINED)) {
@@ -353,6 +357,19 @@ public class DbcReader {
 		bus.getMessage().add(message);
 	}
 
+	private int getCanIdFromString(String canIdStr){
+		
+		long canIdLong = Long.valueOf(canIdStr).longValue();
+		int canId = (int) canIdLong & 0x1FFFFFFF;
+		return canId;
+	}
+	
+	private boolean isExtendedFrameFormat(String canIdStr){
+		
+		long canIdLong = Long.valueOf(canIdStr).longValue();
+		return ((canIdLong >>> 31 & 1) == 1) ? true : false;		
+	}
+	
 	/**
 	 * Parses a dbc file signal line without the SG_ header. Parses also signal
 	 * lines with multiplexed signals (e.g. m2) and multiplexors (M).
@@ -416,7 +433,7 @@ public class DbcReader {
 		/* line e.g. "39|16@0+ (0.01,0) [0|655.35] "Km/h" ECU3" */
 		
 		//** Debug *//
-		System.out.println("@@@Signalname::" + signalName + "Line:" + line);
+		//System.out.println("@@@Signalname::" + signalName + "Line:" + line);
 		
 		signal = (Signal) factory.createSignal();
 		// signal.setName(lineArray[0].replaceAll("\\w+", ""));
