@@ -63,4 +63,14 @@ public class FileList implements ListModel{
         listeners.remove(l);
     }
 
+    public void clear() {
+        int oldsize = files.size();
+        files.clear();
+
+        ListDataEvent e = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, 0, oldsize-1);
+        for(ListDataListener l : listeners) {
+            l.intervalRemoved(e);
+        }
+    }
+
 }

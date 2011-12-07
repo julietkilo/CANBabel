@@ -80,7 +80,7 @@ public class DbcReader {
 				Date now = Calendar.getInstance().getTime();
 				document.setDate(now.toString());
                 network.setDocument(document);
-                
+
                 bus = (Bus) (factory.createBus());
                 bus.setName("Private");
 
@@ -328,12 +328,12 @@ public class DbcReader {
 		String[] messageArray = lineArray[0].split("\\s+");
 		Message message = (Message) factory.createMessage();
 		int messageIdDecimal = getCanIdFromString(messageArray[0]);
-		                       
+
 		message.setId("0x" + Integer.toString(messageIdDecimal,16).toUpperCase() );
 		if (isExtendedFrameFormat(messageArray[0]))
 			message.setFormat("extended");
-		
-		
+
+
 		message.setName(messageArray[1].replace(":", ""));
 		message.setLength(messageArray[2]);
 		if (!messageArray[3].contains(NOT_DEFINED)) {
@@ -358,18 +358,18 @@ public class DbcReader {
 	}
 
 	private int getCanIdFromString(String canIdStr){
-		
+
 		long canIdLong = Long.valueOf(canIdStr).longValue();
 		int canId = (int) canIdLong & 0x1FFFFFFF;
 		return canId;
 	}
-	
+
 	private boolean isExtendedFrameFormat(String canIdStr){
-		
+
 		long canIdLong = Long.valueOf(canIdStr).longValue();
-		return ((canIdLong >>> 31 & 1) == 1) ? true : false;		
+		return ((canIdLong >>> 31 & 1) == 1) ? true : false;
 	}
-	
+
 	/**
 	 * Parses a dbc file signal line without the SG_ header. Parses also signal
 	 * lines with multiplexed signals (e.g. m2) and multiplexors (M).
@@ -396,7 +396,7 @@ public class DbcReader {
 				System.out.println("###Multiplexor: " + lineArray[0]);
 				mux = (Multiplex) factory.createMultiplex();
 				mux.setName(signalName.replace(" M", "").trim());
-				message.getMultiplex().add(mux);
+				//message.getMultiplex().add(mux);
 			} else {
 				/* signal type is multiplex */
 				/* Signal: FIN17 m2 : 43|8@1+ (1,0) [0|255] "" YBOX,CO2,Clima */
@@ -421,20 +421,20 @@ public class DbcReader {
 		/* printMuxed(); */
 	}
 
-	
+
 	/**
 	 * Parses a plain signal that is not a multiplexor or muxed signal.
-	 * 
+	 *
 	 * @param message message object where the signal line belongs to and shall
 	 *            append to.
 	 * @param line signal line String to parse
 	 */
-	private void parsePlainSignal(Message message, String signalName, String line) {	
+	private void parsePlainSignal(Message message, String signalName, String line) {
 		/* line e.g. "39|16@0+ (0.01,0) [0|655.35] "Km/h" ECU3" */
-		
+
 		//** Debug *//
 		//System.out.println("@@@Signalname::" + signalName + "Line:" + line);
-		
+
 		signal = (Signal) factory.createSignal();
 		// signal.setName(lineArray[0].replaceAll("\\w+", ""));
 
@@ -469,12 +469,12 @@ public class DbcReader {
 			if ((intercept != 0.0) || (slope != 1.0)){
 				signal.setValue(value);
 			}
-				
+
 		}
 		message.getSignal().add(signal);
-	
+
 	}
-		
+
 	/**
 	 * Check for character classes. Returns true if the checked character is a
 	 * digit.
@@ -609,7 +609,7 @@ public class DbcReader {
 		this.isReadable = isReadable;
 	}
 
-	/** 
+	/**
 	 * Debugging method
 	 */
 	private void printMuxed(){
@@ -617,7 +617,7 @@ public class DbcReader {
 		for (Map.Entry<String,String> entry : muxed.entrySet()) {
 			String value = entry.getValue();
 		    String key = entry.getKey();
-		    System.out.println(key + "=" + value);    
+		    System.out.println(key + "=" + value);
 		}
 	}
 }
