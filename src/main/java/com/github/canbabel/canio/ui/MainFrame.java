@@ -7,7 +7,10 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -15,11 +18,10 @@ import javax.swing.JFileChooser;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-	private static final long serialVersionUID = -6772467633506915053L;
-
-	private JFileChooser fc = new JFileChooser();
-
+    private static final long serialVersionUID = -6772467633506915053L;
+    private JFileChooser fc = new JFileChooser();
     private FileList list = new FileList();
+    private Thread convertThread;
 
     private FileFilter directoryFilter = new FileFilter() {
         @Override
@@ -93,9 +95,11 @@ public class MainFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
         jButton2 = new javax.swing.JButton();
+        jProgressBar1 = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("CANBabel");
+        setMinimumSize(new java.awt.Dimension(640, 480));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         jButton3.setText("Convert");
@@ -162,6 +166,13 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(jPanel1, gridBagConstraints);
 
+        jProgressBar1.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        getContentPane().add(jProgressBar1, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -197,19 +208,18 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        for(File f : list.getFiles()) {
+        if(convertThread != null && convertThread.isAlive()) {
+            convertThread.interrupt();
+            try {
+                convertThread.join();
+            } catch (InterruptedException ex) {
 
-            String filename = f.getPath();
-            filename = filename.substring(0, filename.length()-4) + ".kcd";
-
-            File newFile = new File(filename);
-
-            if(!newFile.exists()) {
-                DbcReader reader = new DbcReader();
-                if(reader.parseFile(f)) {
-                    reader.writeKcdFile(newFile);
-                }
             }
+            jButton3.setText("Convert");
+        } else if(list.getSize() > 0) {
+            convertThread = new Thread(convertRunnable);
+            convertThread.start();
+            jButton3.setText("Abort");
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -255,6 +265,63 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
+
+    private Runnable convertRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            jButton1.setEnabled(false);
+            jButton2.setEnabled(false);
+
+            jProgressBar1.setEnabled(true);
+            jProgressBar1.setMinimum(0);
+            jProgressBar1.setMaximum(list.getSize());
+            jProgressBar1.setValue(0);
+
+            for(File f : list.getFiles()) {
+
+                String filename = f.getPath();
+                filename = filename.substring(0, filename.length()-4) + ".kcd";
+
+                File newFile = new File(filename);
+
+                if(newFile.exists()) {
+                    int answer = JOptionPane.showConfirmDialog(jButton1, "File " + filename + " already exists. Overwrite?");
+
+                    if(answer == JOptionPane.NO_OPTION) {
+                        jProgressBar1.setValue(jProgressBar1.getValue()+1);
+                        continue;
+                    }
+                }
+
+                if(Thread.interrupted()) {
+                    break;
+                }
+
+                DbcReader reader = new DbcReader();
+                if(reader.parseFile(f)) {
+                    reader.writeKcdFile(newFile);
+                }
+
+                if(Thread.interrupted()) {
+                    break;
+                }
+
+                jProgressBar1.setValue(jProgressBar1.getValue()+1);
+            }
+
+            list.clear();
+
+            jButton1.setEnabled(true);
+            jButton2.setEnabled(true);
+
+            jProgressBar1.setValue(0);
+            jProgressBar1.setEnabled(false);
+        }
+
+    };
+
 }
