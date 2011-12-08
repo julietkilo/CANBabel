@@ -34,6 +34,8 @@ import com.github.canbabel.canio.kcd.ObjectFactory;
 import com.github.canbabel.canio.kcd.Producer;
 import com.github.canbabel.canio.kcd.Signal;
 import com.github.canbabel.canio.kcd.Value;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Reads industry widespread CAN database (*.dbc) format.
@@ -63,8 +65,7 @@ public class DbcReader {
 	private Marshaller marshaller = null;
 	private Signal signal = null;
 	private Value value = null;
-	private MuxGroup muxgroup = null;
-	private TreeMap<String, String> muxed = new TreeMap<String, String>();
+	private Map<Integer, Set<Signal>> muxed = new TreeMap<Integer, Set<Signal>>();
 
 	public boolean parseFile(File file) {
             try {
@@ -313,8 +314,7 @@ public class DbcReader {
 
 		// reset signal context with each new message;
 		signal = null;
-		muxgroup = null;
-		muxed.clear();
+		muxed = new TreeMap<Integer, Set<Signal>>();
 
 		// BO_ 1984 Messagename: 8 Producername
 		// System.out.println("Message Definition: " + line.toString());
@@ -350,6 +350,27 @@ public class DbcReader {
 			// Signal signal = (Signal) factory.createSignal();
 
 		}
+
+                /* Check if we have to add a multiplex definition to the last
+                 * message.
+                 */
+                if(muxed != null && muxed.size() > 0) {
+                    if(message.getMultiplex().size() == 1) {
+                        Multiplex mul = message.getMultiplex().get(0);
+                        List<MuxGroup> muxgroups = mul.getMuxGroup();
+
+                        for(Integer i : muxed.keySet()) {
+                            MuxGroup group = new MuxGroup();
+                            group.setCount(i);
+                            group.getSignal().addAll(muxed.get(i));
+                            muxgroups.add(group);
+                        }
+                    }
+
+                } else {
+                    /* Make sure there is no empty multiplex in the message */
+                    message.getMultiplex().clear();
+                }
 
 		// System.out.println("Signalliste hat " + composite.size() +
 		// "Einträge");
@@ -396,22 +417,84 @@ public class DbcReader {
 				System.out.println("###Multiplexor: " + lineArray[0]);
 				mux = (Multiplex) factory.createMultiplex();
 				mux.setName(signalName.replace(" M", "").trim());
-				//message.getMultiplex().add(mux);
+
+                                signal = (Signal) factory.createSignal();
+
+                                String[] splitted = splitString(lineArray[1]);
+
+                                if (splitted != null) {
+                                        mux.setOffset(Integer.parseInt(splitted[0]));
+
+                                        // Omit length == "1" (default)
+                                        if (!splitted[1].equals("1"))
+                                                mux.setLength(Integer.parseInt(splitted[1]));
+
+                                        // find big endian signals, little is default
+                                        if (splitted[2].equals("0"))
+                                                mux.setEndianess("big");
+                                }
+
+				message.getMultiplex().add(mux);
 			} else {
 				/* signal type is multiplex */
 				/* Signal: FIN17 m2 : 43|8@1+ (1,0) [0|255] "" YBOX,CO2,Clima */
 
 				System.out.println("###Multiplex: "
 						+ signalName);
-				muxgroup = (MuxGroup) factory.createMuxGroup();
-				muxgroup.setCount(0);
 
-				/* key is muxgroup e.g. 3 for all m3 */
-				/* value is string of the signal */
-				String[] sb = lineArray[0].split("\\s+m");
+                                signal = (Signal) factory.createSignal();
 
-				System.out.println("line1" + lineArray[0] + lineArray[1]);
-				muxed.put(sb[1], lineArray[0] + lineArray[1]);
+                                signal.setName(lineArray[0].split(" ")[0]);
+
+                                /* Parse multiplex count */
+                                String countstring = lineArray[0].trim();
+                                for(int i=countstring.length()-1;i>0;i--) {
+                                    if(countstring.charAt(i) == 'm') {
+                                        countstring = countstring.substring(i+1);
+                                        break;
+                                    }
+                                }
+                                int muxcount = Integer.parseInt(countstring);
+
+                                String[] splitted = splitString(lineArray[1]);
+
+                                if (splitted != null) {
+                                        signal.setOffset(Integer.parseInt(splitted[0]));
+
+                                        // Omit length == "1" (default)
+                                        if (!splitted[1].equals("1"))
+                                                signal.setLength(Integer.parseInt(splitted[1]));
+
+                                        // find big endian signals, little is default
+                                        if (splitted[2].equals("0"))
+                                                signal.setEndianess("big");
+
+                                        value = (Value) factory.createValue();
+                                        Double slope = Double.valueOf(splitted[3]);
+                                        Double intercept = Double.valueOf(splitted[4]);
+                                        // Omit default slope = 1.0
+                                        if (slope != 1.0)
+                                                value.setSlope((double) slope);
+
+                                        // Omit default intercept = 0.0
+                                        if (intercept != 0.0)
+                                                value.setIntercept((double) intercept);
+
+                                        // Omit empty value elements
+                                        if ((intercept != 0.0) || (slope != 1.0)){
+                                                signal.setValue(value);
+                                        }
+
+                                }
+
+                                /* Do we have a signal list for muxcount? */
+                                Set<Signal> signalSet = muxed.get(muxcount);
+                                if(signalSet == null) {
+                                    signalSet = new HashSet<Signal>();
+                                    muxed.put(muxcount, signalSet);
+                                }
+
+                                signalSet.add(signal);
 			}
 
 		} else {
@@ -575,21 +658,21 @@ public class DbcReader {
 			if (isDigit(s.charAt(i))) {
 				concat += s.charAt(i);
 			} else if (isDevider(s.charAt(i))) {
-				if (concat != "")
+				if (!"".equals(concat))
 					array[count++] = concat;
 				concat = "";
 			} else if (isWhitespace(s.charAt(i))) {
 				// ignore
 			} else if (isSymbol(s.charAt(i))) {
 				// check if minus sign is part of an exponential number
-				if (concat != ""
+				if (!"".equals(concat)
 						&& concat.substring(concat.length() - 1).equals("E")) {
 					concat += "-";
 				}
 			} else if (isAlpha(s.charAt(i))) {
 				concat += s.charAt(i);
 			} else if (isQuote(s.charAt(i))) {
-				if (concat != "")
+				if (!"".equals(concat))
 					array[count++] = concat;
 				concat = "";
 			} else {
@@ -599,7 +682,7 @@ public class DbcReader {
 
 		}
 
-		if (concat != "")
+		if (!"".equals(concat))
 			array[count++] = concat;
 		return array;
 
@@ -607,17 +690,5 @@ public class DbcReader {
 
 	private void setReadable(boolean isReadable) {
 		this.isReadable = isReadable;
-	}
-
-	/**
-	 * Debugging method
-	 */
-	private void printMuxed(){
-		System.out.println("###Inhalt von Muxed:");
-		for (Map.Entry<String,String> entry : muxed.entrySet()) {
-			String value = entry.getValue();
-		    String key = entry.getKey();
-		    System.out.println(key + "=" + value);
-		}
 	}
 }
