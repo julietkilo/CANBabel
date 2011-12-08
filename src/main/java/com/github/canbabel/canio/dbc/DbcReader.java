@@ -34,8 +34,11 @@ import com.github.canbabel.canio.kcd.ObjectFactory;
 import com.github.canbabel.canio.kcd.Producer;
 import com.github.canbabel.canio.kcd.Signal;
 import com.github.canbabel.canio.kcd.Value;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Reads industry widespread CAN database (*.dbc) format.
@@ -57,39 +60,27 @@ public class DbcReader {
 	private static final String DOC_CONTENT = "Converted with CANBabel (https://github.com/julietkilo/CANBabel)";
 	private boolean isReadable;
 	private Collection<String> nodes = new ArrayList<String>();
-	private JAXBContext context = null;
 	private ObjectFactory factory = null;
 	private NetworkDefinition network = null;
 	private Document document = null;
 	private Bus bus = null;
-	private Marshaller marshaller = null;
 	private Signal signal = null;
 	private Value value = null;
 	private Map<Integer, Set<Signal>> muxed = new TreeMap<Integer, Set<Signal>>();
 
 	public boolean parseFile(File file) {
-            try {
-                context = JAXBContext.newInstance(new Class[]{com.github.canbabel.canio.kcd.NetworkDefinition.class});
-                marshaller = context.createMarshaller();
+            factory = new ObjectFactory();
+            network = (NetworkDefinition) (factory.createNetworkDefinition());
+            network.setVersion(MAJOR_VERSION + "." + MINOR_VERSION);
+            document = (Document) (factory.createDocument());
+                            document.setContent(DOC_CONTENT);
+                            document.setName(file.getName());
+                            Date now = Calendar.getInstance().getTime();
+                            document.setDate(now.toString());
+            network.setDocument(document);
 
-                marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-                factory = new ObjectFactory();
-                network = (NetworkDefinition) (factory.createNetworkDefinition());
-                network.setVersion(MAJOR_VERSION + "." + MINOR_VERSION);
-                document = (Document) (factory.createDocument());
-				document.setContent(DOC_CONTENT);
-				document.setName(file.getName());
-				Date now = Calendar.getInstance().getTime();
-				document.setDate(now.toString());
-                network.setDocument(document);
-
-                bus = (Bus) (factory.createBus());
-                bus.setName("Private");
-
-            } catch (JAXBException e1) {
-                return false;
-            }
+            bus = (Bus) (factory.createBus());
+            bus.setName("Private");
 
             try {
 
@@ -142,10 +133,22 @@ public class DbcReader {
 	 *            File to save.
 	 * @return True, if operation successful.
 	 */
-	 public boolean writeKcdFile(File file) {
+	 public boolean writeKcdFile(File file, boolean prettyPrint, boolean gzip) {
             Writer w = null;
             try {
-                w = new FileWriter(file);
+                JAXBContext context = JAXBContext.newInstance(new Class[]{com.github.canbabel.canio.kcd.NetworkDefinition.class});
+                Marshaller marshaller = context.createMarshaller();
+
+                if(prettyPrint)
+                    marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+                if(gzip) {
+                    FileOutputStream fo = new FileOutputStream(file);
+                    GZIPOutputStream stream = new GZIPOutputStream(fo);
+                    w = new OutputStreamWriter(stream);
+                } else {
+                    w = new FileWriter(file);
+                }
                 marshaller.marshal(network, w);
             } catch (JAXBException jxbe) {
                 return false;

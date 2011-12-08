@@ -90,6 +90,9 @@ public class MainFrame extends javax.swing.JFrame {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jButton3 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jCheckBox1 = new javax.swing.JCheckBox();
+        jCheckBox2 = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -110,9 +113,35 @@ public class MainFrame extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(jButton3, gridBagConstraints);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Settings"));
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        jCheckBox1.setText("Gzipped Output");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.2;
+        jPanel2.add(jCheckBox1, gridBagConstraints);
+
+        jCheckBox2.setSelected(true);
+        jCheckBox2.setText("Pretty print XML");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.weightx = 0.2;
+        jPanel2.add(jCheckBox2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
+        getContentPane().add(jPanel2, gridBagConstraints);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Input"));
         jPanel1.setLayout(new java.awt.GridBagLayout());
@@ -158,10 +187,10 @@ public class MainFrame extends javax.swing.JFrame {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(jPanel1, gridBagConstraints);
@@ -169,7 +198,7 @@ public class MainFrame extends javax.swing.JFrame {
         jProgressBar1.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jProgressBar1, gridBagConstraints);
 
@@ -261,8 +290,11 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
@@ -280,10 +312,18 @@ public class MainFrame extends javax.swing.JFrame {
             jProgressBar1.setMaximum(list.getSize());
             jProgressBar1.setValue(0);
 
+            jCheckBox1.setEnabled(false);
+            jCheckBox2.setEnabled(false);
+
             for(File f : list.getFiles()) {
 
                 String filename = f.getPath();
-                filename = filename.substring(0, filename.length()-4) + ".kcd";
+
+                if(jCheckBox1.isSelected()) {
+                    filename = filename.substring(0, filename.length()-4) + ".kcd.gz";
+                } else {
+                    filename = filename.substring(0, filename.length()-4) + ".kcd";
+                }
 
                 File newFile = new File(filename);
 
@@ -303,7 +343,7 @@ public class MainFrame extends javax.swing.JFrame {
                 try {
                     DbcReader reader = new DbcReader();
                     if(reader.parseFile(f)) {
-                        reader.writeKcdFile(newFile);
+                        reader.writeKcdFile(newFile, jCheckBox2.isSelected(), jCheckBox1.isSelected());
                     }
 
                     if(Thread.interrupted()) {
@@ -324,6 +364,9 @@ public class MainFrame extends javax.swing.JFrame {
 
             jProgressBar1.setValue(0);
             jProgressBar1.setEnabled(false);
+
+            jCheckBox1.setEnabled(true);
+            jCheckBox2.setEnabled(true);
         }
 
     };
