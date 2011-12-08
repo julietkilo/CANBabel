@@ -72,6 +72,8 @@ public class DbcReader {
                 context = JAXBContext.newInstance(new Class[]{com.github.canbabel.canio.kcd.NetworkDefinition.class});
                 marshaller = context.createMarshaller();
 
+                marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
                 factory = new ObjectFactory();
                 network = (NetworkDefinition) (factory.createNetworkDefinition());
                 network.setVersion(MAJOR_VERSION + "." + MINOR_VERSION);

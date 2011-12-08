@@ -215,11 +215,9 @@ public class MainFrame extends javax.swing.JFrame {
             } catch (InterruptedException ex) {
 
             }
-            jButton3.setText("Convert");
         } else if(list.getSize() > 0) {
             convertThread = new Thread(convertRunnable);
             convertThread.start();
-            jButton3.setText("Abort");
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -275,6 +273,7 @@ public class MainFrame extends javax.swing.JFrame {
         public void run() {
             jButton1.setEnabled(false);
             jButton2.setEnabled(false);
+            jButton3.setText("Abort");
 
             jProgressBar1.setEnabled(true);
             jProgressBar1.setMinimum(0);
@@ -301,13 +300,17 @@ public class MainFrame extends javax.swing.JFrame {
                     break;
                 }
 
-                DbcReader reader = new DbcReader();
-                if(reader.parseFile(f)) {
-                    reader.writeKcdFile(newFile);
-                }
+                try {
+                    DbcReader reader = new DbcReader();
+                    if(reader.parseFile(f)) {
+                        reader.writeKcdFile(newFile);
+                    }
 
-                if(Thread.interrupted()) {
-                    break;
+                    if(Thread.interrupted()) {
+                        break;
+                    }
+                } catch(Exception ex) {
+                    System.out.println("Exception: " + ex.toString());
                 }
 
                 jProgressBar1.setValue(jProgressBar1.getValue()+1);
@@ -317,6 +320,7 @@ public class MainFrame extends javax.swing.JFrame {
 
             jButton1.setEnabled(true);
             jButton2.setEnabled(true);
+            jButton3.setText("Convert");
 
             jProgressBar1.setValue(0);
             jProgressBar1.setEnabled(false);
