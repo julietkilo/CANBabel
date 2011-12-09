@@ -234,16 +234,16 @@ public class DbcReader {
 	}
 
 	private static void parseVersion(StringBuffer line) {
-		System.out.println("Version: " + line.toString());
+		//System.out.println("Version: " + line.toString());
 
 	}
 
 	private static void parseBitTimingSection(StringBuffer line) {
-		System.out.println("Bit timing section: " + line.toString());
+		//System.out.println("Bit timing section: " + line.toString());
 	}
 
 	private static void parseNewSymbols(StringBuffer line) {
-		System.out.println("New symbol entries: " + line.toString());
+		//System.out.println("New symbol entries: " + line.toString());
 
 	}
 
@@ -276,7 +276,7 @@ public class DbcReader {
 	 *
 	 */
 	private static void parseMessageTransmitter(StringBuffer line) {
-		System.out.println("Message transmitter: " + line.toString());
+		//System.out.println("Message transmitter: " + line.toString());
 
 	}
 
@@ -305,7 +305,7 @@ public class DbcReader {
 	 * @param line line from dbc-file to handle.
 	 */
 	private static void parseValueDescription(StringBuffer line) {
-		System.out.println("Value Description: " + line.toString());
+		//System.out.println("Value Description: " + line.toString());
 
 	}
 
@@ -349,11 +349,7 @@ public class DbcReader {
 			message.setProducer(producer);
 		}
 		for (int i = 1; i < lineArray.length; i++) {
-
-			System.out.println("Signal: " + lineArray[i]);
 			parseSignal(message, lineArray[i]);
-			// Signal signal = (Signal) factory.createSignal();
-
 		}
 
                 /* Check if we have to add a multiplex definition to the last
@@ -376,9 +372,6 @@ public class DbcReader {
                     /* Make sure there is no empty multiplex in the message */
                     message.getMultiplex().clear();
                 }
-
-		// System.out.println("Signalliste hat " + composite.size() +
-		// "Einträge");
 
 		bus.getMessage().add(message);
 	}
@@ -419,7 +412,6 @@ public class DbcReader {
 			if (signalName.endsWith("M")) {
 				/* signal type is multiplexor */
 				/* FIN_MUX M : 0|2@1+ (1,0) [0|255] "" Motor */
-				System.out.println("###Multiplexor: " + lineArray[0]);
 				mux = (Multiplex) factory.createMultiplex();
 				mux.setName(signalName.replace(" M", "").trim());
 
@@ -443,9 +435,6 @@ public class DbcReader {
 			} else {
 				/* signal type is multiplex */
 				/* Signal: FIN17 m2 : 43|8@1+ (1,0) [0|255] "" YBOX,CO2,Clima */
-
-				System.out.println("###Multiplex: "
-						+ signalName);
 
                                 signal = (Signal) factory.createSignal();
 
@@ -634,7 +623,8 @@ public class DbcReader {
 	 */
 	private boolean isAlpha(char c) {
 		return (c <= 'Z' && c >= 'A' || c <= 'z' && c >= 'a' || c == '_'
-				|| c == '/' || c == '%');
+				 || c == '/' || c == '%' || c == '°' || c == '²' 
+			 	 || c == '³' || c == 'µ' || c == '^' || c == '€');
 	}
 
 	/**
