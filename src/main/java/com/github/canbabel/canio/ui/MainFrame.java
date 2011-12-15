@@ -50,7 +50,7 @@ public class MainFrame extends javax.swing.JFrame {
     private FileFilter dbcFilter = new FileFilter() {
         @Override
         public boolean accept(File file) {
-            return file.getName().endsWith(".dbc");
+            return file.getName().toLowerCase().endsWith(".dbc");
         }
     };
 
@@ -110,6 +110,7 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBox2 = new javax.swing.JCheckBox();
+        jCheckBox3 = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
@@ -154,6 +155,9 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.weightx = 0.2;
         jPanel2.add(jCheckBox2, gridBagConstraints);
+
+        jCheckBox3.setText("Overwrite all");
+        jPanel2.add(jCheckBox3, new java.awt.GridBagConstraints());
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -335,6 +339,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
+    private javax.swing.JCheckBox jCheckBox3;
     private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -425,12 +430,16 @@ public class MainFrame extends javax.swing.JFrame {
 
                 File newFile = new File(filename);
 
-                if(newFile.exists()) {
+                if(newFile.exists() && !jCheckBox3.isSelected()) {
                     int answer = JOptionPane.showConfirmDialog(jButton1, "File " + filename + " already exists. Overwrite?");
 
                     if(answer == JOptionPane.NO_OPTION) {
                         jProgressBar1.setValue(jProgressBar1.getValue()+1);
                         continue;
+                    } else if(answer == JOptionPane.CANCEL_OPTION) {
+                        jProgressBar1.setValue(0);
+                        jProgressBar1.setString("");
+                        return;
                     }
                 }
 
@@ -476,6 +485,7 @@ public class MainFrame extends javax.swing.JFrame {
             jButton3.setText("Convert");
 
             jProgressBar1.setValue(0);
+            jProgressBar1.setString("");
             jProgressBar1.setEnabled(false);
 
             jCheckBox1.setEnabled(true);
