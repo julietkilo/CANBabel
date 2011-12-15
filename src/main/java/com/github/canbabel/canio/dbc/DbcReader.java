@@ -1,9 +1,9 @@
 package com.github.canbabel.canio.dbc;
 
+import com.github.canbabel.canio.kcd.BasicLabelType;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -24,6 +24,8 @@ import javax.xml.bind.Marshaller;
 
 import com.github.canbabel.canio.kcd.Bus;
 import com.github.canbabel.canio.kcd.Document;
+import com.github.canbabel.canio.kcd.Label;
+import com.github.canbabel.canio.kcd.LabelSet;
 import com.github.canbabel.canio.kcd.Message;
 import com.github.canbabel.canio.kcd.Multiplex;
 import com.github.canbabel.canio.kcd.MuxGroup;
@@ -34,8 +36,13 @@ import com.github.canbabel.canio.kcd.ObjectFactory;
 import com.github.canbabel.canio.kcd.Producer;
 import com.github.canbabel.canio.kcd.Signal;
 import com.github.canbabel.canio.kcd.Value;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
@@ -44,6 +51,7 @@ import java.util.zip.GZIPOutputStream;
  * Reads industry widespread CAN database (*.dbc) format.
  *
  * @author julietkilo
+ * @author Jan-Niklas Meier <dschanoeh@googlemail.com>
  *
  */
 public class DbcReader {
@@ -54,7 +62,8 @@ public class DbcReader {
 	final private static String[] KEYWORDS = { "VERSION ", "NS_ : ", "BS_:",
 			"BU_: ", "BO_ ", "SG_ ", "BO_TX_BU_ ", "CM_ ", "CM_ BO_ ",
 			"CM_ SG_ ", "BA_DEF_ ", "BA_DEF_ BU_ ", "BA_DEF_REL_ BU_SG_REL_ ",
-			"BA_DEF_ SG_ ", "BA_DEF_DEF_ ", "BA_DEF_DEF_REL_ ", "BA_ ", "VAL_ " };
+			"BA_DEF_ SG_ ", "BA_DEF_DEF_ ", "BA_DEF_DEF_REL_ ", "BA_ ", "VAL_ ",
+                        "VAL_TABLE_ ", "SIG_VALTYPE_ "};
 
 	private static final String NOT_DEFINED = "Vector__XXX";
 	private static final String DOC_CONTENT = "Converted with CANBabel (https://github.com/julietkilo/CANBabel)";
@@ -65,10 +74,45 @@ public class DbcReader {
 	private Document document = null;
 	private Bus bus = null;
 	private Signal signal = null;
-	private Value value = null;
-	private Map<Integer, Set<Signal>> muxed = new TreeMap<Integer, Set<Signal>>();
+	private Map<Long, Set<Signal>> muxed = new TreeMap<Long, Set<Signal>>();
+        private Set<LabelDescription> labels = new HashSet<LabelDescription>();
 
-	public boolean parseFile(File file) {
+        private PrintWriter logWriter;
+
+        private class LabelDescription {
+
+            private long id;
+            private String signalName;
+            private Set<Label> labels;
+
+            public long getId() {
+                return id;
+            }
+
+            public void setId(long id) {
+                this.id = id;
+            }
+
+            public Set<Label> getLabels() {
+                return labels;
+            }
+
+            public void setLabels(Set<Label> labels) {
+                this.labels = labels;
+            }
+
+            public String getSignalName() {
+                return signalName;
+            }
+
+            public void setSignalName(String signalName) {
+                this.signalName = signalName;
+            }
+
+        };
+
+	public boolean parseFile(File file, OutputStream logStream) {
+            logWriter = new PrintWriter(logStream);
             factory = new ObjectFactory();
             network = (NetworkDefinition) (factory.createNetworkDefinition());
             network.setVersion(MAJOR_VERSION + "." + MINOR_VERSION);
@@ -82,47 +126,68 @@ public class DbcReader {
             bus = (Bus) (factory.createBus());
             bus.setName("Private");
 
-            try {
 
-                if ((file.canRead() && file.exists())) {
-                    this.setReadable(true);
-                }
-
-                StringBuffer contents = new StringBuffer();
-                BufferedReader reader = null;
-
-                try {
-                    reader = new BufferedReader(new FileReader(file));
-                    String text = null;
-                    boolean isFirstLine = true;
-
-                    while ((text = reader.readLine()) != null) {
-                        if (startsWithKeyword(text) && !isFirstLine) {
-                            processLine(contents);
-                            contents.delete(0, contents.length());
-                        }
-                        contents.append(text);
-                        isFirstLine = false;
-                    }
-                    network.getBus().add(bus);
-                } catch (FileNotFoundException e) {
-                    return false;
-                } catch (IOException e) {
-                    return false;
-                } finally {
-                    try {
-                        if (reader != null) {
-                            reader.close();
-                        }
-                    } catch (IOException e) {
-                        return false;
-                    }
-                }
-
-            } catch (Exception e) {
-                return false;
+            if ((file.canRead() && file.exists())) {
+                this.setReadable(true);
             }
 
+            StringBuffer contents = new StringBuffer();
+            BufferedReader reader = null;
+
+            try {
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ASCII"));
+                String text = null;
+                boolean isFirstLine = true;
+
+                while ((text = reader.readLine()) != null) {
+                    if (startsWithKeyword(text) && !isFirstLine) {
+                        processLine(contents);
+                        contents.delete(0, contents.length());
+                    }
+                    contents.append(text);
+                    isFirstLine = false;
+                }
+                network.getBus().add(bus);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace(logWriter);
+                return false;
+            } catch (IOException e) {
+                e.printStackTrace(logWriter);
+                return false;
+            } finally {
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace(logWriter);
+                    return false;
+                }
+            }
+
+            /*
+             * File has been completely parsed. Now the labels can be added
+             * to the corresponding signals.
+             */
+            for(LabelDescription description : labels) {
+                List<Message> messages = bus.getMessage();
+
+                /* Find ID */
+                for(Message message : messages) {
+                    if(Long.parseLong(message.getId().substring(2),16) == description.getId()) {
+                        List<Signal> signals = message.getSignal();
+                        /* Find signal name */
+                        for(Signal signal : signals) {
+                            if(signal.getName().equals(description.getSignalName())) {
+                                LabelSet set = new LabelSet();
+                                List<BasicLabelType> labellist = set.getLabelOrLabelGroup();
+                                labellist.addAll(description.getLabels());
+                                signal.setLabelSet(set);
+                            }
+                        }
+                    }
+                }
+            }
             return true;
         }
 
@@ -151,8 +216,10 @@ public class DbcReader {
                 }
                 marshaller.marshal(network, w);
             } catch (JAXBException jxbe) {
+                jxbe.printStackTrace(logWriter);
                 return false;
             } catch (IOException ioe) {
+                ioe.printStackTrace(logWriter);
                 return false;
             } finally {
                 try {
@@ -190,7 +257,7 @@ public class DbcReader {
 	 *            String to check for Keyword
 	 * @return true, if line starts with a keyword.
 	 */
-	private final boolean startsWithKeyword(String line) {
+	private static boolean startsWithKeyword(String line) {
 		boolean retval = false;
 		line.trim();
 		for (int i = 0; i < KEYWORDS.length; i++) {
@@ -211,6 +278,8 @@ public class DbcReader {
 
 		if (Pattern.matches("BO_.?\\d+.*", line)) {
 			parseMessageDefinition(line);
+                } else if (Pattern.matches("VAL_TABLE_.*", line)) {
+
 		} else if (Pattern.matches("VAL_.*", line)) {
 			parseValueDescription(line);
 		} else if (Pattern.matches("BA_.+\".*", line)) {
@@ -228,23 +297,22 @@ public class DbcReader {
 		} else if (Pattern.matches("VERSION.*", line)) {
 			parseVersion(line);
 		} else {
-			System.out.println("NO MATCH: " + line);
+			logWriter.write("Line does not match:'" + line + "'\n");
 		}
 
 	}
 
 	private static void parseVersion(StringBuffer line) {
-		System.out.println("Version: " + line.toString());
+		//System.out.println("Version: " + line.toString());
 
 	}
 
 	private static void parseBitTimingSection(StringBuffer line) {
-		System.out.println("Bit timing section: " + line.toString());
+		//System.out.println("Bit timing section: " + line.toString());
 	}
 
 	private static void parseNewSymbols(StringBuffer line) {
-		System.out.println("New symbol entries: " + line.toString());
-
+		//System.out.println("New symbol entries: " + line.toString());
 	}
 
 	/**
@@ -276,7 +344,7 @@ public class DbcReader {
 	 *
 	 */
 	private static void parseMessageTransmitter(StringBuffer line) {
-		System.out.println("Message transmitter: " + line.toString());
+		//System.out.println("Message transmitter: " + line.toString());
 
 	}
 
@@ -300,16 +368,6 @@ public class DbcReader {
 	}
 
 	/**
-	 * Handling method for value description starting by a line that begins with VAL_.
-	 *
-	 * @param line line from dbc-file to handle.
-	 */
-	private static void parseValueDescription(StringBuffer line) {
-		System.out.println("Value Description: " + line.toString());
-
-	}
-
-	/**
 	 * Handling method for message definition starting by a line that begins with BO_ {decimal}.
 	 *
 	 * @param line passed over buffer of the line (starting with BO_ including
@@ -319,7 +377,7 @@ public class DbcReader {
 
 		// reset signal context with each new message;
 		signal = null;
-		muxed = new TreeMap<Integer, Set<Signal>>();
+		muxed = new TreeMap<Long, Set<Signal>>();
 
 		// BO_ 1984 Messagename: 8 Producername
 		// System.out.println("Message Definition: " + line.toString());
@@ -350,7 +408,7 @@ public class DbcReader {
 		}
 		for (int i = 1; i < lineArray.length; i++) {
 
-			System.out.println("Signal: " + lineArray[i]);
+			//System.out.println("Signal: " + lineArray[i]);
 			parseSignal(message, lineArray[i]);
 			// Signal signal = (Signal) factory.createSignal();
 
@@ -364,7 +422,7 @@ public class DbcReader {
                         Multiplex mul = message.getMultiplex().get(0);
                         List<MuxGroup> muxgroups = mul.getMuxGroup();
 
-                        for(Integer i : muxed.keySet()) {
+                        for(Long i : muxed.keySet()) {
                             MuxGroup group = new MuxGroup();
                             group.setCount(i);
                             group.getSignal().addAll(muxed.get(i));
@@ -408,7 +466,6 @@ public class DbcReader {
 	 */
 	private void parseSignal(Message message, String line) {
 
-		Multiplex mux = null;
 		// Split signalname and mux coding from rest of line
 		String[] lineArray = line.split(":");
 		String signalName = lineArray[0].toString().trim();
@@ -419,8 +476,8 @@ public class DbcReader {
 			if (signalName.endsWith("M")) {
 				/* signal type is multiplexor */
 				/* FIN_MUX M : 0|2@1+ (1,0) [0|255] "" Motor */
-				System.out.println("###Multiplexor: " + lineArray[0]);
-				mux = (Multiplex) factory.createMultiplex();
+				//System.out.println("###Multiplexor: " + lineArray[0]);
+				Multiplex mux = (Multiplex) factory.createMultiplex();
 				mux.setName(signalName.replace(" M", "").trim());
 
                                 signal = (Signal) factory.createSignal();
@@ -437,6 +494,11 @@ public class DbcReader {
                                         // find big endian signals, little is default
                                         if (splitted[2].equals("0"))
                                                 mux.setEndianess("big");
+
+                                        /*
+                                         * TODO: Signed / unsigned is currenty ignored for
+                                         * multiplex values.
+                                         */
                                 }
 
 				message.getMultiplex().add(mux);
@@ -444,8 +506,8 @@ public class DbcReader {
 				/* signal type is multiplex */
 				/* Signal: FIN17 m2 : 43|8@1+ (1,0) [0|255] "" YBOX,CO2,Clima */
 
-				System.out.println("###Multiplex: "
-						+ signalName);
+				//System.out.println("###Multiplex: "
+				//		+ signalName);
 
                                 signal = (Signal) factory.createSignal();
 
@@ -459,7 +521,7 @@ public class DbcReader {
                                         break;
                                     }
                                 }
-                                int muxcount = Integer.parseInt(countstring);
+                                long muxcount = Long.parseLong(countstring);
 
                                 String[] splitted = splitString(lineArray[1]);
 
@@ -474,22 +536,20 @@ public class DbcReader {
                                         if (splitted[2].equals("0"))
                                                 signal.setEndianess("big");
 
-                                        value = (Value) factory.createValue();
-                                        Double slope = Double.valueOf(splitted[3]);
-                                        Double intercept = Double.valueOf(splitted[4]);
-                                        // Omit default slope = 1.0
-                                        if (slope != 1.0)
-                                                value.setSlope((double) slope);
+                                        Value value = (Value) factory.createValue();
 
-                                        // Omit default intercept = 0.0
-                                        if (intercept != 0.0)
-                                                value.setIntercept((double) intercept);
-
-                                        // Omit empty value elements
-                                        if ((intercept != 0.0) || (slope != 1.0)){
-                                                signal.setValue(value);
+                                        if("-".equals(splitted[3])) {
+                                            value.setType("signed");
+                                        } else {
+                                            value.setType("unsigned");
                                         }
 
+                                        value.setSlope(Double.valueOf(splitted[4]));
+                                        value.setIntercept(Double.valueOf(splitted[5]));
+
+                                        if(!"".equals(splitted[8])) {
+                                            value.setUnit(splitted[8]);
+                                        }
                                 }
 
                                 /* Do we have a signal list for muxcount? */
@@ -542,9 +602,16 @@ public class DbcReader {
 			if (splitted[2].equals("0"))
 				signal.setEndianess("big");
 
-			value = (Value) factory.createValue();
-			Double slope = Double.valueOf(splitted[3]);
-			Double intercept = Double.valueOf(splitted[4]);
+                        Value value = (Value) factory.createValue();
+
+                        if("-".equals(splitted[3])) {
+                            value.setType("signed");
+                        } else {
+                            value.setType("unsigned");
+                        }
+
+			Double slope = Double.valueOf(splitted[4]);
+			Double intercept = Double.valueOf(splitted[5]);
 			// Omit default slope = 1.0
 			if (slope != 1.0)
 				value.setSlope((double) slope);
@@ -553,8 +620,14 @@ public class DbcReader {
 			if (intercept != 0.0)
 				value.setIntercept((double) intercept);
 
+                        if(!"".equals(splitted[8])) {
+                            value.setUnit(splitted[8]);
+                        }
+
 			// Omit empty value elements
-			if ((intercept != 0.0) || (slope != 1.0)){
+			if ((intercept != 0.0) || (slope != 1.0) ||
+                                !"1".equals(value.getUnit()) ||
+                                !"unsigned".equals(value.getType())){
 				signal.setValue(value);
 			}
 
@@ -565,27 +638,15 @@ public class DbcReader {
 
 	/**
 	 * Check for character classes. Returns true if the checked character is a
-	 * digit.
-	 *
-	 * @param c
-	 *            Character to check
-	 * @return True, if the character is a digit.
-	 */
-	private boolean isDigit(char c) {
-		return ((c <= '9' && c >= '0') || c == '.');
-	}
-
-	/**
-	 * Check for character classes. Returns true if the checked character is a
 	 * devider.
 	 *
 	 * @param c
 	 *            Character to check
 	 * @return True, if the character is a devider.
 	 */
-	private boolean isDevider(char c) {
+	private static boolean isDivider(char c) {
 		return (c == '[' || c == ']' || c == '(' || c == ')' || c == '|'
-				|| c == ',' || c == '@');
+				|| c == ',' || c == '@' || c == ' ');
 	}
 
 	/**
@@ -596,7 +657,7 @@ public class DbcReader {
 	 *            Character to check
 	 * @return True, if the character is a symbol.
 	 */
-	private boolean isSymbol(char c) {
+	private static boolean isSymbol(char c) {
 		return (c == '+' || c == '-');
 	}
 
@@ -608,33 +669,8 @@ public class DbcReader {
 	 *            Character to check
 	 * @return True, if the character is a quotation.
 	 */
-	private boolean isQuote(char c) {
+	private static boolean isQuote(char c) {
 		return (c == '"');
-	}
-
-	/**
-	 * Check for character classes. Returns true if the checked character is a
-	 * whitespace.
-	 *
-	 * @param c
-	 *            Character to check
-	 * @return True, if the character is a whitespace.
-	 */
-	private boolean isWhitespace(char c) {
-		return (c == ' ');
-	}
-
-	/**
-	 * Check for character classes. Returns true if the checked character is
-	 * alphabet char.
-	 *
-	 * @param c
-	 *            Character to check
-	 * @return True, if the character is alphabet char.
-	 */
-	private boolean isAlpha(char c) {
-		return (c <= 'Z' && c >= 'A' || c <= 'z' && c >= 'a' || c == '_'
-				|| c == '/' || c == '%');
 	}
 
 	/**
@@ -651,49 +687,84 @@ public class DbcReader {
 	 * @return String array containing the seperated value elements in ascending
 	 *         order.
 	 */
-	private String[] splitString(String s) {
-		int count = 0;
-		/** Maximum number of strings in StringArray */
-		final int MAX_STRINGS = 50;
-		String[] array = new String[MAX_STRINGS];
-		String concat = "";
+	protected static String[] splitString(String s) {
+            ArrayList<String> elements = new ArrayList<String>(10);
+            String element = "";
+            boolean inString = false;
 
-		for (int i = 0; i < s.length(); i++) {
+            for (int i = 0; i < s.length(); i++) {
 
-			if (isDigit(s.charAt(i))) {
-				concat += s.charAt(i);
-			} else if (isDevider(s.charAt(i))) {
-				if (!"".equals(concat))
-					array[count++] = concat;
-				concat = "";
-			} else if (isWhitespace(s.charAt(i))) {
-				// ignore
-			} else if (isSymbol(s.charAt(i))) {
-				// check if minus sign is part of an exponential number
-				if (!"".equals(concat)
-						&& concat.substring(concat.length() - 1).equals("E")) {
-					concat += "-";
-				}
-			} else if (isAlpha(s.charAt(i))) {
-				concat += s.charAt(i);
-			} else if (isQuote(s.charAt(i))) {
-				if (!"".equals(concat))
-					array[count++] = concat;
-				concat = "";
-			} else {
-				// a single char is not catched by the if-else
-				System.out.println("UNKNOWN CHAR:" + s.charAt(i));
-			}
+                /* Dividers in strings are ignored */
+                if (!inString && isDivider(s.charAt(i))) {
+                    if (!"".equals(element)) {
+                        elements.add(element);
+                    }
+                    element = "";
+                /*
+                 * Inside a string + and - are ignored, outside they are
+                 * valid elements.
+                 */
+                } else if (!inString && isSymbol(s.charAt(i))) {
+                    /* Signed unsigned character */
+                    if(s.charAt(i-2) == '@') {
+                        elements.add(element);
+                        element = "" + s.charAt(i);
+                    /*
+                     * Otherwise symbol is either part of an exponential
+                     * or a negative number
+                     */
+                    } else {
+                        element += s.charAt(i);
+                    }
+                } else if (isQuote(s.charAt(i))) {
+                    if (inString) {
+                        elements.add(element);
+                        element = "";
+                        inString = false;
+                    } else {
+                        inString = true;
+                    }
+                /* Default: add to element */
+                } else {
+                    element += s.charAt(i);
+                }
+            }
 
-		}
-
-		if (!"".equals(concat))
-			array[count++] = concat;
-		return array;
-
-	}
+            if (!"".equals(element)) {
+                elements.add(element);
+            }
+            return elements.toArray(new String[elements.size()]);
+        }
 
 	private void setReadable(boolean isReadable) {
 		this.isReadable = isReadable;
 	}
+
+    private void parseValueDescription(StringBuffer line) {
+        /* line e.g. "VAL_ 1234 signalname 1 "on" 2 "off" ;" */
+
+        String[] splitted =  splitString(line.toString());
+
+        long id = Long.valueOf(splitted[1]);
+        String signalName = splitted[2];
+
+        Set<Label> labelSet = new HashSet<Label>();
+
+
+        for(int i=3;i<(splitted.length-1);i+=2) {
+            Label label = new Label();
+
+            label.setName(splitted[i+1]);
+            label.setValue(BigInteger.valueOf(Long.parseLong(splitted[i])));
+
+            labelSet.add(label);
+        }
+
+        LabelDescription description = new LabelDescription();
+        description.setId(id);
+        description.setSignalName(signalName);
+        description.setLabels(labelSet);
+
+        labels.add(description);
+    }
 }

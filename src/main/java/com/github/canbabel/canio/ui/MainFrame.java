@@ -2,15 +2,32 @@
 package com.github.canbabel.canio.ui;
 
 import com.github.canbabel.canio.dbc.DbcReader;
+import com.github.canbabel.canio.kcd.NetworkDefinition;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  *
@@ -93,6 +110,9 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBox2 = new javax.swing.JCheckBox();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -112,8 +132,8 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(jButton3, gridBagConstraints);
 
@@ -138,10 +158,32 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
         getContentPane().add(jPanel2, gridBagConstraints);
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Information"));
+        jPanel3.setLayout(new java.awt.GridBagLayout());
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setEditable(false);
+        jTextArea1.setRows(5);
+        jScrollPane2.setViewportView(jTextArea1);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weighty = 0.1;
+        jPanel3.add(jScrollPane2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 0.5;
+        getContentPane().add(jPanel3, gridBagConstraints);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Input"));
         jPanel1.setLayout(new java.awt.GridBagLayout());
@@ -188,7 +230,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weightx = 1.0;
@@ -196,9 +238,10 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().add(jPanel1, gridBagConstraints);
 
         jProgressBar1.setEnabled(false);
+        jProgressBar1.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jProgressBar1, gridBagConstraints);
 
@@ -295,10 +338,34 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 
+    OutputStream logOutput = new OutputStream() {
+
+        private StringBuilder string = new StringBuilder();
+        @Override
+        public void write(int b) throws IOException {
+            this.string.append((char) b );
+        }
+
+        @Override
+        public String toString(){
+            return this.string.toString();
+        }
+
+        @Override
+        public void flush() throws IOException {
+            jTextArea1.setText(string.toString());
+        }
+
+    };
+
+    PrintWriter logWriter = new PrintWriter(logOutput);
     private Runnable convertRunnable = new Runnable() {
 
         @Override
@@ -314,6 +381,37 @@ public class MainFrame extends javax.swing.JFrame {
 
             jCheckBox1.setEnabled(false);
             jCheckBox2.setEnabled(false);
+
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            InputStream resourceAsStream = NetworkDefinition.class.getResourceAsStream("Definition.xsd");
+            Source s = new StreamSource(resourceAsStream);
+            Schema schema;
+            Validator val = null;
+            try {
+                schema = schemaFactory.newSchema(s);
+                val = schema.newValidator();
+            } catch (SAXException ex) {
+                ex.printStackTrace(logWriter);
+            }
+
+            ErrorHandler handler = new ErrorHandler() {
+
+                @Override
+                public void warning(SAXParseException exception) throws SAXException {
+                    exception.printStackTrace(logWriter);
+                }
+
+                @Override
+                public void error(SAXParseException exception) throws SAXException {
+                    exception.printStackTrace(logWriter);
+                }
+
+                @Override
+                public void fatalError(SAXParseException exception) throws SAXException {
+                    exception.printStackTrace(logWriter);
+                }
+            };
+            val.setErrorHandler(handler);
 
             for(File f : list.getFiles()) {
 
@@ -340,19 +438,34 @@ public class MainFrame extends javax.swing.JFrame {
                     break;
                 }
 
+                jProgressBar1.setString("Converting " + (jProgressBar1.getValue()+1) + " of " + jProgressBar1.getMaximum() + ": " + f.getName());
+                logWriter.write("### Converting " + f.getName() + " ###\n");
+                logWriter.flush();
                 try {
                     DbcReader reader = new DbcReader();
-                    if(reader.parseFile(f)) {
+                    if(reader.parseFile(f, logOutput)) {
                         reader.writeKcdFile(newFile, jCheckBox2.isSelected(), jCheckBox1.isSelected());
+
+                        /* Validate the result */
+                        StreamSource source;
+
+                        if(jCheckBox1.isSelected()) {
+                            source = new StreamSource(new GZIPInputStream(new FileInputStream(newFile)));
+                        } else {
+                            source = new StreamSource(newFile);
+                        }
+                        val.validate(source);
+
                     }
 
                     if(Thread.interrupted()) {
                         break;
                     }
                 } catch(Exception ex) {
-                    System.out.println("Exception: " + ex.toString());
+                    ex.printStackTrace(logWriter);
                 }
 
+                logWriter.flush();
                 jProgressBar1.setValue(jProgressBar1.getValue()+1);
             }
 
