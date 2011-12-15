@@ -76,6 +76,7 @@ public class DbcReader {
 	private Signal signal = null;
 	private Map<Long, Set<Signal>> muxed = new TreeMap<Long, Set<Signal>>();
         private Set<LabelDescription> labels = new HashSet<LabelDescription>();
+        private String version = "";
 
         private PrintWriter logWriter;
 
@@ -165,6 +166,7 @@ public class DbcReader {
                 }
             }
 
+            document.setVersion(version);
             /*
              * File has been completely parsed. Now the labels can be added
              * to the corresponding signals.
@@ -302,9 +304,9 @@ public class DbcReader {
 
 	}
 
-	private static void parseVersion(StringBuffer line) {
-		//System.out.println("Version: " + line.toString());
-
+	private void parseVersion(StringBuffer line) {
+            String[] splitted =  splitString(line.toString());
+            version = splitted[1];
 	}
 
 	private static void parseBitTimingSection(StringBuffer line) {
