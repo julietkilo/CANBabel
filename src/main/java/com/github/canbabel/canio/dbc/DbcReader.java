@@ -86,6 +86,15 @@ public class DbcReader {
             private long id;
             private String signalName;
             private Set<Label> labels;
+            private boolean extended;
+
+            public boolean isExtended() {
+                return extended;
+            }
+
+            public void setExtended(boolean extended) {
+                this.extended = extended;
+            }
 
             public long getId() {
                 return id;
@@ -118,6 +127,15 @@ public class DbcReader {
             private long id;
             private String signalName;
             private String comment;
+            private boolean extended;
+
+            public boolean isExtended() {
+                return extended;
+            }
+
+            public void setExtended(boolean extended) {
+                this.extended = extended;
+            }
 
             public long getId() {
                 return id;
@@ -144,6 +162,33 @@ public class DbcReader {
             }
 
         };
+
+        private static Signal findSignal(List<Message> messages, long id, boolean e, String name) {
+            for(Message message : messages) {
+                boolean extended = (message.getFormat().equals("extended"));
+                if(Long.parseLong(message.getId().substring(2),16) == id
+                        && extended == e) {
+                    List<Signal> signals = message.getSignal();
+                    /* Find signal name */
+                    for(Signal signal : signals) {
+                        if(signal.getName().equals(name)) {
+                            return signal;
+                        }
+                    }
+
+                    for(Multiplex multiplex : message.getMultiplex()) {
+                        for(MuxGroup group : multiplex.getMuxGroup()) {
+                            for(Signal signal : group.getSignal()) {
+                                if(signal.getName().equals(name)) {
+                                    return signal;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
 
 	public boolean parseFile(File file, OutputStream logStream) {
             logWriter = new PrintWriter(logStream);
@@ -207,21 +252,13 @@ public class DbcReader {
             for(LabelDescription description : labels) {
                 List<Message> messages = bus.getMessage();
 
-                /* Find ID */
-                for(Message message : messages) {
-                    if(Long.parseLong(message.getId().substring(2),16) == description.getId()) {
-                        List<Signal> signals = message.getSignal();
-                        /* Find signal name */
-                        for(Signal signal : signals) {
-                            if(signal.getName().equals(description.getSignalName())) {
-                                LabelSet set = new LabelSet();
-                                List<BasicLabelType> labellist = set.getLabelOrLabelGroup();
-                                labellist.addAll(description.getLabels());
-                                signal.setLabelSet(set);
-                            }
-                        }
-                    }
-                }
+                LabelSet set = new LabelSet();
+                List<BasicLabelType> labellist = set.getLabelOrLabelGroup();
+                labellist.addAll(description.getLabels());
+
+                Signal signal = findSignal(messages, description.getId(), description.isExtended(), description.getSignalName());
+                if(signal != null)
+                    signal.setLabelSet(set);
             }
 
             /*
@@ -232,17 +269,9 @@ public class DbcReader {
                 List<Message> messages = bus.getMessage();
 
                 /* Find ID */
-                for(Message message : messages) {
-                    if(Long.parseLong(message.getId().substring(2),16) == comment.getId()) {
-                        List<Signal> signals = message.getSignal();
-                        /* Find signal name */
-                        for(Signal signal : signals) {
-                            if(signal.getName().equals(comment.getSignalName())) {
-                                signal.setNotes(comment.getComment());
-                            }
-                        }
-                    }
-                }
+                Signal signal = findSignal(messages, comment.getId(), comment.isExtended(), comment.getSignalName());
+                if(signal != null)
+                    signal.setNotes(comment.getComment());
             }
 
             return true;
@@ -260,16 +289,18 @@ public class DbcReader {
             try {
                 JAXBContext context = JAXBContext.newInstance(new Class[]{com.github.canbabel.canio.kcd.NetworkDefinition.class});
                 Marshaller marshaller = context.createMarshaller();
+                marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
 
                 if(prettyPrint)
-                    marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+                    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
                 if(gzip) {
                     FileOutputStream fo = new FileOutputStream(file);
                     GZIPOutputStream stream = new GZIPOutputStream(fo);
-                    w = new OutputStreamWriter(stream);
+                    w = new OutputStreamWriter(stream, "ISO-8859-1");
                 } else {
-                    w = new FileWriter(file);
+                    FileOutputStream fo = new FileOutputStream(file);
+                    w = new OutputStreamWriter(fo, "ISO-8859-1");
                 }
                 marshaller.marshal(network, w);
             } catch (JAXBException jxbe) {
@@ -804,11 +835,17 @@ public class DbcReader {
 
         String[] splitted =  splitString(line.toString());
 
-        long id = Long.valueOf(splitted[1]);
-        String signalName = splitted[2];
+        LabelDescription description = new LabelDescription();
 
+        if(isExtendedFrameFormat(splitted[1])) {
+            description.setExtended(true);
+        } else {
+            description.setExtended(false);
+        }
+
+        description.setId(getCanIdFromString(splitted[1]));
+        description.setSignalName(splitted[2]);
         Set<Label> labelSet = new HashSet<Label>();
-
 
         for(int i=3;i<(splitted.length-1);i+=2) {
             Label label = new Label();
@@ -819,9 +856,6 @@ public class DbcReader {
             labelSet.add(label);
         }
 
-        LabelDescription description = new LabelDescription();
-        description.setId(id);
-        description.setSignalName(signalName);
         description.setLabels(labelSet);
 
         labels.add(description);
@@ -834,10 +868,15 @@ public class DbcReader {
 
         SignalComment comment = new SignalComment();
 
-        comment.setId(Long.valueOf(splitted[2]));
+        if(isExtendedFrameFormat(splitted[2])) {
+            comment.setExtended(true);
+        } else {
+            comment.setExtended(false);
+        }
+
+        comment.setId(getCanIdFromString(splitted[2]));
         comment.setSignalName(splitted[3]);
         comment.setComment(splitted[4]);
-
 
         signalComments.add(comment);
     }
