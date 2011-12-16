@@ -500,8 +500,6 @@ public class DbcReader {
 
 			//System.out.println("Signal: " + lineArray[i]);
 			parseSignal(message, lineArray[i]);
-			// Signal signal = (Signal) factory.createSignal();
-
 		}
 
                 /* Check if we have to add a multiplex definition to the last
@@ -524,9 +522,6 @@ public class DbcReader {
                     /* Make sure there is no empty multiplex in the message */
                     message.getMultiplex().clear();
                 }
-
-		// System.out.println("Signalliste hat " + composite.size() +
-		// "Einträge");
 
 		bus.getMessage().add(message);
 	}
