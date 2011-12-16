@@ -76,6 +76,7 @@ public class DbcReader {
 	private Signal signal = null;
 	private Map<Long, Set<Signal>> muxed = new TreeMap<Long, Set<Signal>>();
         private Set<LabelDescription> labels = new HashSet<LabelDescription>();
+        private Set<SignalComment> signalComments = new HashSet<SignalComment>();
         private String version = "";
 
         private PrintWriter logWriter;
@@ -100,6 +101,38 @@ public class DbcReader {
 
             public void setLabels(Set<Label> labels) {
                 this.labels = labels;
+            }
+
+            public String getSignalName() {
+                return signalName;
+            }
+
+            public void setSignalName(String signalName) {
+                this.signalName = signalName;
+            }
+
+        };
+
+        private class SignalComment {
+
+            private long id;
+            private String signalName;
+            private String comment;
+
+            public long getId() {
+                return id;
+            }
+
+            public void setId(long id) {
+                this.id = id;
+            }
+
+            public String getComment() {
+                return comment;
+            }
+
+            public void setComment(String comment) {
+                this.comment = comment;
             }
 
             public String getSignalName() {
@@ -190,6 +223,28 @@ public class DbcReader {
                     }
                 }
             }
+
+            /*
+             * File has been completely parsed. Now the signal comments can be added
+             * to the corresponding signals.
+             */
+            for(SignalComment comment : signalComments) {
+                List<Message> messages = bus.getMessage();
+
+                /* Find ID */
+                for(Message message : messages) {
+                    if(Long.parseLong(message.getId().substring(2),16) == comment.getId()) {
+                        List<Signal> signals = message.getSignal();
+                        /* Find signal name */
+                        for(Signal signal : signals) {
+                            if(signal.getName().equals(comment.getSignalName())) {
+                                signal.setNotes(comment.getComment());
+                            }
+                        }
+                    }
+                }
+            }
+
             return true;
         }
 
@@ -286,6 +341,8 @@ public class DbcReader {
 			parseValueDescription(line);
 		} else if (Pattern.matches("BA_.+\".*", line)) {
 			parseAttribute(line);
+                } else if (Pattern.matches("CM_ SG_.*", line)) {
+			parseSignalComment(line);
 		} else if (Pattern.matches("CM.*", line)) {
 			parseComment(line);
 		} else if (Pattern.matches("BO_TX_BU_.*", line)) {
@@ -768,5 +825,20 @@ public class DbcReader {
         description.setLabels(labelSet);
 
         labels.add(description);
+    }
+
+    private void parseSignalComment(StringBuffer line) {
+        /* line e.g. "CM_ SG_ 1234 signalname 1 "comment";" */
+
+        String[] splitted =  splitString(line.toString());
+
+        SignalComment comment = new SignalComment();
+
+        comment.setId(Long.valueOf(splitted[2]));
+        comment.setSignalName(splitted[3]);
+        comment.setComment(splitted[4]);
+
+
+        signalComments.add(comment);
     }
 }
