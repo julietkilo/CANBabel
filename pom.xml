@@ -49,6 +49,28 @@
                         </archive>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <!-- Usage: mvn org.jvnet.jaxb2.maven2:maven-jaxb2-plugin:generate -->
+                    <groupId>org.jvnet.jaxb2.maven2</groupId>
+                    <artifactId>maven-jaxb2-plugin</artifactId>
+                    <version>0.8.0</version>
+                    <configuration>
+                        <schemaDirectory>src/main/resources/com/github/canbabel/canio/kcd</schemaDirectory>
+                        <schemaIncludes>
+                            <include>Definition.xsd</include>
+                        </schemaIncludes>
+                        <bindingDirectory>src/main/resources/com/github/canbabel/canio/kcd/</bindingDirectory>
+                        <bindingIncludes>
+                            <include>*.xjb</include>
+                        </bindingIncludes>
+                        <generateDirectory>target/generated-sources/xjc</generateDirectory>
+                        <generatePackage>com.github.canbabel.canio.kcd</generatePackage>
+                        <writeCode>true</writeCode>
+                        <readOnly>false</readOnly>
+                        <removeOldOutput>false</removeOldOutput>
+                        <forceRegenerate>false</forceRegenerate>
+                    </configuration>
+                </plugin>                
             </plugins>
         </pluginManagement>
     </build>
@@ -75,6 +97,9 @@
 
     <!-- More project info -->
     <name>CANBabel</name>
+    <description>Translator for several Controller Area Network (CAN) description formats. Currently a converter
+    from industry-widespread DBC-format to KCD-format. CANBabel aims to promote and develop the open-source KCD 
+    format and encourage the use of open-source tools for the CAN bus.</description>
     <url>https://github.com/julietkilo/CANBabel/</url>
     <inceptionYear>2011</inceptionYear>
     <licenses>

@@ -17,7 +17,7 @@
 --> 
 <NetworkDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="Definition.xsd"
- version="0.6">
+ version="0.7">
 	<Document name="The Homer" version="1.23" author="Herbert Powell" company="Powell Motors" date="1991-02-16">
 	A car designed by Homer J. Simpson that the average american consumer would want to buy.
 	The Homer has two bubble domes: one in the front and one for quarreling kids. 
@@ -202,7 +202,7 @@
 		<Message id="0x385" name="BCC" count="10" triggered="true" interval="200">
 	     	<Producer>
 	     		<NodeRef id="12"/>
-	     	</Producer>	     	
+	     	</Producer>	
 	     	<Signal name="Milage1" offset="0" length="24">
 	     		<Value slope="0.1" unit="km"/>
 	     	</Signal>

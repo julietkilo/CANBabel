@@ -1,4 +1,3 @@
-
 package com.github.canbabel.canio.ui;
 
 import com.github.canbabel.canio.dbc.DbcReader;
@@ -13,6 +12,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.prefs.*;
 import java.util.zip.GZIPInputStream;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -26,6 +26,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+/* TODO: Close button on panel */
 /**
  *
  * @author Jan-Niklas Meier < dschanoeh@googlemail.com >
@@ -33,18 +34,18 @@ import org.xml.sax.SAXParseException;
 public class MainFrame extends javax.swing.JFrame {
 
     private static final long serialVersionUID = -6772467633506915053L;
-    private JFileChooser fc = new JFileChooser();
+    private JFileChooser fc = new JFileChooser("");
     private FileList list = new FileList();
     private Thread convertThread;
-
     private FileFilter directoryFilter = new FileFilter() {
+
         @Override
         public boolean accept(File file) {
             return file.isDirectory();
         }
     };
-
     private FileFilter dbcFilter = new FileFilter() {
+
         @Override
         public boolean accept(File file) {
             return file.getName().toLowerCase().endsWith(".dbc");
@@ -55,13 +56,16 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         initComponents();
 
+        Preferences.userNodeForPackage(this.getClass());
+
+
         fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
 
             @Override
             public boolean accept(File f) {
-                if(f.getName().endsWith(".dbc")) {
+                if (f.getName().endsWith(".dbc")) {
                     return true;
-                } else if(f.isDirectory()) {
+                } else if (f.isDirectory()) {
                     return true;
                 }
 
@@ -85,7 +89,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         File[] dirs = directory.listFiles(directoryFilter);
 
-        for(File dir : dirs) {
+        for (File dir : dirs) {
             files.addAll(filesForDirectory(dir));
         }
 
@@ -117,6 +121,7 @@ public class MainFrame extends javax.swing.JFrame {
         jList1 = new javax.swing.JList();
         jButton2 = new javax.swing.JButton();
         jProgressBar1 = new javax.swing.JProgressBar();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("CANBabel");
@@ -132,7 +137,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
         getContentPane().add(jButton3, gridBagConstraints);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Settings"));
@@ -159,7 +164,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
         getContentPane().add(jPanel2, gridBagConstraints);
@@ -181,7 +186,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 0.5;
         getContentPane().add(jPanel3, gridBagConstraints);
@@ -231,7 +236,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weightx = 1.0;
@@ -239,27 +244,59 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().add(jPanel1, gridBagConstraints);
 
         jProgressBar1.setEnabled(false);
+        jProgressBar1.setMinimumSize(new java.awt.Dimension(410, 23));
+        jProgressBar1.setPreferredSize(new java.awt.Dimension(190, 23));
+        jProgressBar1.setRequestFocusEnabled(false);
         jProgressBar1.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         getContentPane().add(jProgressBar1, gridBagConstraints);
+
+        jButton4.setText("Close");
+        jButton4.setToolTipText("Close application");
+        jButton4.setAlignmentX(0.5F);
+        jButton4.setFocusTraversalPolicyProvider(true);
+        jButton4.setMaximumSize(new java.awt.Dimension(68, 30));
+        jButton4.setMinimumSize(new java.awt.Dimension(68, 30));
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeButtonHandler(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+        getContentPane().add(jButton4, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+//    void outputDirectoryButton_actionPerformed(ActionEvent e)
+//    {
+//      int status = getDirectoryFromUser(jFileChooser,mostRecentOutputDirectory);
+//      if ( status == JFileChooser.APPROVE_OPTION )
+//      {
+//        mostRecentOutputDirectory = jFileChooser.getSelectedFile();
+//        jspOutputDirectoryTextField.setText(mostRecentOutputDirectory.getAbsolutePath());
+//        prefs.put("LAST_OUTPUT_DIR", mostRecentOutputDirectory.getAbsolutePath());
+//      }
+//    }    
+    /** TODO: Remembering the users last choosen directory */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         int returnVal = fc.showOpenDialog(this);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File[] files = fc.getSelectedFiles();
 
-            for(File f : files) {
-                if(f.isDirectory()) {
+            for (File f : files) {
+                if (f.isDirectory()) {
                     List<File> dirFiles = filesForDirectory(f);
 
-                    for(File fi : dirFiles) {
+                    for (File fi : dirFiles) {
                         list.addFile(fi);
                     }
 
@@ -275,24 +312,27 @@ public class MainFrame extends javax.swing.JFrame {
 
         Arrays.sort(selection);
 
-        for(int i=0;i<selection.length;i++) {
+        for (int i = 0; i < selection.length; i++) {
             list.remove(selection[i] - i);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        if(convertThread != null && convertThread.isAlive()) {
+        if (convertThread != null && convertThread.isAlive()) {
             convertThread.interrupt();
             try {
                 convertThread.join();
             } catch (InterruptedException ex) {
-
             }
-        } else if(list.getSize() > 0) {
+        } else if (list.getSize() > 0) {
             convertThread = new Thread(convertRunnable);
             convertThread.start();
         }
     }//GEN-LAST:event_jButton3ActionPerformed
+
+private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonHandler
+    System.exit(0);
+}//GEN-LAST:event_closeButtonHandler
 
     /**
      * @param args the command line arguments
@@ -334,6 +374,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
@@ -346,17 +387,17 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
-
     OutputStream logOutput = new OutputStream() {
 
         private StringBuilder string = new StringBuilder();
+
         @Override
         public void write(int b) throws IOException {
-            this.string.append((char) b );
+            this.string.append((char) b);
         }
 
         @Override
-        public String toString(){
+        public String toString() {
             return this.string.toString();
         }
 
@@ -364,9 +405,7 @@ public class MainFrame extends javax.swing.JFrame {
         public void flush() throws IOException {
             jTextArea1.setText(string.toString());
         }
-
     };
-
     PrintWriter logWriter = new PrintWriter(logOutput);
     private Runnable convertRunnable = new Runnable() {
 
@@ -386,93 +425,108 @@ public class MainFrame extends javax.swing.JFrame {
 
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             InputStream resourceAsStream = NetworkDefinition.class.getResourceAsStream("Definition.xsd");
-            Source s = new StreamSource(resourceAsStream);
-            Schema schema;
             Validator val = null;
-            try {
-                schema = schemaFactory.newSchema(s);
-                val = schema.newValidator();
-            } catch (SAXException ex) {
-                ex.printStackTrace(logWriter);
+
+            if (resourceAsStream != null) {
+
+                Source s = new StreamSource(resourceAsStream);
+                Schema schema;
+
+                try {
+                    schema = schemaFactory.newSchema(s);
+                    val = schema.newValidator();
+                } catch (SAXException ex) {
+                    ex.printStackTrace(logWriter);
+                }
+
+                ErrorHandler handler = new ErrorHandler() {
+
+                    @Override
+                    public void warning(SAXParseException exception) throws SAXException {
+                        exception.printStackTrace(logWriter);
+                    }
+
+                    @Override
+                    public void error(SAXParseException exception) throws SAXException {
+                        exception.printStackTrace(logWriter);
+                    }
+
+                    @Override
+                    public void fatalError(SAXParseException exception) throws SAXException {
+                        exception.printStackTrace(logWriter);
+                    }
+                };
+                try {
+                    val.setErrorHandler(handler);
+                } catch (Exception e) {
+                    e.printStackTrace(logWriter);
+                }
+
+            } else {
+                // if schema can't be found skip validation part
+                logWriter.print("Network definition schema can't be found in jar. Started from commandline?\n");
             }
 
-            ErrorHandler handler = new ErrorHandler() {
-
-                @Override
-                public void warning(SAXParseException exception) throws SAXException {
-                    exception.printStackTrace(logWriter);
-                }
-
-                @Override
-                public void error(SAXParseException exception) throws SAXException {
-                    exception.printStackTrace(logWriter);
-                }
-
-                @Override
-                public void fatalError(SAXParseException exception) throws SAXException {
-                    exception.printStackTrace(logWriter);
-                }
-            };
-            val.setErrorHandler(handler);
-
-            for(File f : list.getFiles()) {
+            for (File f : list.getFiles()) {
 
                 String filename = f.getPath();
 
-                if(jCheckBox1.isSelected()) {
-                    filename = filename.substring(0, filename.length()-4) + ".kcd.gz";
+                if (jCheckBox1.isSelected()) {
+                    filename = filename.substring(0, filename.length() - 4) + ".kcd.gz";
                 } else {
-                    filename = filename.substring(0, filename.length()-4) + ".kcd";
+                    filename = filename.substring(0, filename.length() - 4) + ".kcd";
                 }
 
                 File newFile = new File(filename);
 
-                if(newFile.exists() && !jCheckBox3.isSelected()) {
+                if (newFile.exists() && !jCheckBox3.isSelected()) {
                     int answer = JOptionPane.showConfirmDialog(jButton1, "File " + filename + " already exists. Overwrite?");
 
-                    if(answer == JOptionPane.NO_OPTION) {
-                        jProgressBar1.setValue(jProgressBar1.getValue()+1);
+                    if (answer == JOptionPane.NO_OPTION) {
+                        jProgressBar1.setValue(jProgressBar1.getValue() + 1);
                         continue;
-                    } else if(answer == JOptionPane.CANCEL_OPTION) {
+                    } else if (answer == JOptionPane.CANCEL_OPTION) {
                         jProgressBar1.setValue(0);
                         jProgressBar1.setString("");
                         return;
                     }
                 }
 
-                if(Thread.interrupted()) {
+                if (Thread.interrupted()) {
                     break;
                 }
 
-                jProgressBar1.setString("Converting " + (jProgressBar1.getValue()+1) + " of " + jProgressBar1.getMaximum() + ": " + f.getName());
+                jProgressBar1.setString("Converting " + (jProgressBar1.getValue() + 1) + " of " + jProgressBar1.getMaximum() + ": " + f.getName());
                 logWriter.write("### Converting " + f.getName() + " ###\n");
                 logWriter.flush();
                 try {
                     DbcReader reader = new DbcReader();
-                    if(reader.parseFile(f, logOutput)) {
+                    if (reader.parseFile(f, logOutput)) {
                         reader.writeKcdFile(newFile, jCheckBox2.isSelected(), jCheckBox1.isSelected());
 
                         /* Validate the result */
                         StreamSource source;
 
-                        if(jCheckBox1.isSelected()) {
+                        if (jCheckBox1.isSelected()) {
                             source = new StreamSource(new GZIPInputStream(new FileInputStream(newFile)));
                         } else {
                             source = new StreamSource(newFile);
                         }
-                        val.validate(source);
+                        if (val != null) {
+                            val.validate(source);
+                        }
 
                     }
 
-                    if(Thread.interrupted()) {
+                    if (Thread.interrupted()) {
                         break;
                     }
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace(logWriter);
                 }
 
                 logWriter.flush();
-                jProgressBar1.setValue(jProgressBar1.getValue()+1);
+                jProgressBar1.setValue(jProgressBar1.getValue() + 1);
             }
 
             list.clear();
@@ -488,7 +542,5 @@ public class MainFrame extends javax.swing.JFrame {
             jCheckBox1.setEnabled(true);
             jCheckBox2.setEnabled(true);
         }
-
     };
-
 }

@@ -4,7 +4,6 @@ import com.github.canbabel.canio.kcd.BasicLabelType;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import com.github.canbabel.canio.kcd.BasicSignalType;
 import com.github.canbabel.canio.kcd.Bus;
 import com.github.canbabel.canio.kcd.Document;
 import com.github.canbabel.canio.kcd.Label;
@@ -54,10 +54,12 @@ import java.util.zip.GZIPOutputStream;
  * @author Jan-Niklas Meier <dschanoeh@googlemail.com>
  *
  */
+
+
 public class DbcReader {
 
 	private static final String MAJOR_VERSION = "0";
-	private static final String MINOR_VERSION = "4";
+	private static final String MINOR_VERSION = "7";
 
 	final private static String[] KEYWORDS = { "VERSION ", "NS_ : ", "BS_:",
 			"BU_: ", "BO_ ", "SG_ ", "BO_TX_BU_ ", "CM_ ", "CM_ BO_ ",
@@ -66,6 +68,7 @@ public class DbcReader {
                         "VAL_TABLE_ ", "SIG_VALTYPE_ "};
 
 	private static final String NOT_DEFINED = "Vector__XXX";
+        private static final String ORPHANED_SIGNALS = "VECTOR__INDEPENDENT_SIG_MSG";
 	private static final String DOC_CONTENT = "Converted with CANBabel (https://github.com/julietkilo/CANBabel)";
 	private boolean isReadable;
 	private Collection<String> nodes = new ArrayList<String>();
@@ -73,7 +76,6 @@ public class DbcReader {
 	private NetworkDefinition network = null;
 	private Document document = null;
 	private Bus bus = null;
-	private Signal signal = null;
 	private Map<Long, Set<Signal>> muxed = new TreeMap<Long, Set<Signal>>();
         private Set<LabelDescription> labels = new HashSet<LabelDescription>();
         private Set<SignalComment> signalComments = new HashSet<SignalComment>();
@@ -244,7 +246,6 @@ public class DbcReader {
                 }
             }
 
-            document.setVersion(version);
             /*
              * File has been completely parsed. Now the labels can be added
              * to the corresponding signals.
@@ -465,8 +466,6 @@ public class DbcReader {
 	 */
 	private void parseMessageDefinition(StringBuffer line) {
 
-		// reset signal context with each new message;
-		signal = null;
 		muxed = new TreeMap<Long, Set<Signal>>();
 
 		// BO_ 1984 Messagename: 8 Producername
@@ -485,7 +484,6 @@ public class DbcReader {
 		message.setId("0x" + Integer.toString(messageIdDecimal,16).toUpperCase() );
 		if (isExtendedFrameFormat(messageArray[0]))
 			message.setFormat("extended");
-
 
 		message.setName(messageArray[1].replace(":", ""));
 		message.setLength(messageArray[2]);
@@ -522,8 +520,10 @@ public class DbcReader {
                     /* Make sure there is no empty multiplex in the message */
                     message.getMultiplex().clear();
                 }
-
-		bus.getMessage().add(message);
+                
+                /* Skip messages with signals that have not defined a parent message */
+                if (!message.getName().contains(ORPHANED_SIGNALS))
+                    bus.getMessage().add(message);
 	}
 
 	private int getCanIdFromString(String canIdStr){
@@ -539,6 +539,115 @@ public class DbcReader {
 		return ((canIdLong >>> 31 & 1) == 1) ? true : false;
 	}
 
+	private enum SignalType { MULTIPLEXOR, MULTIPLEX, PLAIN };
+	
+
+	/**
+	 * Parses a the part of a signal line that is same for plain, multiplexor 
+	 * or muxed signal.
+	 *
+	 * @param message message object where the signal line belongs to and shall
+	 *            append to.
+	 * @param signalName name of the signal as parsed before the line string begins
+	 * @param type signal type that is one of multiplexor, multiplex or plain signal.    
+	 * @param line signal line String to parse
+	 */	
+	public Signal parseSignalLine(Message message, String signalName, SignalType type, String line){
+		/* line e.g. "39|16@0+ (0.01,0) [0|655.35] "Km/h" ECU3" */
+		Value value = null;
+		
+		/** 1 */
+		BasicSignalType basicSignalType = 
+				(BasicSignalType) factory.createBasicSignalType();
+		
+		/** 2 */
+		basicSignalType.setName(signalName);
+		
+		/** 3 */
+		String[] splitted = splitString(line);
+		
+		/** 4*/
+		if (splitted != null){
+			basicSignalType.setOffset(Integer.parseInt(splitted[0]));
+			
+			// Omit length == "1" (default)
+			if (!splitted[1].equals("1"))
+				basicSignalType.setLength(Integer.parseInt(splitted[1]));
+			
+			// find big endian signals, little is default
+			if (splitted[2].equals("0"))
+				basicSignalType.setEndianess("big");
+						
+			/** 7.1 */
+			Double slope = Double.valueOf(splitted[4]);
+			Double intercept = Double.valueOf(splitted[5]);
+			Double min = Double.valueOf(splitted[6]);
+			Double max = Double.valueOf(splitted[7]);
+					
+			/** 9 (partly) */
+			if ((intercept != 0.0) || (slope != 1.0) || !"".equals(splitted[8]) ||
+					"-".equals(splitted[3]) || (min != 0.0) || (max != 1.0)){
+				/** 6 */
+				value = (Value) factory.createValue();
+
+				if ("-".equals(splitted[3]))
+					value.setType("signed");
+								
+				/** 7.2 */				
+				// Omit default slope
+				if (slope != 1.0)
+					value.setSlope((double) slope);
+				
+				// Omit default intercept = 0.0
+				if (intercept != 0.0)
+					value.setIntercept((double) intercept);
+				
+				/** 8 */
+				// Omit empty units
+				if (!"".equals(splitted[8]))
+					value.setUnit(splitted[8]);
+				
+				/** 9 */
+				// Omit default min = 0.0
+				if (min != 0.0)
+					value.setMin((double) min);
+				
+				// Omit default max = 1.0
+				if (max != 1.0)
+					value.setMax((double) max);
+			
+			} // End value part
+			
+		} // End line split
+		
+		if (type == SignalType.MULTIPLEXOR){
+			/** A */
+			Multiplex mux = (Multiplex) factory.createMultiplex();
+			mux.setName(basicSignalType.getName());
+			mux.setOffset(basicSignalType.getOffset());
+			if (basicSignalType.getLength() != 1)
+				mux.setLength(basicSignalType.getLength());
+			if (basicSignalType.getEndianess().equals("big")) 
+				mux.setEndianess(basicSignalType.getEndianess());
+			mux.setValue(value);
+			message.getMultiplex().add(mux);
+			return null;
+		
+		} else {
+			/** B and C */
+			Signal signal = (Signal) factory.createSignal();
+			signal.setName(basicSignalType.getName());
+			signal.setOffset(basicSignalType.getOffset());
+			if (basicSignalType.getLength() != 1)
+				signal.setLength(basicSignalType.getLength());
+			if (basicSignalType.getEndianess().equals("big")) 
+				signal.setEndianess(basicSignalType.getEndianess());
+			signal.setValue(value);
+			message.getSignal().add(signal);
+			return signal;
+		}
+	}
+	
 	/**
 	 * Parses a dbc file signal line without the SG_ header. Parses also signal
 	 * lines with multiplexed signals (e.g. m2) and multiplexors (M).
@@ -561,165 +670,45 @@ public class DbcReader {
 			if (signalName.endsWith("M")) {
 				/* signal type is multiplexor */
 				/* FIN_MUX M : 0|2@1+ (1,0) [0|255] "" Motor */
-				//System.out.println("###Multiplexor: " + lineArray[0]);
-				Multiplex mux = (Multiplex) factory.createMultiplex();
-				mux.setName(signalName.replace(" M", "").trim());
-
-                                signal = (Signal) factory.createSignal();
-
-                                String[] splitted = splitString(lineArray[1]);
-
-                                if (splitted != null) {
-                                        mux.setOffset(Integer.parseInt(splitted[0]));
-
-                                        // Omit length == "1" (default)
-                                        if (!splitted[1].equals("1"))
-                                                mux.setLength(Integer.parseInt(splitted[1]));
-
-                                        // find big endian signals, little is default
-                                        if (splitted[2].equals("0"))
-                                                mux.setEndianess("big");
-
-                                        /*
-                                         * TODO: Signed / unsigned is currenty ignored for
-                                         * multiplex values.
-                                         */
-                                }
-
-				message.getMultiplex().add(mux);
+				//System.out.println("###Multiplexor: " + lineArray[0]);	
+				// Remove multiplex coding ' M' from name "Muxname M"
+				parseSignalLine(message, signalName.substring(0, signalName.length()-2), SignalType.MULTIPLEXOR, lineArray[1]);
+				
 			} else {
 				/* signal type is multiplex */
 				/* Signal: FIN17 m2 : 43|8@1+ (1,0) [0|255] "" YBOX,CO2,Clima */
+				//System.out.println("###Multiplex: " + signalName);
+                /* Parse multiplex count */
+                String countstring = lineArray[0].trim();
+                for(int i=countstring.length()-1;i>0;i--) {
+                    if(countstring.charAt(i) == 'm') {
+                        countstring = countstring.substring(i+1);
+                        break;
+                    }
+                }
+                long muxcount = Long.parseLong(countstring);				
+				
+				Signal signal = parseSignalLine(message, lineArray[0].split(" ")[0], SignalType.MULTIPLEX, lineArray[1]);
+                               
 
-				//System.out.println("###Multiplex: "
-				//		+ signalName);
+                /* Do we have a signal list for muxcount? */
+                Set<Signal> signalSet = muxed.get(muxcount);
+                if(signalSet == null) {
+                    signalSet = new HashSet<Signal>();
+                    muxed.put(muxcount, signalSet);
+                }
 
-                                signal = (Signal) factory.createSignal();
-
-                                signal.setName(lineArray[0].split(" ")[0]);
-
-                                /* Parse multiplex count */
-                                String countstring = lineArray[0].trim();
-                                for(int i=countstring.length()-1;i>0;i--) {
-                                    if(countstring.charAt(i) == 'm') {
-                                        countstring = countstring.substring(i+1);
-                                        break;
-                                    }
-                                }
-                                long muxcount = Long.parseLong(countstring);
-
-                                String[] splitted = splitString(lineArray[1]);
-
-                                if (splitted != null) {
-                                        signal.setOffset(Integer.parseInt(splitted[0]));
-
-                                        // Omit length == "1" (default)
-                                        if (!splitted[1].equals("1"))
-                                                signal.setLength(Integer.parseInt(splitted[1]));
-
-                                        // find big endian signals, little is default
-                                        if (splitted[2].equals("0"))
-                                                signal.setEndianess("big");
-
-                                        Value value = (Value) factory.createValue();
-
-                                        if("-".equals(splitted[3])) {
-                                            value.setType("signed");
-                                        } else {
-                                            value.setType("unsigned");
-                                        }
-
-                                        value.setSlope(Double.valueOf(splitted[4]));
-                                        value.setIntercept(Double.valueOf(splitted[5]));
-
-                                        if(!"".equals(splitted[8])) {
-                                            value.setUnit(splitted[8]);
-                                        }
-                                }
-
-                                /* Do we have a signal list for muxcount? */
-                                Set<Signal> signalSet = muxed.get(muxcount);
-                                if(signalSet == null) {
-                                    signalSet = new HashSet<Signal>();
-                                    muxed.put(muxcount, signalSet);
-                                }
-
-                                signalSet.add(signal);
+                signalSet.add(signal);
 			}
 
 		} else {
 			/* signal type is plain */
-			parsePlainSignal(message, signalName, lineArray[1].toString().trim());
+			//parsePlainSignal(message, signalName, lineArray[1].toString().trim());
+			parseSignalLine(message,signalName,SignalType.PLAIN, lineArray[1].toString().trim());
 		}
-		/* printMuxed(); */
+
 	}
 
-
-	/**
-	 * Parses a plain signal that is not a multiplexor or muxed signal.
-	 *
-	 * @param message message object where the signal line belongs to and shall
-	 *            append to.
-	 * @param line signal line String to parse
-	 */
-	private void parsePlainSignal(Message message, String signalName, String line) {
-		/* line e.g. "39|16@0+ (0.01,0) [0|655.35] "Km/h" ECU3" */
-
-		//** Debug *//
-		//System.out.println("@@@Signalname::" + signalName + "Line:" + line);
-
-		signal = (Signal) factory.createSignal();
-		// signal.setName(lineArray[0].replaceAll("\\w+", ""));
-
-		String[] splitted = null;
-
-		splitted = splitString(line);
-
-		signal.setName(signalName);
-		if (splitted != null) {
-			signal.setOffset(Integer.parseInt(splitted[0]));
-
-			// Omit length == "1" (default)
-			if (!splitted[1].equals("1"))
-				signal.setLength(Integer.parseInt(splitted[1]));
-
-			// find big endian signals, little is default
-			if (splitted[2].equals("0"))
-				signal.setEndianess("big");
-
-                        Value value = (Value) factory.createValue();
-
-                        if("-".equals(splitted[3])) {
-                            value.setType("signed");
-                        } else {
-                            value.setType("unsigned");
-                        }
-
-			Double slope = Double.valueOf(splitted[4]);
-			Double intercept = Double.valueOf(splitted[5]);
-			// Omit default slope = 1.0
-			if (slope != 1.0)
-				value.setSlope((double) slope);
-
-			// Omit default intercept = 0.0
-			if (intercept != 0.0)
-				value.setIntercept((double) intercept);
-
-                        if(!"".equals(splitted[8])) {
-                            value.setUnit(splitted[8]);
-                        }
-
-			// Omit empty value elements
-			if ((intercept != 0.0) || (slope != 1.0) ||
-                                !"1".equals(value.getUnit()) ||
-                                !"unsigned".equals(value.getType())){
-				signal.setValue(value);
-			}
-
-		}
-		message.getSignal().add(signal);
-
-	}
 
 	/**
 	 * Check for character classes. Returns true if the checked character is a
