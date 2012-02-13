@@ -26,7 +26,6 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-/* TODO: Close button on panel */
 /**
  *
  * @author Jan-Niklas Meier < dschanoeh@googlemail.com >
