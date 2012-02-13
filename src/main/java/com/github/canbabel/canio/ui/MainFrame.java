@@ -27,17 +27,21 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
- *
+ * User interface
+ * 
  * @author Jan-Niklas Meier < dschanoeh@googlemail.com >
+ * @author julietkilo
+ * 
  */
 public class MainFrame extends javax.swing.JFrame {
 
     private static final long serialVersionUID = -6772467633506915053L;
-    private JFileChooser fc = new JFileChooser("");
+    //private JFileChooser fc = new JFileChooser("");
+    private JFileChooser fc;
     private FileList list = new FileList();
     private Thread convertThread;
+    public Preferences prefs = Preferences.userNodeForPackage(this.getClass());  
     private FileFilter directoryFilter = new FileFilter() {
-
         @Override
         public boolean accept(File file) {
             return file.isDirectory();
@@ -54,9 +58,9 @@ public class MainFrame extends javax.swing.JFrame {
     /** Creates new form MainFrame */
     public MainFrame() {
         initComponents();
-
-        Preferences.userNodeForPackage(this.getClass());
-
+        //Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+        fc = new JFileChooser(prefs.get("user.dir", "."));
+        
 
         fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
 
@@ -284,11 +288,16 @@ public class MainFrame extends javax.swing.JFrame {
 //        prefs.put("LAST_OUTPUT_DIR", mostRecentOutputDirectory.getAbsolutePath());
 //      }
 //    }    
-    /** TODO: Remembering the users last choosen directory */
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         int returnVal = fc.showOpenDialog(this);
-
+        /** new code */
+        String path =   fc.getCurrentDirectory().getAbsolutePath();
+        System.out.println(path);
+        prefs.put("user.dir",path);
+        /** end new code */
         if (returnVal == JFileChooser.APPROVE_OPTION) {
+       
             File[] files = fc.getSelectedFiles();
 
             for (File f : files) {
