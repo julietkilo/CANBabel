@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
@@ -36,6 +39,7 @@ import com.github.canbabel.canio.kcd.ObjectFactory;
 import com.github.canbabel.canio.kcd.Producer;
 import com.github.canbabel.canio.kcd.Signal;
 import com.github.canbabel.canio.kcd.Value;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -187,7 +191,11 @@ public class DbcReader {
     }
 
     public boolean parseFile(File file, OutputStream logStream) {
-        logWriter = new PrintWriter(logStream);
+        try {
+            logWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(logStream,"ISO-8859-1")), true);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(DbcReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
         factory = new ObjectFactory();
         network = (NetworkDefinition) (factory.createNetworkDefinition());
         network.setVersion(MAJOR_VERSION + "." + MINOR_VERSION);
@@ -199,6 +207,7 @@ public class DbcReader {
         network.setDocument(document);
 
         bus = (Bus) (factory.createBus());
+        /** TODO Allow customized bus names */
         bus.setName("Private");
 
 
@@ -384,6 +393,7 @@ public class DbcReader {
             parseBitTimingSection(line);
         } else if (Pattern.matches("VERSION.*", line)) {
             parseVersion(line);
+        } else if (Pattern.matches("EV_.*", line)){
         } else {
             logWriter.write("Line does not match:'" + line + "'\n");
         }

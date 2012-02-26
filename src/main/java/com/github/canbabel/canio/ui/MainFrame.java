@@ -414,6 +414,7 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
             jTextArea1.setText(string.toString());
         }
     };
+
     PrintWriter logWriter = new PrintWriter(logOutput);
     private Runnable convertRunnable = new Runnable() {
 

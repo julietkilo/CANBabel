@@ -76,16 +76,16 @@
     </build>
 
     <reporting>
-        <outputDirectory>${project.build.directory}/site</outputDirectory>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.4.0</version>
                 <configuration>
-                    <debug>false</debug>
                     <xmlOutput>true</xmlOutput>
+                    <!-- Optional directory to put findbugs xdoc xml report -->
+                    <xmlOutputDirectory>target/site</xmlOutputDirectory>
                 </configuration>
-                <version>2.3.2</version>
             </plugin>
         </plugins>
     </reporting>
