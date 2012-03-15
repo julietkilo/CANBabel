@@ -1,5 +1,5 @@
 package com.github.canbabel.canio.dbc;
-
+// TODO Licence text
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -83,7 +83,7 @@ public class DbcReader {
     private String version = "";
     private PrintWriter logWriter;
 
-    private class LabelDescription {
+    private static class LabelDescription {
 
         private long id;
         private String signalName;
@@ -123,7 +123,7 @@ public class DbcReader {
         }
     };
 
-    private class SignalComment {
+    private static class SignalComment {
 
         private long id;
         private String signalName;
@@ -165,7 +165,7 @@ public class DbcReader {
 
     private static Signal findSignal(List<Message> messages, long id, boolean e, String name) {
         for (Message message : messages) {
-            boolean extended = (message.getFormat().equals("extended"));
+            boolean extended = "extended".equals(message.getFormat());
             if (Long.parseLong(message.getId().substring(2), 16) == id
                     && extended == e) {
                 List<Signal> signals = message.getSignal();
@@ -354,7 +354,6 @@ public class DbcReader {
      */
     private static boolean startsWithKeyword(String line) {
         boolean retval = false;
-        line.trim();
         for (int i = 0; i < KEYWORDS.length; i++) {
             if (line.startsWith(KEYWORDS[i])) {
                 retval = true;
@@ -556,7 +555,7 @@ public class DbcReader {
      * @param type signal type that is one of multiplexor, multiplex or plain signal.    
      * @param line signal line String to parse
      */
-    public Signal parseSignalLine(Message message, String signalName, SignalType type, String line) {
+    private Signal parseSignalLine(Message message, String signalName, SignalType type, String line) {
         /* line e.g. "39|16@0+ (0.01,0) [0|655.35] "Km/h" ECU3" */
         Value value = null;
 
@@ -568,12 +567,12 @@ public class DbcReader {
             basicSignalType.setOffset(Integer.parseInt(splitted[0]));
 
             // Omit length == "1" (default)
-            if (!splitted[1].equals("1")) {
+            if (!"1".equals(splitted[1])) {
                 basicSignalType.setLength(Integer.parseInt(splitted[1]));
             }
 
             // find big endian signals, little is default
-            if (splitted[2].equals("0")) {
+            if ("0".equals(splitted[2])) {
                 basicSignalType.setEndianess("big");
             }
 
@@ -596,12 +595,12 @@ public class DbcReader {
 
                 // Omit default slope
                 if (slope != 1.0) {
-                    value.setSlope((double) slope);
+                    value.setSlope(slope);
                 }
 
                 // Omit default intercept = 0.0
                 if (intercept != 0.0) {
-                    value.setIntercept((double) intercept);
+                    value.setIntercept(intercept);
                 }
 
                 // Omit empty units
@@ -611,12 +610,12 @@ public class DbcReader {
 
                 // Omit default min = 0.0
                 if (min != 0.0) {
-                    value.setMin((double) min);
+                    value.setMin(min);
                 }
 
                 // Omit default max = 1.0
                 if (max != 1.0) {
-                    value.setMax((double) max);
+                    value.setMax(max);
                 }
 
             } // End value part
@@ -631,7 +630,7 @@ public class DbcReader {
             if (basicSignalType.getLength() != 1) {
                 mux.setLength(basicSignalType.getLength());
             }
-            if (basicSignalType.getEndianess().equals("big")) {
+            if ("big".equals(basicSignalType.getEndianess())) {
                 mux.setEndianess(basicSignalType.getEndianess());
             }
             mux.setValue(value);
@@ -646,7 +645,7 @@ public class DbcReader {
             if (basicSignalType.getLength() != 1) {
                 signal.setLength(basicSignalType.getLength());
             }
-            if (basicSignalType.getEndianess().equals("big")) {
+            if ("big".equals(basicSignalType.getEndianess())) {
                 signal.setEndianess(basicSignalType.getEndianess());
             }
             signal.setValue(value);

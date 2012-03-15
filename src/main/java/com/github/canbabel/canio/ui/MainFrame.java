@@ -1,5 +1,5 @@
 package com.github.canbabel.canio.ui;
-
+// TODO Versionnumber(major.minor.build)
 import com.github.canbabel.canio.dbc.DbcReader;
 import com.github.canbabel.canio.kcd.NetworkDefinition;
 import java.io.File;
