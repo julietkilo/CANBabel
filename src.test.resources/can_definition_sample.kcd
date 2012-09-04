@@ -206,7 +206,7 @@
 	     	<Signal name="Milage1" offset="0" length="24">
 	     		<Value slope="0.1" unit="km"/>
 	     	</Signal>
-            <Signal name="Milage2" offset="24" length="48">
+            <Signal name="Milage2" offset="24" length="24">
             	<Value slope="0.1" unit="km"/>
             </Signal>
 		</Message>
@@ -248,10 +248,10 @@
 				<NodeRef id="15"/>
 			</Producer>
 			<Signal name="InsideTempC" offset="0" length="12">
-				<Value type="signed" unit="Cel"/>
+				<Value type="unsigned" unit="Cel" slope="0.05" intercept="-70"/>
 			</Signal>
 			<Signal name="OutsideTempC" offset="12" length="12">
-				<Value type="signed" unit="Cel"/>
+				<Value type="unsigned" unit="Cel" slope="0.05" intercept="-70"/>
 			</Signal>
 		</Message>
 		
