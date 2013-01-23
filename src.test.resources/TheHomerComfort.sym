@@ -1,0 +1,142 @@
+FormatVersion=5.0 // Do not edit!
+Title="Comfort"
+
+{SENDRECEIVE}
+
+[Temperature]
+ID=21Ch	// Sender: Climate
+DLC=8
+Var=InsideTempC unsigned 0,12 /u:Cel /f:0.05 /o:-70
+Var=OutsideTempC unsigned 12,12 /u:Cel /f:0.05 /o:-70
+
+[AirCondition]
+ID=21Dh	// Sender: Climate
+DLC=8
+Var=AirConditionOnOff unsigned 0,1
+
+[FrontLeftDoor]
+ID=3ABh	// Sender: DoorLocking
+DLC=8
+
+[FrontRightDoor]
+ID=3BBh	// Sender: DoorLocking
+DLC=8
+
+[BackLeftDoor]
+ID=3CBh	// Sender: DoorLocking
+DLC=8
+
+[BackRightDoor]
+ID=3DBh	// Sender: DoorLocking
+DLC=8
+
+[TrunkLid]
+ID=3EBh	// Sender: DoorLocking
+DLC=8
+
+[DriverSeat]
+ID=55Bh	// Sender: Seat
+DLC=8
+Var=Headrest unsigned 0,8
+Var=Backrest unsigned 8,8
+Var=SeatPos unsigned 16,8
+
+[CodriverSeat]
+ID=55Ch	// Sender: Seat
+DLC=8
+Var=Headrest unsigned 0,8
+Var=Backrest unsigned 8,8
+Var=SeatPos unsigned 16,8
+
+[Radio]
+ID=79Ah	// Sender: Radio
+DLC=8
+Mux=StationMux0 0,8 0 
+Var=StationId1 unsigned 8,8
+Var=SignalStrength unsigned 16,16
+Var=IsEnabled unsigned 32,1
+Var=TrafficInfo unsigned 33,1
+Var=Mute unsigned 34,1
+
+[Radio]
+DLC=8
+Mux=StationMux1 0,8 1 
+Var=StationId2 unsigned 8,8
+Var=SignalStrength unsigned 16,16
+Var=IsEnabled unsigned 32,1
+Var=TrafficInfo unsigned 33,1
+Var=Mute unsigned 34,1
+
+[Radio]
+DLC=8
+Mux=StationMux2 0,8 2 
+Var=StationId3 unsigned 8,8
+Var=SignalStrength unsigned 16,16
+Var=IsEnabled unsigned 32,1
+Var=TrafficInfo unsigned 33,1
+Var=Mute unsigned 34,1
+
+[Radio]
+DLC=8
+Mux=StationMux3 0,8 3 
+Var=StationId4 unsigned 8,8
+Var=SignalStrength unsigned 16,16
+Var=IsEnabled unsigned 32,1
+Var=TrafficInfo unsigned 33,1
+Var=Mute unsigned 34,1
+
+[Radio]
+DLC=8
+Mux=StationMux4 0,8 4 
+Var=StationId5 unsigned 8,8
+Var=SignalStrength unsigned 16,16
+Var=IsEnabled unsigned 32,1
+Var=TrafficInfo unsigned 33,1
+Var=Mute unsigned 34,1
+
+[Radio]
+DLC=8
+Mux=StationMux5 0,8 5 
+Var=StationId6 unsigned 8,8
+Var=SignalStrength unsigned 16,16
+Var=IsEnabled unsigned 32,1
+Var=TrafficInfo unsigned 33,1
+Var=Mute unsigned 34,1
+
+[Radio]
+DLC=8
+Mux=StationMux6 0,8 6 
+Var=StationId7 unsigned 8,8
+Var=SignalStrength unsigned 16,16
+Var=IsEnabled unsigned 32,1
+Var=TrafficInfo unsigned 33,1
+Var=Mute unsigned 34,1
+
+[Radio]
+DLC=8
+Mux=StationMux7 0,8 7 
+Var=StationId8 unsigned 8,8
+Var=SignalStrength unsigned 16,16
+Var=IsEnabled unsigned 32,1
+Var=TrafficInfo unsigned 33,1
+Var=Mute unsigned 34,1
+
+[Navigation]
+ID=7A9h	// Sender: Navigation
+DLC=8
+Var=IsEnabled unsigned 0,1
+Var=Announcements unsigned 1,1
+Var=Guidance unsigned 2,8
+
+[DateTime]
+ID=0000DA7Eh	// Sender: Clock
+Type=Extended
+DLC=8
+Var=Day unsigned 0,8 /u:d /min:1 /max:31
+Var=Month unsigned 8,8 /u:mo /min:1 /max:12
+Var=Year unsigned 16,8 /u:a /max:1	// Year starts with offset 2000. 2012 would be value 12.
+Var=Weekday unsigned 24,8 /max:1
+Var=Hour unsigned 32,8 /u:h /max:23
+Var=Minute unsigned 40,8 /u:min /max:59
+Var=Second unsigned 48,8 /u:s /max:59
+

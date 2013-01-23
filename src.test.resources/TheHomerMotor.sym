@@ -1,0 +1,34 @@
+FormatVersion=5.0 // Do not edit!
+Title="Motor"
+
+{SENDRECEIVE}
+
+[Airbag]
+ID=00Ah
+DLC=8
+
+[ABS]
+ID=0B2h	// Anti lock brake system
+DLC=1
+CycleTime=100
+
+[CruiseControlStatus]
+ID=37Fh
+DLC=8
+
+[Emission]
+ID=400h
+DLC=1
+
+[SteeringInfo]
+ID=55Bh
+DLC=8
+
+[AntiTheft]
+ID=667h
+DLC=8
+
+[Gear]
+ID=2C2h
+DLC=8
+

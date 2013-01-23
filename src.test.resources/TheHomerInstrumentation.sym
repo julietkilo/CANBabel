@@ -1,0 +1,53 @@
+FormatVersion=5.0 // Do not edit!
+Title="Instrumentation"
+
+{SENDRECEIVE}
+
+[Headlights]
+ID=260h	// Sender: BodyControl
+DLC=8
+Var=DRL unsigned 0,1
+Var=Low unsigned 1,1
+Var=High unsigned 2,1
+Var=Fog unsigned 3,1
+Var=Turnsignal_L unsigned 4,1
+Var=Turnsignal_R unsigned 5,1
+
+[Wiper]
+ID=270h	// Sender: BodyControl
+DLC=8
+Var=WiperMode unsigned 0,8
+
+[BCC]
+ID=385h	// Sender: BodyComputer
+DLC=8
+CycleTime=200
+Var=Milage1 unsigned 0,24 /u:km
+Var=Milage2 unsigned 24,24 /u:km
+
+[TankController]
+ID=5A2h	// Sender: Fuel
+DLC=8
+CycleTime=200
+Var=TankLevel unsigned 0,16
+Var=TankTemperature signed 16,16 /u:Cel
+Var=FillingStatus unsigned 32,4
+
+[ParksensorFront]
+ID=765h	// Sender: ParkDistance
+DLC=8
+CycleTime=100
+Var=Sensor1 unsigned 0,16 /max:1
+Var=Sensor2 unsigned 16,16 /max:1
+Var=Sensor3 unsigned 32,16 /max:1
+Var=Sensor4 unsigned 48,16 /max:1
+
+[ParksensorBack]
+ID=766h	// Sender: ParkDistance
+DLC=8
+CycleTime=100
+Var=Sensor5 unsigned 0,16 /max:1
+Var=Sensor6 unsigned 16,16 /max:1
+Var=Sensor7 unsigned 32,16 /max:1
+Var=Sensor8 unsigned 48,16 /max:1
+
