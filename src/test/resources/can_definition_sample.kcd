@@ -17,7 +17,7 @@
 --> 
 <NetworkDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="Definition.xsd"
- version="0.7">
+ version="0.8-SNAPSHOT">
 	<Document name="The Homer" version="1.23" author="Herbert Powell" company="Powell Motors" date="1991-02-16">
 	A car designed by Homer J. Simpson that the average american consumer would want to buy.
 	The Homer has two bubble domes: one in the front and one for quarreling kids. 
@@ -25,7 +25,12 @@
 	are three horns, playing the song "La Cucaracha." The car also features 
 	gigantic cupholders.
 	</Document> 
-	<Node id="1" name="Motor ACME"/>
+	<Node id="1" name="Motor ACME">
+		<Var name="MotorTempHouse">
+			<Notes>Engine housing temperature</Notes>
+			<Value type="unsigned" slope="0.05" intercept="-40" unit="Cel" min="0" max="100"/>
+		</Var>
+	</Node>
 	<Node id="17" name="Motor alternative supplier"/>
 	<Node id="2" name="Brake ACME"/>
 	<Node id="18" name="Brake alternative supplier"/>
@@ -89,7 +94,7 @@
 	     	  <Consumer>
 	     	  	<NodeRef id="12"/>
 	     	  </Consumer>
-	     		<Value type="unsigned" slope="0.05" intercept="-40" unit="Cel" min="0" max="100"/>
+	     	  <Value type="unsigned" slope="0.05" intercept="-40" unit="Cel" min="0" max="100"/>
 	       	  <LabelSet>
 	     	    <Label name="init" value="0"/>
 	     	    <LabelGroup type="error" name="Sensor error" from="4090" to="4095"/>
