@@ -1,6 +1,6 @@
 /**
  *  CANBabel - Translator for Controller Area Network description formats
- *  Copyright (C) 2011 julietkilo and Jan-Niklas Meier
+ *  Copyright (C) 2011-2013 julietkilo and Jan-Niklas Meier
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

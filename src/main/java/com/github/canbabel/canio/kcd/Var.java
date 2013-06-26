@@ -8,8 +8,6 @@
 
 package com.github.canbabel.canio.kcd;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -27,11 +25,11 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence maxOccurs="unbounded" minOccurs="0">
- *         &lt;element ref="{http://kayak.2codeornot2code.org/1.0}Var"/>
+ *       &lt;sequence>
+ *         &lt;element ref="{http://kayak.2codeornot2code.org/1.0}Notes" minOccurs="0"/>
+ *         &lt;element ref="{http://kayak.2codeornot2code.org/1.0}Value"/>
  *       &lt;/sequence>
- *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -41,69 +39,65 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "var"
+    "notes",
+    "value"
 })
-@XmlRootElement(name = "Node")
-public class Node {
+@XmlRootElement(name = "Var")
+public class Var {
 
-    @XmlElement(name = "Var")
-    protected List<Var> var;
-    @XmlAttribute(name = "id", required = true)
-    protected String id;
-    @XmlAttribute(name = "name")
+    @XmlElement(name = "Notes")
+    protected String notes;
+    @XmlElement(name = "Value", required = true)
+    protected Value value;
+    @XmlAttribute(name = "name", required = true)
     protected String name;
 
     /**
-     * Gets the value of the var property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the var property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getVar().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Var }
-     * 
-     * 
-     */
-    public List<Var> getVar() {
-        if (var == null) {
-            var = new ArrayList<Var>();
-        }
-        return this.var;
-    }
-
-    /**
-     * Gets the value of the id property.
+     * Gets the value of the notes property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getId() {
-        return id;
+    public String getNotes() {
+        return notes;
     }
 
     /**
-     * Sets the value of the id property.
+     * Sets the value of the notes property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setId(String value) {
-        this.id = value;
+    public void setNotes(String value) {
+        this.notes = value;
+    }
+
+    /**
+     * Gets the value of the value property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Value }
+     *     
+     */
+    public Value getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value of the value property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Value }
+     *     
+     */
+    public void setValue(Value value) {
+        this.value = value;
     }
 
     /**
@@ -115,11 +109,7 @@ public class Node {
      *     
      */
     public String getName() {
-        if (name == null) {
-            return "";
-        } else {
-            return name;
-        }
+        return name;
     }
 
     /**

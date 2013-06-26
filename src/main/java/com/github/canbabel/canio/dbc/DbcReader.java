@@ -1,6 +1,6 @@
 /**
  *  CANBabel - Translator for Controller Area Network description formats
- *  Copyright (C) 2011 julietkilo and Jan-Niklas Meier
+ *  Copyright (C) 2011-2013 julietkilo and Jan-Niklas Meier
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,29 +16,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.github.canbabel.canio.dbc;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import com.github.canbabel.canio.kcd.BasicLabelType;
 import com.github.canbabel.canio.kcd.BasicSignalType;
@@ -56,17 +33,39 @@ import com.github.canbabel.canio.kcd.ObjectFactory;
 import com.github.canbabel.canio.kcd.Producer;
 import com.github.canbabel.canio.kcd.Signal;
 import com.github.canbabel.canio.kcd.Value;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 /**
  * Reads industry widespread CAN database (*.dbc) format.
@@ -77,8 +76,6 @@ import java.util.zip.GZIPOutputStream;
  */
 public class DbcReader {
 
-    private static final String MAJOR_VERSION = "0";
-    private static final String MINOR_VERSION = "7";
     final private static String[] KEYWORDS = {"VERSION ", "NS_ : ", "BS_:",
         "BU_: ", "BO_ ", "SG_ ", "BO_TX_BU_ ", "CM_ ",
         "CM_ BO_ ", "CM_ EV_ ", "CM_ SG_ ", "BA_DEF_ ",
@@ -206,7 +203,14 @@ public class DbcReader {
         }
         return null;
     }
+    
 
+    /**
+     * Read in given CAN database file (*.dbc) 
+     * @param file CAN database filehandle to read.
+     * @param logStream OutputStream to write out stack traces
+     * @return true, if file has been successfully read.
+     */
     public boolean parseFile(File file, OutputStream logStream) {
         try {
             logWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(logStream,"ISO-8859-1")), true);
@@ -215,7 +219,6 @@ public class DbcReader {
         }
         factory = new ObjectFactory();
         network = (NetworkDefinition) (factory.createNetworkDefinition());
-        network.setVersion(MAJOR_VERSION + "." + MINOR_VERSION);
         document = (Document) (factory.createDocument());
         document.setContent(DOC_CONTENT);
         document.setName(file.getName());
@@ -237,7 +240,7 @@ public class DbcReader {
 
         try {
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ASCII"));
-            String text = null;
+            String text;
             boolean isFirstLine = true;
 
             while ((text = reader.readLine()) != null) {
@@ -335,7 +338,7 @@ public class DbcReader {
             return false;
         } finally {
             try {
-                w.close();
+                if (w != null) { w.close(); }
             } catch (Exception e) {
                 return false;
             }
@@ -391,9 +394,11 @@ public class DbcReader {
         if (Pattern.matches("BO_.?\\d+.*", line)) {
             parseMessageDefinition(line);
         } else if (Pattern.matches("VAL_TABLE_.*", line)) {
-        } else if (Pattern.matches("VAL_.*", line)) {
+        } else if (Pattern.matches("VAL_.?\\d+.*", line)) {
             parseValueDescription(line);
-        } else if (Pattern.matches("BA_.+\".*", line)) {
+        } else if (Pattern.matches("BA_DEF_.+\".*", line)) {
+            parseAttribute(line);
+        } else if (Pattern.matches("BA_\\s+\".*", line)) {
             parseAttribute(line);
         } else if (Pattern.matches("CM_ SG_.*", line)) {
             parseSignalComment(line);
@@ -409,7 +414,10 @@ public class DbcReader {
             parseBitTimingSection(line);
         } else if (Pattern.matches("VERSION.*", line)) {
             parseVersion(line);
-        } else if (Pattern.matches("EV_.*", line)){
+        } else if (Pattern.matches("EV_.*", line)) {
+            parseEnvironmentVariable(line);
+        } else if (Pattern.matches("VAL_.?\\w+.*", line)) {
+            parseEnvironmentVariableDescription(line);
         } else {
             logWriter.write("Line does not match:'" + line + "'\n");
         }
@@ -422,11 +430,11 @@ public class DbcReader {
     }
 
     private static void parseBitTimingSection(StringBuffer line) {
-        //System.out.println("Bit timing section: " + line.toString());
+        // ignore
     }
 
     private static void parseNewSymbols(StringBuffer line) {
-        //System.out.println("New symbol entries: " + line.toString());
+        // ignore
     }
 
     /**
@@ -456,7 +464,7 @@ public class DbcReader {
      *
      */
     private static void parseMessageTransmitter(StringBuffer line) {
-        //System.out.println("Message transmitter: " + line.toString());
+        // ignore
     }
 
     /**
@@ -465,7 +473,7 @@ public class DbcReader {
      * @param line line from dbc-file to handle.
      */
     private static void parseComment(StringBuffer line) {
-        // System.out.println("Comment: " + line.toString());
+        // ignore
     }
 
     /**
@@ -474,14 +482,26 @@ public class DbcReader {
      * @param line line from dbc-file to handle.
      */
     private static void parseAttribute(StringBuffer line) {
-        // System.out.println("Attribute: " + line.toString());
+          
+    //     if (Pattern.matches("BA_\\s+\"GenMsgCycleTime.*", line)) {
+    //         String[] splitted = splitString(line.toString());
+    //         if (splitted != null) {
+    //         //System.out.println("Attribute: " + line.toString());
+    //     
+    //         System.out.println("id: "+splitted[3]+"cycle: "+splitted[4].substring(0, splitted[4].length()-1));
+    //         }
+    //     }
+        
+    // TODO getMessageByCanId needed to attach cycle time to a message node
+        // messag context : List<Message> messages = bus.getMessage();
     }
 
     /**
      * Handling method for message definition starting by a line that begins with BO_ {decimal}.
      *
      * @param line passed over buffer of the line (starting with BO_ including
-     * all corresponding signals.
+     * all corresponding signals e.g.
+     * BO_ 2684354547 ExtMsgBig2: 8 Bob SG_ TestSigBigDouble1 : 7|64@0- (2,0) [0|0] "" Vector__XXX
      */
     private void parseMessageDefinition(StringBuffer line) {
 
@@ -543,7 +563,27 @@ public class DbcReader {
             bus.getMessage().add(message);
         }
     }
-
+    
+    /**
+     * Handling method for environment variable starting by a line that begins with EV_.
+     *
+     * @param line line from dbc-file to handle.
+     *
+     */
+    private void parseEnvironmentVariable(StringBuffer line) {
+         // ignore
+    }
+    
+    /**
+     * Handling method for environment variable starting by a line that begins with VAL_ {string}.
+     *
+     * @param line line from dbc-file to handle.
+     *
+     */    
+    private void parseEnvironmentVariableDescription(StringBuffer line) {
+        // ignore
+    }
+    
     private int getCanIdFromString(String canIdStr) {
 
         long canIdLong = Long.valueOf(canIdStr).longValue();
@@ -570,10 +610,9 @@ public class DbcReader {
      *            append to.
      * @param signalName name of the signal as parsed before the line string begins
      * @param type signal type that is one of multiplexor, multiplex or plain signal.    
-     * @param line signal line String to parse
+     * @param line signal line String to parse  e.g. "39|16@0+ (0.01,0) [0|655.35] "Km/h" ECU3"
      */
     private Signal parseSignalLine(Message message, String signalName, SignalType type, String line) {
-        /* line e.g. "39|16@0+ (0.01,0) [0|655.35] "Km/h" ECU3" */
         Value value = null;
 
         BasicSignalType basicSignalType =
@@ -593,10 +632,10 @@ public class DbcReader {
                 basicSignalType.setEndianess("big");
             }
 
-            Double slope = Double.valueOf(splitted[4]);
-            Double intercept = Double.valueOf(splitted[5]);
-            Double min = Double.valueOf(splitted[6]);
-            Double max = Double.valueOf(splitted[7]);
+            double slope = Double.valueOf(splitted[4]);
+            double intercept = Double.valueOf(splitted[5]);
+            double min = Double.valueOf(splitted[6]);
+            double max = Double.valueOf(splitted[7]);
 
             if ((intercept != 0.0)
                     || (slope != 1.0)
@@ -681,7 +720,7 @@ public class DbcReader {
      * @param line
      *            signal line String to parse
      */
-    private void parseSignal(Message message, String line) {
+    protected void parseSignal(Message message, String line) {
 
         // Split signalname and mux coding from rest of line
         String[] lineArray = line.split(":");
@@ -834,8 +873,13 @@ public class DbcReader {
         this.isReadable = isReadable;
     }
 
+    /**
+     * Handling method for value description starting by a line that begins with VAL_ {integer}.
+     *
+     * @param line line from dbc-file to handle e.g. "VAL_ 1234 signalname 1 "on" 2 "off" ;".
+     *
+     */      
     private void parseValueDescription(StringBuffer line) {
-        /* line e.g. "VAL_ 1234 signalname 1 "on" 2 "off" ;" */
 
         String[] splitted = splitString(line.toString());
 
@@ -849,8 +893,8 @@ public class DbcReader {
 
         description.setId(getCanIdFromString(splitted[1]));
         description.setSignalName(splitted[2]);
-        Set<Label> labelSet = new HashSet<Label>();
-
+        Set<Label> labelSet = new TreeSet<Label>(new LabelComparator());
+        
         for (int i = 3; i < (splitted.length - 1); i += 2) {
             Label label = new Label();
 
@@ -865,11 +909,13 @@ public class DbcReader {
         labels.add(description);
     }
 
+    /**
+     * Handling method for signal comments starting by a line that begins with CM_ SG_ {integer}.
+     * @param line line from dbc-file to handle e.g. "CM_ SG_ 1234 signalname 1 "comment";".
+     */
     private void parseSignalComment(StringBuffer line) {
-        /* line e.g. "CM_ SG_ 1234 signalname 1 "comment";" */
 
         String[] splitted = splitString(line.toString());
-
         SignalComment comment = new SignalComment();
 
         if (isExtendedFrameFormat(splitted[2])) {

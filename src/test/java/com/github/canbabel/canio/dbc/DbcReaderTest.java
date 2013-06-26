@@ -17,6 +17,11 @@
  **/
 package com.github.canbabel.canio.dbc;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.URL;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -26,6 +31,10 @@ import static org.junit.Assert.*;
  */
 public class DbcReaderTest {
 
+    private DbcReader dr = null;
+    private File testFile = null;
+
+    
     public DbcReaderTest() {
     }
 
@@ -39,6 +48,9 @@ public class DbcReaderTest {
 
     @Before
     public void setUp() {
+        dr = new DbcReader();
+        URL url = Thread.currentThread().getContextClassLoader().getResource("read_in_test.dbc");
+        testFile = new File(url.getPath());        
     }
 
     @After
@@ -83,4 +95,18 @@ public class DbcReaderTest {
         assertEquals("Vector__XXX", result[9]);
     }
 
+    @Test
+    public void testFindTestFileRessource() {
+
+        assertTrue(testFile != null); 
+    }
+    /*
+    @Test
+    public void testGetNodes() {
+        
+        assertTrue(dr.parseFile(testFile, null));
+
+    }
+    */
+    
 }
