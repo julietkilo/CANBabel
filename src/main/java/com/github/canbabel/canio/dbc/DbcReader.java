@@ -239,7 +239,7 @@ public class DbcReader {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ASCII"));
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
             String text;
             boolean isFirstLine = true;
 
@@ -315,7 +315,7 @@ public class DbcReader {
         try {
             JAXBContext context = JAXBContext.newInstance(new Class[]{com.github.canbabel.canio.kcd.NetworkDefinition.class});
             Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 
             if (prettyPrint) {
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -324,10 +324,10 @@ public class DbcReader {
             if (gzip) {
                 FileOutputStream fo = new FileOutputStream(file);
                 GZIPOutputStream stream = new GZIPOutputStream(fo);
-                w = new OutputStreamWriter(stream, "ISO-8859-1");
+                w = new OutputStreamWriter(stream, "UTF-8");
             } else {
                 FileOutputStream fo = new FileOutputStream(file);
-                w = new OutputStreamWriter(fo, "ISO-8859-1");
+                w = new OutputStreamWriter(fo, "UTF-8");
             }
             marshaller.marshal(network, w);
         } catch (JAXBException jxbe) {
