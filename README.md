@@ -3,7 +3,7 @@
 ## Overview
 
 CANBabel is a conversion tool for CAN database files. It was created because most CAN databases are stored in proprietary formats that are not documented and can not be used for free.
-The open source CAN analysis tool **Kayak** introduced a new and well documented XML based format: KCD (file suffix .kcd). KCD is the acronym for Kayak CAN definition.
+The open source CAN analysis tool [**Kayak**](https://github.com/dschanoeh/Kayak/ "Kayak is an application for CAN bus diagnosis and monitoring") introduced a new and well documented XML based format: KCD (file suffix .kcd). KCD is the acronym for Kayak CAN definition.
 Initially **CANBabel** supported only conversion from the .dbc format to the .kcd format but the goal is to provide a tool that supports many formats.
 
 ## Supported formats
