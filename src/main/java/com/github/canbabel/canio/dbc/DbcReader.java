@@ -90,13 +90,13 @@ public class DbcReader {
     private ObjectFactory factory = null;
     private NetworkDefinition network = null;
     private Document document = null;
-    private Bus bus = null;
+    private static Bus bus = null;
     private Map<Long, Set<Signal>> muxed = new TreeMap<Long, Set<Signal>>();
     private Set<LabelDescription> labels = new HashSet<LabelDescription>();
     private Set<SignalComment> signalComments = new HashSet<SignalComment>();
     private String version = "";
-    private PrintWriter logWriter;
-
+    private static PrintWriter logWriter;
+    
     private static class LabelDescription {
 
         private long id;
@@ -177,33 +177,67 @@ public class DbcReader {
         }
     };
 
-    private static Signal findSignal(List<Message> messages, long id, boolean e, String name) {
-        for (Message message : messages) {
+    /**
+     * Find a single CAN message from the list of messages
+     * @param messages List of message objects
+     * @param id CAN identifier of the message to find
+     * @param e True, if the message to find is of extended frame format
+     * @return Message object found, null otherwise
+     */
+    private static Message findMessage(List<Message> messages, long id, boolean e) {
+        for (Message message : messages){
             boolean extended = "extended".equals(message.getFormat());
             if (Long.parseLong(message.getId().substring(2), 16) == id
                     && extended == e) {
-                List<Signal> signals = message.getSignal();
-                /* Find signal name */
-                for (Signal signal : signals) {
-                    if (signal.getName().equals(name)) {
-                        return signal;
-                    }
-                }
-
-                for (Multiplex multiplex : message.getMultiplex()) {
-                    for (MuxGroup group : multiplex.getMuxGroup()) {
-                        for (Signal signal : group.getSignal()) {
-                            if (signal.getName().equals(name)) {
-                                return signal;
-                            }
-                        }
-                    }
-                }
+                    return message;
             }
         }
         return null;
     }
     
+    /**
+     * Find a single CAN signal from list of CAN messages.
+     * @param messages List of messages object
+     * @param id Identifier of CAN message to find
+     * @param e True, if CAN message to find is extended frame format
+     * @param name Name of signal to find
+     * @return Signal object found, null otherwise
+     */
+    private static Signal findSignal(List<Message> messages, long id, boolean e, String name) {
+        Message message;
+        message = findMessage(messages, id, e);
+        List<Signal> signals;
+         
+        if (message != null){
+            signals = message.getSignal();
+        } else if (id == 0) {
+            /* orphaned signal found */
+            return null;
+        } else {
+            /* valid signal found but message not defined */
+            return null;
+        }
+    
+                   
+        /* Find signal name */
+        for (Signal signal : signals) {
+            if (signal.getName().equals(name)) {
+                return signal;
+            }
+        }
+
+        for (Multiplex multiplex : message.getMultiplex()) {
+            for (MuxGroup group : multiplex.getMuxGroup()) {
+                for (Signal signal : group.getSignal()) {
+                    if (signal.getName().equals(name)) {
+                        return signal;
+                    }
+                }
+            }
+        }        
+        return null;
+    }
+   
 
     /**
      * Read in given CAN database file (*.dbc) 
@@ -280,7 +314,9 @@ public class DbcReader {
             List<BasicLabelType> labellist = set.getLabelOrLabelGroup();
             labellist.addAll(description.getLabels());
 
-            Signal signal = findSignal(messages, description.getId(), description.isExtended(), description.getSignalName());
+            Signal signal = null;
+            signal = findSignal(messages, description.getId(), description.isExtended(), description.getSignalName());
+
             if (signal != null) {
                 signal.setLabelSet(set);
             }
@@ -299,7 +335,7 @@ public class DbcReader {
                 signal.setNotes(comment.getComment());
             }
         }
-
+        
         return true;
     }
 
@@ -483,17 +519,20 @@ public class DbcReader {
      */
     private static void parseAttribute(StringBuffer line) {
           
-    //     if (Pattern.matches("BA_\\s+\"GenMsgCycleTime.*", line)) {
-    //         String[] splitted = splitString(line.toString());
-    //         if (splitted != null) {
-    //         //System.out.println("Attribute: " + line.toString());
-    //     
-    //         System.out.println("id: "+splitted[3]+"cycle: "+splitted[4].substring(0, splitted[4].length()-1));
-    //         }
-    //     }
+        List<Message> messages = bus.getMessage();
         
-    // TODO getMessageByCanId needed to attach cycle time to a message node
-        // messag context : List<Message> messages = bus.getMessage();
+        /* Find message with given id in GenMsgCycleTime and attach to message node */
+         if (Pattern.matches("BA_\\s+\"GenMsgCycleTime.*", line)) {
+             String[] splitted = splitString(line.toString());
+             if (splitted != null) {             
+                Message message =  findMessage(messages, Long.valueOf(splitted[3]), isExtendedFrameFormat(splitted[3]) );
+                Integer ival = Integer.valueOf(splitted[4].substring(0, splitted[4].length()-1));
+                 // Omit default interval = 0
+                if (ival != 0) {
+                    message.setInterval(ival);
+                }                
+             }
+         }
     }
 
     /**
@@ -508,7 +547,6 @@ public class DbcReader {
         muxed = new TreeMap<Long, Set<Signal>>();
 
         // BO_ 1984 Messagename: 8 Producername
-        // System.out.println("Message Definition: " + line.toString());
 
         // remove BO_
         line.replace(0, 4, "");
@@ -591,7 +629,7 @@ public class DbcReader {
         return canId;
     }
 
-    private boolean isExtendedFrameFormat(String canIdStr) {
+    private static boolean isExtendedFrameFormat(String canIdStr) {
 
         long canIdLong = Long.valueOf(canIdStr).longValue();
         return ((canIdLong >>> 31 & 1) == 1) ? true : false;
