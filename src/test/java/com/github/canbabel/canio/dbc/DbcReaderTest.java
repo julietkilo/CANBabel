@@ -1,6 +1,6 @@
 /**
  *  CANBabel - Translator for Controller Area Network description formats
- *  Copyright (C) 2011 julietkilo and Jan-Niklas Meier
+ *  Copyright (C) 2011-2013 julietkilo and Jan-Niklas Meier
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,16 +18,13 @@
 package com.github.canbabel.canio.dbc;
 
 import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.URL;
 import org.junit.*;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author Jan-Niklas Meier < dschanoeh@googlemail.com >
+ * @author julietkilo
  */
 public class DbcReaderTest {
 
@@ -108,5 +105,28 @@ public class DbcReaderTest {
 
     }
     */
+    
+    @Test
+    public void testGetCanIdFromString() {
+        /* Valid extended frame format id with Bit32 set as extended flag */
+        /* dec: 419378175 hex: 0x18FF33FF */
+        assertTrue(DbcReader.getCanIdFromString("2566861823") == 419378175 );
+        assertTrue(DbcReader.isExtendedFrameFormat("2566861823"));
+        /* Max extended frame format id with Bit 32 set as extended flag */
+        /* Also Bit 31, 30 set and maximum id hex: 0x1FFFFFFF */
+        assertTrue(DbcReader.getCanIdFromString("4294967295") == 536870911 );
+        assertTrue(DbcReader.isExtendedFrameFormat("4294967295"));
+        
+        /* Extended frame format and dec: 583, hex: 0x247 */
+        assertTrue(DbcReader.getCanIdFromString("2147484231") == 583 );
+        assertTrue(DbcReader.isExtendedFrameFormat("2147484231"));
+        /* Standard frame format and dec: 583, hex: 0x247 */
+        assertTrue(DbcReader.getCanIdFromString("583") == 583 );
+        assertFalse(DbcReader.isExtendedFrameFormat("583"));
+        /* Id of wrapper message for orphaned signals */
+        assertTrue(DbcReader.getCanIdFromString("3221225472") == 0 );
+        assertTrue(DbcReader.isExtendedFrameFormat("3221225472"));
+    }
+    
     
 }
