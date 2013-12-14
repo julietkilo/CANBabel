@@ -137,12 +137,14 @@ CM_ SG_ 291 TestSigLittleUnsigned1 "!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLM
 ÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞ‗אבגדהוזחטיךכלםמןנסעףפץצקרש
 תûü‎‏ÿ";
 BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 1000000;
 BA_DEF_ BU_  "NodeLayerModules" STRING ;
 BA_DEF_ BU_  "ECU" STRING ;
 BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
 BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
 BA_DEF_ BU_  "CANoeDrift" INT 0 0;
 BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
 BA_DEF_DEF_  "BusType" "";
 BA_DEF_DEF_  "NodeLayerModules" "";
 BA_DEF_DEF_  "ECU" "";
@@ -150,6 +152,8 @@ BA_DEF_DEF_  "CANoeJitterMax" 0;
 BA_DEF_DEF_  "CANoeJitterMin" 0;
 BA_DEF_DEF_  "CANoeDrift" 0;
 BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_ "GenMsgCycleTime" BO_ 1110 20;
+BA_ "GenMsgCycleTime" BO_ 2566861823 500;
 VAL_ 2566861823 ExtSigLittleMuxedOne 255 "error" 12 "jerry" 11 "tom" 10 "scratchy" 9 "itchy" 8 "strawberry" 7 "chocolate" 6 "vanilla" 5 "cherry" 4 "apple" 3 "cola" 2 "coca" 1 "bar" 0 "foo" ;
 VAL_ EnvIntegerWritable 255 "error" 12 "jerry" 11 "tom" 10 "scratchy" 9 "itchy" 8 "strawberry" 7 "chocolate" 6 "vanilla" 5 "cherry" 4 "apple" 3 "cola" 2 "coca" 1 "bar" 0 "foo" ;
 SIG_VALTYPE_ 1383 TestSigLittleMuxed0 : 1;

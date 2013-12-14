@@ -96,7 +96,7 @@ public class DbcReader {
     private Set<SignalComment> signalComments = new HashSet<SignalComment>();
     private String version = "";
     private static PrintWriter logWriter;
-    
+
     private static class LabelDescription {
 
         private long id;
@@ -314,7 +314,7 @@ public class DbcReader {
             List<BasicLabelType> labellist = set.getLabelOrLabelGroup();
             labellist.addAll(description.getLabels());
 
-            Signal signal = null;
+            Signal signal;
             signal = findSignal(messages, description.getId(), description.isExtended(), description.getSignalName());
 
             if (signal != null) {
@@ -433,7 +433,6 @@ public class DbcReader {
         } else if (Pattern.matches("VAL_.?\\d+.*", line)) {
             parseValueDescription(line);
         } else if (Pattern.matches("BA_DEF_.+\".*", line)) {
-            parseAttribute(line);
         } else if (Pattern.matches("BA_\\s+\".*", line)) {
             parseAttribute(line);
         } else if (Pattern.matches("CM_ SG_.*", line)) {
@@ -518,14 +517,13 @@ public class DbcReader {
      * @param line line from dbc-file to handle.
      */
     private static void parseAttribute(StringBuffer line) {
-          
-        List<Message> messages = bus.getMessage();
         
         /* Find message with given id in GenMsgCycleTime and attach to message node */
          if (Pattern.matches("BA_\\s+\"GenMsgCycleTime.*", line)) {
              String[] splitted = splitString(line.toString());
              if (splitted != null) {             
-                Message message =  findMessage(messages, Long.valueOf(splitted[3]), isExtendedFrameFormat(splitted[3]) );
+                List<Message> messages = bus.getMessage();                 
+                Message message =  findMessage(messages, getCanIdFromString(splitted[3]), isExtendedFrameFormat(splitted[3]) );
                 Integer ival = Integer.valueOf(splitted[4].substring(0, splitted[4].length()-1));
                  // Omit default interval = 0
                 if (ival != 0) {
@@ -534,7 +532,7 @@ public class DbcReader {
              }
          }
     }
-
+    
     /**
      * Handling method for message definition starting by a line that begins with BO_ {decimal}.
      *
@@ -622,14 +620,14 @@ public class DbcReader {
         // ignore
     }
     
-    private int getCanIdFromString(String canIdStr) {
+    public static int getCanIdFromString(String canIdStr) {
 
         long canIdLong = Long.valueOf(canIdStr).longValue();
         int canId = (int) canIdLong & 0x1FFFFFFF;
         return canId;
     }
 
-    private static boolean isExtendedFrameFormat(String canIdStr) {
+    public static boolean isExtendedFrameFormat(String canIdStr) {
 
         long canIdLong = Long.valueOf(canIdStr).longValue();
         return ((canIdLong >>> 31 & 1) == 1) ? true : false;
