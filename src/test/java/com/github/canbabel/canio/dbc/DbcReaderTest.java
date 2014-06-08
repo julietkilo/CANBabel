@@ -97,15 +97,7 @@ public class DbcReaderTest {
 
         assertTrue(testFile != null); 
     }
-    /*
-    @Test
-    public void testGetNodes() {
-        
-        assertTrue(dr.parseFile(testFile, null));
 
-    }
-    */
-    
     @Test
     public void testGetCanIdFromString() {
         /* Valid extended frame format id with Bit32 set as extended flag */
@@ -128,5 +120,5 @@ public class DbcReaderTest {
         assertTrue(DbcReader.isExtendedFrameFormat("3221225472"));
     }
     
-    
+
 }

@@ -727,7 +727,6 @@ public class DbcReader {
             return null;
 
         } else {
-
             Signal signal = (Signal) factory.createSignal();
             signal.setName(basicSignalType.getName());
             signal.setOffset(basicSignalType.getOffset());
@@ -738,7 +737,10 @@ public class DbcReader {
                 signal.setEndianess(basicSignalType.getEndianess());
             }
             signal.setValue(value);
-            message.getSignal().add(signal);
+            if (type == SignalType.PLAIN){
+                // Prevent from adding MULTIPLEX signals twice
+                message.getSignal().add(signal);
+            }
             return signal;
         }
     }
