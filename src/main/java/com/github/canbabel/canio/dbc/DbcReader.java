@@ -92,8 +92,8 @@ public class DbcReader {
     private Document document = null;
     private static Bus bus = null;
     private Map<Long, Set<Signal>> muxed = new TreeMap<Long, Set<Signal>>();
-    private Set<LabelDescription> labels = new HashSet<LabelDescription>();
-    private Set<SignalComment> signalComments = new HashSet<SignalComment>();
+    private final Set<LabelDescription> labels = new HashSet<LabelDescription>();
+    private final Set<SignalComment> signalComments = new HashSet<SignalComment>();
     private String version = "";
     private static PrintWriter logWriter;
 
@@ -342,8 +342,9 @@ public class DbcReader {
     /**
      * Produces a file in KCD format.
      *
-     * @param file
-     *            File to save.
+     * @param file File to save.
+     * @param prettyPrint True, if the output file shall be easy to view for human readers.
+     * @param gzip True, if the output file shall be compressed.
      * @return True, if operation successful.
      */
     public boolean writeKcdFile(File file, boolean prettyPrint, boolean gzip) {
@@ -398,11 +399,7 @@ public class DbcReader {
 
     /**
      * Returns true, if a line from the input file starts with a keyword from
-     * the list of
-     * <p>
-     * KEYWORDS
-     * </p>
-     * .
+     * the list of <p>KEYWORDS</p>.
      *
      * @param line
      *            String to check for Keyword
@@ -410,8 +407,8 @@ public class DbcReader {
      */
     private static boolean startsWithKeyword(String line) {
         boolean retval = false;
-        for (int i = 0; i < KEYWORDS.length; i++) {
-            if (line.startsWith(KEYWORDS[i])) {
+        for (String keyword : KEYWORDS) {
+            if (line.startsWith(keyword)) {
                 retval = true;
             }
         }
@@ -630,7 +627,7 @@ public class DbcReader {
     public static boolean isExtendedFrameFormat(String canIdStr) {
 
         long canIdLong = Long.valueOf(canIdStr).longValue();
-        return ((canIdLong >>> 31 & 1) == 1) ? true : false;
+        return ((canIdLong >>> 31 & 1) == 1);
     }
 
     private enum SignalType {
