@@ -934,8 +934,7 @@ public class DbcReader {
             Label label = new Label();
 
             label.setName(splitted[i + 1]);
-            label.setValue(BigInteger.valueOf(Long.parseLong(splitted[i])));
-
+            label.setValue(int32ToBigInt(new BigInteger(splitted[i])));
             labelSet.add(label);
         }
 
@@ -965,4 +964,18 @@ public class DbcReader {
 
         signalComments.add(comment);
     }
+    
+    /**
+     * Correct C long int values bigger than 2^31-1 to a BigInteger representation.
+     * @param big BigInteger of C long int
+     * @return Corrected value as BigInteger representation
+     */
+    public static BigInteger int32ToBigInt(BigInteger big){
+        if ( big.signum() != -1 ){ 
+            return big;
+        } else {
+            // negative because C long int value exceeds 2^31-1
+            return big.add(BigInteger.valueOf(4294967296L));
+        }             
+    }    
 }
