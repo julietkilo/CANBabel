@@ -8,13 +8,13 @@
     <!-- THE BASICS -->
     <groupId>com.github.canbabel</groupId>
     <artifactId>CANBabel</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <version>4.12</version>
             <scope>test</scope>
             <optional>true</optional>
         </dependency>
@@ -26,24 +26,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
-                    </configuration>
+                    <version>3.2</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>2.3</version>
+                    <version>3.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.2.1</version>
+                    <version>2.5.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.5</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -56,7 +54,7 @@
                     <!-- Usage: mvn org.jvnet.jaxb2.maven2:maven-jaxb2-plugin:generate -->
                     <groupId>org.jvnet.jaxb2.maven2</groupId>
                     <artifactId>maven-jaxb2-plugin</artifactId>
-                    <version>0.8.0</version>
+                    <version>0.12.3</version>
                     <configuration>
                         <schemaDirectory>src/main/resources/com/github/canbabel/canio/kcd</schemaDirectory>
                         <schemaIncludes>
@@ -83,7 +81,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.4.0</version>
+                <version>3.0.0</version>
                 <configuration>
                     <xmlOutput>true</xmlOutput>
                     <!-- Optional directory to put findbugs xdoc xml report -->

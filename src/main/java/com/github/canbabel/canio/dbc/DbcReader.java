@@ -51,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -76,26 +75,30 @@ import javax.xml.bind.Marshaller;
  */
 public class DbcReader {
 
-    final private static String[] KEYWORDS = {"VERSION ", "NS_ : ", "BS_:",
-        "BU_: ", "BO_ ", "SG_ ", "BO_TX_BU_ ", "CM_ ",
-        "CM_ BO_ ", "CM_ EV_ ", "CM_ SG_ ", "BA_DEF_ ",
-        "BA_DEF_ BU_ ", "BA_DEF_REL_ BU_SG_REL_ ",
-        "BA_DEF_ SG_ ", "BA_DEF_DEF_ ", "BA_DEF_DEF_REL_ ",
-        "BA_ ", "EV_ ", "VAL_ ", "VAL_TABLE_ ", "SIG_VALTYPE_ "};
+    private static final String[] KEYWORDS = 
+        { "VERSION ", "NS_ : ", "BS_:", "BU_: ", "BO_ ", "SG_ ", "BO_TX_BU_ ", 
+        "CM_ ", "CM_ BO_ ", "CM_ EV_ ", "CM_ SG_ ", "BA_DEF_ ", "BA_DEF_ BU_ ", 
+        "BA_DEF_REL_ BU_SG_REL_ ", "BA_DEF_ SG_ ",  "BA_ ", "EV_ ", "VAL_ ", 
+        "BA_DEF_DEF_ ", "BA_DEF_DEF_REL_ ", "VAL_TABLE_ ", "SIG_VALTYPE_ "};
     private static final String NOT_DEFINED = "Vector__XXX";
     private static final String ORPHANED_SIGNALS = "VECTOR__INDEPENDENT_SIG_MSG";
     private static final String DOC_CONTENT = "Converted with CANBabel (https://github.com/julietkilo/CANBabel)";
+    private static final String UTF8 = "UTF-8";
     private boolean isReadable;
     private Collection<String> nodes = new ArrayList<String>();
     private ObjectFactory factory = null;
     private NetworkDefinition network = null;
     private Document document = null;
-    private static Bus bus = null;
+    private Bus bus;
     private Map<Long, Set<Signal>> muxed = new TreeMap<Long, Set<Signal>>();
     private final Set<LabelDescription> labels = new HashSet<LabelDescription>();
     private final Set<SignalComment> signalComments = new HashSet<SignalComment>();
     private String version = "";
-    private static PrintWriter logWriter;
+    private PrintWriter logWriter;
+
+    public DbcReader() {
+        this.bus = null;
+    }
 
     private static class LabelDescription {
 
@@ -135,7 +138,7 @@ public class DbcReader {
         public void setSignalName(String signalName) {
             this.signalName = signalName;
         }
-    };
+    }
 
     private static class SignalComment {
 
@@ -175,7 +178,7 @@ public class DbcReader {
         public void setSignalName(String signalName) {
             this.signalName = signalName;
         }
-    };
+    }
 
     /**
      * Find a single CAN message from the list of messages
@@ -265,11 +268,11 @@ public class DbcReader {
         bus.setName("Private");
 
 
-        if ((file.canRead() && file.exists())) {
+        if ( file.canRead() && file.exists() ) {
             this.setReadable(true);
         }
 
-        StringBuffer contents = new StringBuffer();
+        StringBuilder contents = new StringBuilder();
         BufferedReader reader = null;
 
         try {
@@ -299,7 +302,6 @@ public class DbcReader {
                 }
             } catch (IOException e) {
                 e.printStackTrace(logWriter);
-                return false;
             }
         }
 
@@ -343,8 +345,8 @@ public class DbcReader {
      * Produces a file in KCD format.
      *
      * @param file File to save.
-     * @param prettyPrint True, if the output file shall be easy to view for human readers.
-     * @param gzip True, if the output file shall be compressed.
+     * @param prettyPrint True, to format for human reading.
+     * @param gzip True, to compress output file.
      * @return True, if operation successful.
      */
     public boolean writeKcdFile(File file, boolean prettyPrint, boolean gzip) {
@@ -352,7 +354,7 @@ public class DbcReader {
         try {
             JAXBContext context = JAXBContext.newInstance(new Class[]{com.github.canbabel.canio.kcd.NetworkDefinition.class});
             Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, UTF8);
 
             if (prettyPrint) {
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -361,10 +363,10 @@ public class DbcReader {
             if (gzip) {
                 FileOutputStream fo = new FileOutputStream(file);
                 GZIPOutputStream stream = new GZIPOutputStream(fo);
-                w = new OutputStreamWriter(stream, "UTF-8");
+                w = new OutputStreamWriter(stream, UTF8);
             } else {
                 FileOutputStream fo = new FileOutputStream(file);
-                w = new OutputStreamWriter(fo, "UTF-8");
+                w = new OutputStreamWriter(fo, UTF8);
             }
             marshaller.marshal(network, w);
         } catch (JAXBException jxbe) {
@@ -375,26 +377,13 @@ public class DbcReader {
             return false;
         } finally {
             try {
-                if (w != null) { w.close(); }
-            } catch (Exception e) {
-                return false;
+                if (w != null)  w.close(); 
+            } catch (IOException e) {
+                e.printStackTrace(logWriter);
             }
         }
 
         return true;
-    }
-
-    public boolean isReadable() {
-        return this.isReadable;
-    }
-
-    /**
-     * Returns the available network nodes as set.
-     *
-     * @return
-     */
-    public List<String> getNodes() {
-        return Collections.unmodifiableList((List<String>) nodes);
     }
 
     /**
@@ -422,7 +411,7 @@ public class DbcReader {
      * @param line Related parts of a dbc-file will be passed over to the
      * suitable handling method.
      */
-    private void processLine(StringBuffer line) {
+    private void processLine(StringBuilder line) {
 
         if (Pattern.matches("BO_.?\\d+.*", line)) {
             parseMessageDefinition(line);
@@ -456,16 +445,16 @@ public class DbcReader {
 
     }
 
-    private void parseVersion(StringBuffer line) {
+    private void parseVersion(StringBuilder line) {
         String[] splitted = splitString(line.toString());
         version = splitted[1];
     }
 
-    private static void parseBitTimingSection(StringBuffer line) {
+    private static void parseBitTimingSection(StringBuilder line) {
         // ignore
     }
 
-    private static void parseNewSymbols(StringBuffer line) {
+    private static void parseNewSymbols(StringBuilder line) {
         // ignore
     }
 
@@ -474,7 +463,7 @@ public class DbcReader {
      *
      * @param line line from dbc-file to handle.
      */
-    private void parseNetworkNode(StringBuffer line) {
+    private void parseNetworkNode(StringBuilder line) {
         line.replace(0, 5, "");
         line.trimToSize();
         String[] lineArray = line.toString().split("\\s+");
@@ -495,7 +484,7 @@ public class DbcReader {
      * @param line line from dbc-file to handle.
      *
      */
-    private static void parseMessageTransmitter(StringBuffer line) {
+    private static void parseMessageTransmitter(StringBuilder line) {
         // ignore
     }
 
@@ -504,7 +493,7 @@ public class DbcReader {
      *
      * @param line line from dbc-file to handle.
      */
-    private static void parseComment(StringBuffer line) {
+    private static void parseComment(StringBuilder line) {
         // ignore
     }
 
@@ -513,7 +502,7 @@ public class DbcReader {
      *
      * @param line line from dbc-file to handle.
      */
-    private static void parseAttribute(StringBuffer line) {
+    private void parseAttribute(StringBuilder line) {
         
         /* Find message with given id in GenMsgCycleTime and attach to message node */
          if (Pattern.matches("BA_\\s+\"GenMsgCycleTime.*", line)) {
@@ -537,7 +526,7 @@ public class DbcReader {
      * all corresponding signals e.g.
      * BO_ 2684354547 ExtMsgBig2: 8 Bob SG_ TestSigBigDouble1 : 7|64@0- (2,0) [0|0] "" Vector__XXX
      */
-    private void parseMessageDefinition(StringBuffer line) {
+    private void parseMessageDefinition(StringBuilder line) {
 
         muxed = new TreeMap<Long, Set<Signal>>();
 
@@ -603,7 +592,7 @@ public class DbcReader {
      * @param line line from dbc-file to handle.
      *
      */
-    private void parseEnvironmentVariable(StringBuffer line) {
+    private void parseEnvironmentVariable(StringBuilder line) {
          // ignore
     }
     
@@ -613,20 +602,20 @@ public class DbcReader {
      * @param line line from dbc-file to handle.
      *
      */    
-    private void parseEnvironmentVariableDescription(StringBuffer line) {
+    private void parseEnvironmentVariableDescription(StringBuilder line) {
         // ignore
     }
     
     public static int getCanIdFromString(String canIdStr) {
 
-        long canIdLong = Long.valueOf(canIdStr).longValue();
+        long canIdLong = Long.valueOf(canIdStr);
         int canId = (int) canIdLong & 0x1FFFFFFF;
         return canId;
     }
 
     public static boolean isExtendedFrameFormat(String canIdStr) {
 
-        long canIdLong = Long.valueOf(canIdStr).longValue();
+        long canIdLong = Long.valueOf(canIdStr);
         return ((canIdLong >>> 31 & 1) == 1);
     }
 
@@ -706,10 +695,10 @@ public class DbcReader {
                 if (max != 1.0) {
                     value.setMax(max);
                 }
-
-            } // End value part
-
-        } // End line split
+            // End value part
+            } 
+        // End line split
+        } 
 
         if (type == SignalType.MULTIPLEXOR) {
 
@@ -759,7 +748,7 @@ public class DbcReader {
 
         // Split signalname and mux coding from rest of line
         String[] lineArray = line.split(":");
-        String signalName = lineArray[0].toString().trim();
+        String signalName = lineArray[0].trim();
         // Check if this is a multiplex
         if (Pattern.compile("\\w+\\s+\\w+").matcher(lineArray[0]).find()) {
             /* line is multiplexer or multiplexed signal */
@@ -799,7 +788,7 @@ public class DbcReader {
 
         } else {
             /* signal type is plain */
-            parseSignalLine(message, signalName, SignalType.PLAIN, lineArray[1].toString().trim());
+            parseSignalLine(message, signalName, SignalType.PLAIN, lineArray[1].trim());
         }
 
     }
@@ -813,8 +802,8 @@ public class DbcReader {
      * @return True, if the character is a devider.
      */
     private static boolean isDivider(char c) {
-        return (c == '[' || c == ']' || c == '(' || c == ')' || c == '|'
-                || c == ',' || c == '@' || c == ' ');
+        return c == '[' || c == ']' || c == '(' || c == ')' || c == '|'
+                || c == ',' || c == '@' || c == ' ';
     }
 
     /**
@@ -826,7 +815,7 @@ public class DbcReader {
      * @return True, if the character is a symbol.
      */
     private static boolean isSymbol(char c) {
-        return (c == '+' || c == '-');
+        return c == '+' || c == '-';
     }
 
     /**
@@ -838,7 +827,7 @@ public class DbcReader {
      * @return True, if the character is a quotation.
      */
     private static boolean isQuote(char c) {
-        return (c == '"');
+        return c == '"';
     }
 
     /**
@@ -856,7 +845,7 @@ public class DbcReader {
      *         order.
      */
     protected static String[] splitString(String s) {
-        ArrayList<String> elements = new ArrayList<String>(10);
+        List<String> elements = new ArrayList<String>(10);
         String element = "";
         boolean inString = false;
 
@@ -914,18 +903,12 @@ public class DbcReader {
      * @param line line from dbc-file to handle e.g. "VAL_ 1234 signalname 1 "on" 2 "off" ;".
      *
      */      
-    private void parseValueDescription(StringBuffer line) {
+    private void parseValueDescription(StringBuilder line) {
 
         String[] splitted = splitString(line.toString());
 
         LabelDescription description = new LabelDescription();
-
-        if (isExtendedFrameFormat(splitted[1])) {
-            description.setExtended(true);
-        } else {
-            description.setExtended(false);
-        }
-
+        description.setExtended(isExtendedFrameFormat(splitted[1]));
         description.setId(getCanIdFromString(splitted[1]));
         description.setSignalName(splitted[2]);
         Set<Label> labelSet = new TreeSet<Label>(new LabelComparator());
@@ -947,17 +930,11 @@ public class DbcReader {
      * Handling method for signal comments starting by a line that begins with CM_ SG_ {integer}.
      * @param line line from dbc-file to handle e.g. "CM_ SG_ 1234 signalname 1 "comment";".
      */
-    private void parseSignalComment(StringBuffer line) {
+    private void parseSignalComment(StringBuilder line) {
 
         String[] splitted = splitString(line.toString());
         SignalComment comment = new SignalComment();
-
-        if (isExtendedFrameFormat(splitted[2])) {
-            comment.setExtended(true);
-        } else {
-            comment.setExtended(false);
-        }
-
+        comment.setExtended(isExtendedFrameFormat(splitted[2]));
         comment.setId(getCanIdFromString(splitted[2]));
         comment.setSignalName(splitted[3]);
         comment.setComment(splitted[4]);

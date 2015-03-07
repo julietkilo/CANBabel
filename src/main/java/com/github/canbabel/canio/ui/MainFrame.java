@@ -127,59 +127,59 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jButton3 = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jPanel3 = new javax.swing.JPanel();
+        convertButton = new javax.swing.JButton();
+        settingsPanel = new javax.swing.JPanel();
+        gzippedCheckbox = new javax.swing.JCheckBox();
+        prettyprintCheckbox = new javax.swing.JCheckBox();
+        OverwriteCheckbox = new javax.swing.JCheckBox();
+        informationPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        debugInfoArea = new javax.swing.JTextArea();
+        inputPanel = new javax.swing.JPanel();
+        addFilesOrFoldersButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
-        jButton2 = new javax.swing.JButton();
-        jProgressBar1 = new javax.swing.JProgressBar();
-        jButton4 = new javax.swing.JButton();
+        fileList = new javax.swing.JList();
+        removeButton = new javax.swing.JButton();
+        progressBar = new javax.swing.JProgressBar();
+        closeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("CANBabel");
         setMinimumSize(new java.awt.Dimension(640, 480));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jButton3.setText("Convert");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        convertButton.setText("Convert");
+        convertButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                convertButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
-        getContentPane().add(jButton3, gridBagConstraints);
+        getContentPane().add(convertButton, gridBagConstraints);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Settings"));
-        jPanel2.setLayout(new java.awt.GridBagLayout());
+        settingsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Settings"));
+        settingsPanel.setLayout(new java.awt.GridBagLayout());
 
-        jCheckBox1.setText("Gzipped Output");
+        gzippedCheckbox.setText("Gzipped Output");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 0.2;
-        jPanel2.add(jCheckBox1, gridBagConstraints);
+        settingsPanel.add(gzippedCheckbox, gridBagConstraints);
 
-        jCheckBox2.setSelected(true);
-        jCheckBox2.setText("Pretty print XML");
+        prettyprintCheckbox.setSelected(true);
+        prettyprintCheckbox.setText("Pretty print XML");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.weightx = 0.2;
-        jPanel2.add(jCheckBox2, gridBagConstraints);
+        settingsPanel.add(prettyprintCheckbox, gridBagConstraints);
 
-        jCheckBox3.setText("Overwrite all");
-        jPanel2.add(jCheckBox3, new java.awt.GridBagConstraints());
+        OverwriteCheckbox.setText("Overwrite all");
+        settingsPanel.add(OverwriteCheckbox, new java.awt.GridBagConstraints());
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -187,21 +187,21 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
-        getContentPane().add(jPanel2, gridBagConstraints);
+        getContentPane().add(settingsPanel, gridBagConstraints);
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Information"));
-        jPanel3.setLayout(new java.awt.GridBagLayout());
+        informationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Information"));
+        informationPanel.setLayout(new java.awt.GridBagLayout());
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setEditable(false);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        debugInfoArea.setEditable(false);
+        debugInfoArea.setColumns(20);
+        debugInfoArea.setRows(5);
+        jScrollPane2.setViewportView(debugInfoArea);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
-        jPanel3.add(jScrollPane2, gridBagConstraints);
+        informationPanel.add(jScrollPane2, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -209,15 +209,15 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 0.5;
-        getContentPane().add(jPanel3, gridBagConstraints);
+        getContentPane().add(informationPanel, gridBagConstraints);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Input"));
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+        inputPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Input"));
+        inputPanel.setLayout(new java.awt.GridBagLayout());
 
-        jButton1.setText("Add files or folders");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        addFilesOrFoldersButton.setText("Add files or folders");
+        addFilesOrFoldersButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                addFilesOrFoldersButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -225,10 +225,10 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        jPanel1.add(jButton1, gridBagConstraints);
+        inputPanel.add(addFilesOrFoldersButton, gridBagConstraints);
 
-        jList1.setModel(list);
-        jScrollPane1.setViewportView(jList1);
+        fileList.setModel(list);
+        jScrollPane1.setViewportView(fileList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -238,12 +238,12 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel1.add(jScrollPane1, gridBagConstraints);
+        inputPanel.add(jScrollPane1, gridBagConstraints);
 
-        jButton2.setText("Remove");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        removeButton.setText("Remove");
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                removeButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -251,7 +251,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        jPanel1.add(jButton2, gridBagConstraints);
+        inputPanel.add(removeButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -261,27 +261,27 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        getContentPane().add(jPanel1, gridBagConstraints);
+        getContentPane().add(inputPanel, gridBagConstraints);
 
-        jProgressBar1.setEnabled(false);
-        jProgressBar1.setMinimumSize(new java.awt.Dimension(410, 23));
-        jProgressBar1.setPreferredSize(new java.awt.Dimension(190, 23));
-        jProgressBar1.setRequestFocusEnabled(false);
-        jProgressBar1.setStringPainted(true);
+        progressBar.setEnabled(false);
+        progressBar.setMinimumSize(new java.awt.Dimension(410, 23));
+        progressBar.setPreferredSize(new java.awt.Dimension(190, 23));
+        progressBar.setRequestFocusEnabled(false);
+        progressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        getContentPane().add(jProgressBar1, gridBagConstraints);
+        getContentPane().add(progressBar, gridBagConstraints);
 
-        jButton4.setText("Close");
-        jButton4.setToolTipText("Close application");
-        jButton4.setAlignmentX(0.5F);
-        jButton4.setFocusTraversalPolicyProvider(true);
-        jButton4.setMaximumSize(new java.awt.Dimension(68, 30));
-        jButton4.setMinimumSize(new java.awt.Dimension(68, 30));
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        closeButton.setText("Close");
+        closeButton.setToolTipText("Close application");
+        closeButton.setAlignmentX(0.5F);
+        closeButton.setFocusTraversalPolicyProvider(true);
+        closeButton.setMaximumSize(new java.awt.Dimension(68, 30));
+        closeButton.setMinimumSize(new java.awt.Dimension(68, 30));
+        closeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeButtonHandler(evt);
             }
@@ -290,7 +290,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-        getContentPane().add(jButton4, gridBagConstraints);
+        getContentPane().add(closeButton, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -306,7 +306,7 @@ public class MainFrame extends javax.swing.JFrame {
 //      }
 //    }    
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void addFilesOrFoldersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addFilesOrFoldersButtonActionPerformed
         int returnVal = fc.showOpenDialog(this);
         /** new code */
         String path =   fc.getCurrentDirectory().getAbsolutePath();
@@ -330,19 +330,19 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_addFilesOrFoldersButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        int[] selection = jList1.getSelectedIndices();
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        int[] selection = fileList.getSelectedIndices();
 
         Arrays.sort(selection);
 
         for (int i = 0; i < selection.length; i++) {
             list.remove(selection[i] - i);
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_removeButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void convertButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_convertButtonActionPerformed
         if (convertThread != null && convertThread.isAlive()) {
             convertThread.interrupt();
             try {
@@ -353,8 +353,8 @@ public class MainFrame extends javax.swing.JFrame {
             convertThread = new Thread(convertRunnable);
             convertThread.start();
         }
-    }//GEN-LAST:event_jButton3ActionPerformed
-
+    }//GEN-LAST:event_convertButtonActionPerformed
+ 
 private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonHandler
     System.exit(0);
 }//GEN-LAST:event_closeButtonHandler
@@ -363,6 +363,19 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        if (args.length == 0){
+            /* GUI mode */
+            startGUI();
+        } else if (args.length == 2){
+            startCmdLine(args[0],args[1]);
+            
+        } else {
+            System.out.println("Usage: CANBabel.jar [dbc-in  kcd-out]");
+        }
+
+    }
+    
+    private static void startGUI(){
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -393,24 +406,38 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
             public void run() {
                 new MainFrame().setVisible(true);
             }
-        });
+        });        
     }
+    
+    private static void startCmdLine(String dbc, String kcd){
+        
+        File dbcfile = new File(dbc);
+        File kcdfile = new File(kcd);
+        
+        if (dbcfile.canRead()) {
+            DbcReader reader = new DbcReader();
+            if (reader.parseFile(dbcfile, System.out)) {
+                reader.writeKcdFile(kcdfile, true, false);
+            }            
+        }       
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JList jList1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JCheckBox OverwriteCheckbox;
+    private javax.swing.JButton addFilesOrFoldersButton;
+    private javax.swing.JButton closeButton;
+    private javax.swing.JButton convertButton;
+    private javax.swing.JTextArea debugInfoArea;
+    private javax.swing.JList fileList;
+    private javax.swing.JCheckBox gzippedCheckbox;
+    private javax.swing.JPanel informationPanel;
+    private javax.swing.JPanel inputPanel;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JCheckBox prettyprintCheckbox;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JButton removeButton;
+    private javax.swing.JPanel settingsPanel;
     // End of variables declaration//GEN-END:variables
     OutputStream logOutput = new OutputStream() {
 
@@ -428,7 +455,7 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
 
         @Override
         public void flush() throws IOException {
-            jTextArea1.setText(string.toString());
+            debugInfoArea.setText(string.toString());
         }
     };
 
@@ -437,17 +464,17 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
 
         @Override
         public void run() {
-            jButton1.setEnabled(false);
-            jButton2.setEnabled(false);
-            jButton3.setText("Abort");
+            addFilesOrFoldersButton.setEnabled(false);
+            removeButton.setEnabled(false);
+            convertButton.setText("Abort");
 
-            jProgressBar1.setEnabled(true);
-            jProgressBar1.setMinimum(0);
-            jProgressBar1.setMaximum(list.getSize());
-            jProgressBar1.setValue(0);
+            progressBar.setEnabled(true);
+            progressBar.setMinimum(0);
+            progressBar.setMaximum(list.getSize());
+            progressBar.setValue(0);
 
-            jCheckBox1.setEnabled(false);
-            jCheckBox2.setEnabled(false);
+            gzippedCheckbox.setEnabled(false);
+            prettyprintCheckbox.setEnabled(false);
 
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             InputStream resourceAsStream = NetworkDefinition.class.getResourceAsStream("Definition.xsd");
@@ -497,7 +524,7 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
 
                 String filename = f.getPath();
 
-                if (jCheckBox1.isSelected()) {
+                if (gzippedCheckbox.isSelected()) {
                     filename = filename.substring(0, filename.length() - 4) + ".kcd.gz";
                 } else {
                     filename = filename.substring(0, filename.length() - 4) + ".kcd";
@@ -505,15 +532,15 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
 
                 File newFile = new File(filename);
 
-                if (newFile.exists() && !jCheckBox3.isSelected()) {
-                    int answer = JOptionPane.showConfirmDialog(jButton1, "File " + filename + " already exists. Overwrite?");
+                if (newFile.exists() && !OverwriteCheckbox.isSelected()) {
+                    int answer = JOptionPane.showConfirmDialog(addFilesOrFoldersButton, "File " + filename + " already exists. Overwrite?");
 
                     if (answer == JOptionPane.NO_OPTION) {
-                        jProgressBar1.setValue(jProgressBar1.getValue() + 1);
+                        progressBar.setValue(progressBar.getValue() + 1);
                         continue;
                     } else if (answer == JOptionPane.CANCEL_OPTION) {
-                        jProgressBar1.setValue(0);
-                        jProgressBar1.setString("");
+                        progressBar.setValue(0);
+                        progressBar.setString("");
                         return;
                     }
                 }
@@ -522,18 +549,18 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
                     break;
                 }
 
-                jProgressBar1.setString("Converting " + (jProgressBar1.getValue() + 1) + " of " + jProgressBar1.getMaximum() + ": " + f.getName());
+                progressBar.setString("Converting " + (progressBar.getValue() + 1) + " of " + progressBar.getMaximum() + ": " + f.getName());
                 logWriter.write("### Converting " + f.getName() + " ###\n");
                 logWriter.flush();
                 try {
                     DbcReader reader = new DbcReader();
                     if (reader.parseFile(f, logOutput)) {
-                        reader.writeKcdFile(newFile, jCheckBox2.isSelected(), jCheckBox1.isSelected());
+                        reader.writeKcdFile(newFile, prettyprintCheckbox.isSelected(), gzippedCheckbox.isSelected());
 
                         /* Validate the result */
                         StreamSource source;
 
-                        if (jCheckBox1.isSelected()) {
+                        if (gzippedCheckbox.isSelected()) {
                             source = new StreamSource(new GZIPInputStream(new FileInputStream(newFile)));
                         } else {
                             source = new StreamSource(newFile);
@@ -547,26 +574,28 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
                     if (Thread.interrupted()) {
                         break;
                     }
-                } catch (Exception ex) {
+                } catch (IOException ex) {
+                    ex.printStackTrace(logWriter);
+                } catch (SAXException ex) {
                     ex.printStackTrace(logWriter);
                 }
 
                 logWriter.flush();
-                jProgressBar1.setValue(jProgressBar1.getValue() + 1);
+                progressBar.setValue(progressBar.getValue() + 1);
             }
 
             list.clear();
 
-            jButton1.setEnabled(true);
-            jButton2.setEnabled(true);
-            jButton3.setText("Convert");
+            addFilesOrFoldersButton.setEnabled(true);
+            removeButton.setEnabled(true);
+            convertButton.setText("Convert");
 
-            jProgressBar1.setValue(0);
-            jProgressBar1.setString("");
-            jProgressBar1.setEnabled(false);
+            progressBar.setValue(0);
+            progressBar.setString("");
+            progressBar.setEnabled(false);
 
-            jCheckBox1.setEnabled(true);
-            jCheckBox2.setEnabled(true);
+            gzippedCheckbox.setEnabled(true);
+            prettyprintCheckbox.setEnabled(true);
         }
     };
 }
