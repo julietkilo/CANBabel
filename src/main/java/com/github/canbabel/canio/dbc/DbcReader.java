@@ -1,6 +1,6 @@
 /**
  *  CANBabel - Translator for Controller Area Network description formats
- *  Copyright (C) 2011-2013 julietkilo and Jan-Niklas Meier
+ *  Copyright (C) 2011-2015 julietkilo and Jan-Niklas Meier
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -642,18 +642,27 @@ public class DbcReader {
         basicSignalType.setName(signalName);
         String[] splitted = splitString(line);
         if (splitted != null) {
-            basicSignalType.setOffset(Integer.parseInt(splitted[0]));
-
+            int offset = Integer.parseInt(splitted[0]);
+            int length = Integer.parseInt(splitted[1]);
+            boolean isBigEndian = "0".equals(splitted[2]);
+            
             // Omit length == "1" (default)
-            if (!"1".equals(splitted[1])) {
-                basicSignalType.setLength(Integer.parseInt(splitted[1]));
+            if (length > 1) {
+                basicSignalType.setLength(length);
+            } 
+
+            if (isBigEndian && length > 1) {
+                // big endian signal and signal length greater than 1
+                basicSignalType.setOffset(bigEndianLeastSignificantBitOffset(offset, length));
+            } else {
+                // little endian OR signal length == 1
+                basicSignalType.setOffset(offset);
             }
 
-            // find big endian signals, little is default
-            if ("0".equals(splitted[2])) {
+            if (isBigEndian) {
                 basicSignalType.setEndianess("big");
             }
-
+           
             double slope = Double.valueOf(splitted[4]);
             double intercept = Double.valueOf(splitted[5]);
             double min = Double.valueOf(splitted[6]);
@@ -954,5 +963,29 @@ public class DbcReader {
             // negative because C long int value exceeds 2^31-1
             return big.add(BigInteger.valueOf(4294967296L));
         }             
-    }    
+    }
+    
+    /**
+     * Calculates the least significant bit offset for big endian byte order
+     * @param msb Most significant bit offset
+     * @param length signal length in bit
+     * @return lsb Least significant bit offset
+     */
+    public static int bigEndianLeastSignificantBitOffset(int msb, int length){
+        int lsb;
+        int pos;
+        int cpos;
+        int bytes;
+        pos = 7 - (msb % 8) + (length - 1);
+        if (pos < 8){
+            /* msb pass a byte order */
+            lsb = msb - length + 1;
+        } else {
+            cpos = 7 - (pos % 8);
+            bytes = pos / 8;
+            lsb = cpos + (bytes * 8) + (msb/8) * 8;
+        }
+        
+        return lsb;
+    }
 }
