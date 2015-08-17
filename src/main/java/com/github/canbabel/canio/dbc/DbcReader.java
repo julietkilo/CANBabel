@@ -288,6 +288,8 @@ public class DbcReader {
                 contents.append(text);
                 isFirstLine = false;
             }
+			// since there is no last keyword to trigger the parsing of the last block, we just parse it.
+			processLine(contents);
             network.getBus().add(bus);
         } catch (FileNotFoundException e) {
             e.printStackTrace(logWriter);
