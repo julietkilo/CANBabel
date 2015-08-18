@@ -397,13 +397,12 @@ public class DbcReader {
      * @return true, if line starts with a keyword.
      */
     private static boolean startsWithKeyword(String line) {
-        boolean retval = false;
         for (String keyword : KEYWORDS) {
             if (line.startsWith(keyword)) {
-                retval = true;
+                return true;
             }
         }
-        return retval;
+        return false;
     }
 
     /**
