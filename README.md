@@ -15,7 +15,10 @@ Currently the following formats are supported (Read/Write):
 ## Build instructions
 You will need a current Java JDK and Maven to build **CANBabel**. After cloning the repository just type
 	$ mvn clean install
-and maven will fetch all dependencies and build **CANBabel**. You can also just add the repository in your favorite Java IDE as a new _maven project_.
+and maven will fetch all dependencies and build a **CANBabel** jar-file in the /target folder of your workspace. You can also just add the repository in your favorite Java IDE as a new _maven project_.
+
+## Run CANBabel
+In most environments it's simply required to doubleclick the jar-file in a file browser. If not try the commandline <code>java -jar CANBabel-1.3.jar</code>
 
 ## KCD Example
 
