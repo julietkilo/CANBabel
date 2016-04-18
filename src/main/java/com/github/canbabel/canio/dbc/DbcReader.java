@@ -76,7 +76,7 @@ import javax.xml.bind.Marshaller;
 public class DbcReader {
 
     private static final String[] KEYWORDS = 
-        { "VERSION ", "NS_ : ", "BS_:", "BU_: ", "BO_ ", "SG_ ", "BO_TX_BU_ ", 
+        { "VERSION ", "NS_ : ", "BS_:", "BU_: ", "BO_ ", "BO_TX_BU_ ", 
         "CM_ ", "CM_ BO_ ", "CM_ EV_ ", "CM_ SG_ ", "BA_DEF_ ", "BA_DEF_ BU_ ", 
         "BA_DEF_REL_ BU_SG_REL_ ", "BA_DEF_ SG_ ",  "BA_ ", "EV_ ", "VAL_ ", 
         "BA_DEF_DEF_ ", "BA_DEF_DEF_REL_ ", "VAL_TABLE_ ", "SIG_VALTYPE_ "};
@@ -536,7 +536,7 @@ public class DbcReader {
         // remove BO_
         line.replace(0, 4, "");
         line.trimToSize();
-        String[] lineArray = line.toString().split("\\s+SG_\\s+");
+        String[] lineArray = line.toString().split("\\s*SG_\\s+");
 
         String[] messageArray = lineArray[0].split("\\s+");
         Message message = (Message) factory.createMessage();
