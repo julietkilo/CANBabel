@@ -17,54 +17,18 @@
  **/
 package com.github.canbabel.canio.dbc;
 
-import com.github.canbabel.canio.kcd.BasicLabelType;
-import com.github.canbabel.canio.kcd.BasicSignalType;
-import com.github.canbabel.canio.kcd.Bus;
-import com.github.canbabel.canio.kcd.Document;
-import com.github.canbabel.canio.kcd.Label;
-import com.github.canbabel.canio.kcd.LabelSet;
-import com.github.canbabel.canio.kcd.Message;
-import com.github.canbabel.canio.kcd.Multiplex;
-import com.github.canbabel.canio.kcd.MuxGroup;
-import com.github.canbabel.canio.kcd.NetworkDefinition;
-import com.github.canbabel.canio.kcd.Node;
-import com.github.canbabel.canio.kcd.NodeRef;
-import com.github.canbabel.canio.kcd.ObjectFactory;
-import com.github.canbabel.canio.kcd.Producer;
-import com.github.canbabel.canio.kcd.Signal;
-import com.github.canbabel.canio.kcd.Value;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import com.github.canbabel.canio.kcd.*;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import java.io.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 /**
  * Reads industry widespread CAN database (*.dbc) format.
@@ -418,10 +382,18 @@ public class DbcReader {
             parseMessageDefinition(line);
         } else if (Pattern.matches("VAL_TABLE_.*", line)) {
         } else if (Pattern.matches("VAL_.?\\d+.*", line)) {
-            parseValueDescription(line);
+            try {
+                parseValueDescription(line);
+            } catch (Exception e) {
+                System.err.println(line);
+            }
         } else if (Pattern.matches("BA_DEF_.+\".*", line)) {
         } else if (Pattern.matches("BA_\\s+\".*", line)) {
-            parseAttribute(line);
+            try {
+                parseAttribute(line);
+            } catch (Exception e) {
+                System.err.println(line + e.getMessage());
+            }
         } else if (Pattern.matches("CM_ SG_.*", line)) {
             parseSignalComment(line);
         } else if (Pattern.matches("CM.*", line)) {
@@ -511,8 +483,9 @@ public class DbcReader {
              if (splitted != null) {             
                 List<Message> messages = bus.getMessage();                 
                 Message message =  findMessage(messages, getCanIdFromString(splitted[3]), isExtendedFrameFormat(splitted[3]) );
-                Integer ival = Integer.valueOf(splitted[4].substring(0, splitted[4].length()-1));
-                 // Omit default interval = 0
+                Float fval = Float.valueOf(splitted[4].substring(0, splitted[4].length()-1));
+                Integer ival = Math.round(fval);
+                // Omit default interval = 0
                 if (ival != 0) {
                     message.setInterval(ival);
                 }                
@@ -638,9 +611,9 @@ public class DbcReader {
     private Signal parseSignalLine(Message message, String signalName, SignalType type, String line) {
         Value value = null;
 
-        BasicSignalType basicSignalType =
-                (BasicSignalType) factory.createBasicSignalType();
-        basicSignalType.setName(signalName);
+        Signal tSignal = (Signal) factory.createSignal();
+
+        tSignal.setName(signalName);
         String[] splitted = splitString(line);
         if (splitted != null) {
             int offset = Integer.parseInt(splitted[0]);
@@ -649,19 +622,19 @@ public class DbcReader {
             
             // Omit length == "1" (default)
             if (length > 1) {
-                basicSignalType.setLength(length);
+                tSignal.setLength(length);
             } 
 
             if (isBigEndian && length > 1) {
                 // big endian signal and signal length greater than 1
-                basicSignalType.setOffset(bigEndianLeastSignificantBitOffset(offset, length));
+                tSignal.setOffset(bigEndianLeastSignificantBitOffset(offset, length));
             } else {
                 // little endian OR signal length == 1
-                basicSignalType.setOffset(offset);
+                tSignal.setOffset(offset);
             }
 
             if (isBigEndian) {
-                basicSignalType.setEndianess("big");
+                tSignal.setEndianess("big");
             }
            
             double slope = Double.valueOf(splitted[4]);
@@ -696,6 +669,15 @@ public class DbcReader {
                     value.setUnit(splitted[8]);
                 }
 
+                // Omit empty consumer
+                if (!"".equals(splitted[9])) {
+                    Consumer consumer = (Consumer) factory.createConsumer();
+                    NodeRef ref = (NodeRef) factory.createNodeRef();
+                    ref.setId(splitted[9]);
+                    consumer.getNodeRef().add(ref);
+                    tSignal.setConsumer(consumer);
+                }
+
                 // Omit default min = 0.0
                 if (min != 0.0) {
                     value.setMin(min);
@@ -713,13 +695,14 @@ public class DbcReader {
         if (type == SignalType.MULTIPLEXOR) {
 
             Multiplex mux = (Multiplex) factory.createMultiplex();
-            mux.setName(basicSignalType.getName());
-            mux.setOffset(basicSignalType.getOffset());
-            if (basicSignalType.getLength() != 1) {
-                mux.setLength(basicSignalType.getLength());
+            mux.setName(tSignal.getName());
+            mux.setOffset(tSignal.getOffset());
+            mux.setConsumer(tSignal.getConsumer());
+            if (tSignal.getLength() != 1) {
+                mux.setLength(tSignal.getLength());
             }
-            if ("big".equals(basicSignalType.getEndianess())) {
-                mux.setEndianess(basicSignalType.getEndianess());
+            if ("big".equals(tSignal.getEndianess())) {
+                mux.setEndianess(tSignal.getEndianess());
             }
             mux.setValue(value);
             message.getMultiplex().add(mux);
@@ -727,13 +710,14 @@ public class DbcReader {
 
         } else {
             Signal signal = (Signal) factory.createSignal();
-            signal.setName(basicSignalType.getName());
-            signal.setOffset(basicSignalType.getOffset());
-            if (basicSignalType.getLength() != 1) {
-                signal.setLength(basicSignalType.getLength());
+            signal.setName(tSignal.getName());
+            signal.setOffset(tSignal.getOffset());
+            signal.setConsumer(tSignal.getConsumer());
+            if (tSignal.getLength() != 1) {
+                signal.setLength(tSignal.getLength());
             }
-            if ("big".equals(basicSignalType.getEndianess())) {
-                signal.setEndianess(basicSignalType.getEndianess());
+            if ("big".equals(tSignal.getEndianess())) {
+                signal.setEndianess(tSignal.getEndianess());
             }
             signal.setValue(value);
             if (type == SignalType.PLAIN){
