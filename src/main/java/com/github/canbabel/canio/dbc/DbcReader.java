@@ -647,7 +647,6 @@ public class DbcReader {
             if (sConsumers.length > 0) {
                 Consumer consumer = (Consumer) factory.createConsumer();
                 for (String sConsumer : sConsumers) {
-                    System.out.println(sConsumer);
                     NodeRef ref = (NodeRef) factory.createNodeRef();
                     consumer.getNodeRef().add(ref);
                     ref.setId(sConsumer);
