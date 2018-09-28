@@ -17,6 +17,7 @@
  **/
 package com.github.canbabel.canio.dbc;
 
+import com.github.canbabel.canio.dbc.AttributeDefinition.AttrType;
 import com.github.canbabel.canio.kcd.*;
 
 import javax.xml.bind.JAXBContext;
@@ -39,16 +40,14 @@ import java.util.zip.GZIPOutputStream;
  */
 public class DbcReader {
 
-    private static final String[] KEYWORDS =
-        { "VERSION ", "NS_ : ", "BS_:", "BU_: ", "BO_ ", "BO_TX_BU_ ",
-        "CM_ ", "CM_ BO_ ", "CM_ EV_ ", "CM_ SG_ ", "BA_DEF_ ", "BA_DEF_ BU_ ",
-        "BA_DEF_REL_ BU_SG_REL_ ", "BA_DEF_ SG_ ",  "BA_ ", "EV_ ", "VAL_ ",
-        "BA_DEF_DEF_ ", "BA_DEF_DEF_REL_ ", "VAL_TABLE_ ", "SIG_VALTYPE_ "};
+    private static final String[] KEYWORDS = { "VERSION ", "NS_ : ", "BS_:", "BU_: ", "BO_ ", "BO_TX_BU_ ", "CM_ ",
+        "CM_ BO_ ", "CM_ EV_ ", "CM_ SG_ ", "BA_DEF_ ", "BA_DEF_ BU_ ", "BA_DEF_REL_ BU_SG_REL_ ", "BA_DEF_ SG_ ",
+        "BA_ ", "EV_ ", "VAL_ ", "BA_DEF_DEF_ ", "BA_DEF_DEF_REL_ ", "VAL_TABLE_ ", "SIG_VALTYPE_ " };
     private static final String NOT_DEFINED = "Vector__XXX";
     private static final String ORPHANED_SIGNALS = "VECTOR__INDEPENDENT_SIG_MSG";
     private static final String DOC_CONTENT = "Converted with CANBabel (https://github.com/julietkilo/CANBabel)";
     private static final String UTF8 = "UTF-8";
-    private boolean isReadable;
+
     private Collection<String> nodes = new ArrayList<String>();
     private ObjectFactory factory = null;
     private NetworkDefinition network = null;
@@ -64,19 +63,22 @@ public class DbcReader {
         this.bus = null;
     }
 
+    Map<String, AttributeDefinition> attribute_definitions  = new HashMap<String, AttributeDefinition>();
+    List<Attribute> attributes = new ArrayList<Attribute>();
+
     /**
      * Find a single CAN message from the list of messages
+     *
      * @param messages List of message objects
-     * @param id CAN identifier of the message to find
-     * @param e True, if the message to find is of extended frame format
+     * @param id       CAN identifier of the message to find
+     * @param e        True, if the message to find is of extended frame format
      * @return Message object found, null otherwise
      */
     private static Message findMessage(List<Message> messages, long id, boolean e) {
-        for (Message message : messages){
+        for (Message message : messages) {
             boolean extended = "extended".equals(message.getFormat());
-            if (Long.parseLong(message.getId().substring(2), 16) == id
-                    && extended == e) {
-                    return message;
+            if (Long.parseLong(message.getId().substring(2), 16) == id && extended == e) {
+                return message;
             }
         }
         return null;
@@ -84,10 +86,11 @@ public class DbcReader {
 
     /**
      * Find a single CAN signal from list of CAN messages.
+     *
      * @param messages List of messages object
-     * @param id Identifier of CAN message to find
-     * @param e True, if CAN message to find is extended frame format
-     * @param name Name of signal to find
+     * @param id       Identifier of CAN message to find
+     * @param e        True, if CAN message to find is extended frame format
+     * @param name     Name of signal to find
      * @return Signal object found, null otherwise
      */
     private static Signal findSignal(List<Message> messages, long id, boolean e, String name) {
@@ -95,7 +98,7 @@ public class DbcReader {
         message = findMessage(messages, id, e);
         List<Signal> signals;
 
-        if (message != null){
+        if (message != null) {
             signals = message.getSignal();
         } else if (id == 0) {
             /* orphaned signal found */
@@ -104,8 +107,7 @@ public class DbcReader {
             /* valid signal found but message not defined */
             return null;
         }
-    
-                   
+
         /* Find signal name */
         for (Signal signal : signals) {
             if (signal.getName().equals(name)) {
@@ -125,18 +127,18 @@ public class DbcReader {
         return null;
     }
 
-
     /**
      * Read in given CAN database file (*.dbc)
-     * @param file CAN database filehandle to read.
+     *
+     * @param file      CAN database filehandle to read.
      * @param logStream OutputStream to write out stack traces
      * @return true, if file has been successfully read.
      */
     public boolean parseFile(File file, OutputStream logStream) {
         try {
-            logWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(logStream,"ISO-8859-1")), true);
+            logWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(logStream, "ISO-8859-1")), true);
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(DbcReader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DbcReader.class.getName()).log(Level.FINE, null, ex);
         }
         factory = new ObjectFactory();
         network = (NetworkDefinition) (factory.createNetworkDefinition());
@@ -148,12 +150,11 @@ public class DbcReader {
         network.setDocument(document);
 
         bus = (Bus) (factory.createBus());
-        /** TODO Allow customized bus names */
+
         bus.setName("Private");
 
-
-        if ( file.canRead() && file.exists() ) {
-            this.setReadable(true);
+        if (!(file.canRead() && file.exists())) {
+            throw new RuntimeException("could not open file");
         }
 
         StringBuilder contents = new StringBuilder();
@@ -172,8 +173,9 @@ public class DbcReader {
                 contents.append(text);
                 isFirstLine = false;
             }
-			// since there is no last keyword to trigger the parsing of the last block, we just parse it.
-			processLine(contents);
+            // since there is no last keyword to trigger the parsing of the last block, we
+            // just parse it.
+            processLine(contents);
             network.getBus().add(bus);
         } catch (FileNotFoundException e) {
             e.printStackTrace(logWriter);
@@ -192,12 +194,12 @@ public class DbcReader {
         }
 
         /*
-         * File has been completely parsed. Now the labels can be added
-         * to the corresponding signals.
+         * File has been completely parsed. Now the labels can be added to the
+         * corresponding signals.
          */
-        for (LabelDescription description : labels) {
-            List<Message> messages = bus.getMessage();
+        List<Message> messages = bus.getMessage();
 
+        for (LabelDescription description : labels) {
             LabelSet set = new LabelSet();
             List<BasicLabelType> labellist = set.getLabelOrLabelGroup();
             labellist.addAll(description.getLabels());
@@ -211,16 +213,97 @@ public class DbcReader {
         }
 
         /*
-         * File has been completely parsed. Now the signal comments can be added
-         * to the corresponding signals.
+         * File has been completely parsed. Now the signal comments can be added to the
+         * corresponding signals.
          */
         for (SignalComment comment : signalComments) {
-            List<Message> messages = bus.getMessage();
-
             /* Find ID */
             Signal signal = findSignal(messages, comment.getId(), comment.isExtended(), comment.getSignalName());
             if (signal != null) {
                 signal.setNotes(comment.getComment());
+            }
+        }
+
+        /*
+         * maybe the default for an attribute differs from the default in the KCD format
+         * If that is the case, we set the value for all applicable elements.
+         */
+        if (attribute_definitions.containsKey("VFrameFormat")) {
+            AttributeDefinition attr_def = attribute_definitions.get("VFrameFormat");
+            if (attr_def.getType() == AttributeDefinition.AttrType.ENUM) {
+                if (((AttributeDefinitionEnum) attr_def).getDefaultAsString().endsWith("_FD")) {
+                    // the default in KCD is not-FD, so we need to set all messages to FD. Messages
+                    // with
+                    // are explicitly set not-FD are reset below.
+                    for (Message m : messages) {
+                        m.setFd(true);
+                    }
+                }
+            } else {
+                throw new RuntimeException("VFrameFormat is not of type ENUM");
+            }
+        }
+        if (attribute_definitions.containsKey("CANFD_BRS")) {
+            AttributeDefinition attr_def = attribute_definitions.get("CANFD_BRS");
+            if (attr_def.getType() == AttributeDefinition.AttrType.ENUM) {
+                if (((AttributeDefinitionEnum) attr_def).getDefaultAsString().equals("1")) {
+                    for (Message m : messages) {
+                        m.setBitrateswitch(true);
+                    }
+                }
+            } else {
+                throw new RuntimeException("CANFD_BRS is not of type ENUM");
+            }
+        }
+
+        /*
+         * add attributes to their elements
+         */
+        for (Attribute attr : attributes) {
+            switch (attr.getTarget()) {
+            case MESSAGE:
+                long mid = attr.getMessage();
+                Message m = findMessage(messages, mid & 0x1FFFFFFF, ((mid & 0x80000000) > 0) ? true : false);
+                if (attr.getName().equals("GenMsgCycleTime")) {
+                    m.setInterval(attr.getInt());
+                } else if (attr.getName().equals("VFrameFormat")) {
+                    if (attr.getEnumAsString().endsWith("_FD")) {
+                        m.setFd(true);
+                    } else {
+                        m.setFd(false);
+                    }
+                } else if (attr.getName().equals("CANFD_BRS")) {
+                    if (attr.getEnumAsString().equals("1")) {
+                        m.setBitrateswitch(true);
+                    } else {
+                        // Explicitly set BRS appears in the KCD, even if it is the default value.
+                        m.setBitrateswitch(false);
+                    }
+                }
+                break;
+            case SIGNAL:
+                // we currently don't parse any signal attributes
+                break;
+            case NODE:
+                break;
+            case NETWORK:
+                if (attr.getName().equals("DBName")) {
+                    if (attr.getType() == AttrType.STRING) {
+                        bus.setName(attr.getString());
+                    }
+                }
+                break;
+            }
+        }
+
+        // due to the handling of default values and the KCD formats defaults we need to
+        // fix up the messages that are set to non-FD but got the BRS flag set by the
+        // default attribute value.
+        for (Message m : messages) {
+            if (!m.isFd()) {
+                if (m.isBitrateswitch()) {
+                    m.setBitrateswitch(false);
+                }
             }
         }
 
@@ -230,15 +313,16 @@ public class DbcReader {
     /**
      * Produces a file in KCD format.
      *
-     * @param file File to save.
+     * @param file        File to save.
      * @param prettyPrint True, to format for human reading.
-     * @param gzip True, to compress output file.
+     * @param gzip        True, to compress output file.
      * @return True, if operation successful.
      */
     public boolean writeKcdFile(File file, boolean prettyPrint, boolean gzip) {
         Writer w = null;
         try {
-            JAXBContext context = JAXBContext.newInstance(new Class[]{com.github.canbabel.canio.kcd.NetworkDefinition.class});
+            JAXBContext context = JAXBContext
+                .newInstance(new Class[] { com.github.canbabel.canio.kcd.NetworkDefinition.class });
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_ENCODING, UTF8);
 
@@ -263,7 +347,8 @@ public class DbcReader {
             return false;
         } finally {
             try {
-                if (w != null)  w.close();
+                if (w != null)
+                    w.close();
             } catch (IOException e) {
                 e.printStackTrace(logWriter);
             }
@@ -273,11 +358,14 @@ public class DbcReader {
     }
 
     /**
-     * Returns true, if a line from the input file starts with a keyword from
-     * the list of <p>KEYWORDS</p>.
+     * Returns true, if a line from the input file starts with a keyword from the
+     * list of
+     * <p>
+     * KEYWORDS
+     * </p>
+     * .
      *
-     * @param line
-     *            String to check for Keyword
+     * @param line String to check for Keyword
      * @return true, if line starts with a keyword.
      */
     private static boolean startsWithKeyword(String line) {
@@ -290,11 +378,11 @@ public class DbcReader {
     }
 
     /**
-     * Several lines of a DBC-File, which begins with a keyword
-     * will be sorted here for further processing.
+     * Several lines of a DBC-File, which begins with a keyword will be sorted here
+     * for further processing.
      *
-     * @param line Related parts of a dbc-file will be passed over to the
-     * suitable handling method.
+     * @param line Related parts of a dbc-file will be passed over to the suitable
+     *             handling method.
      */
     private void processLine(StringBuilder line) {
 
@@ -305,14 +393,19 @@ public class DbcReader {
             try {
                 parseValueDescription(line);
             } catch (Exception e) {
-                System.err.println(line);
+                System.err.println(line + " FAIL: " + e.getMessage());
             }
         } else if (Pattern.matches("BA_DEF_.+\".*", line)) {
+            try {
+                parseAttributeDefinition(line);
+            } catch (Exception e) {
+                System.err.println(line + " FAIL: " + e.getMessage());
+            }
         } else if (Pattern.matches("BA_\\s+\".*", line)) {
             try {
                 parseAttribute(line);
             } catch (Exception e) {
-                System.err.println(line + e.getMessage());
+                System.err.println(line + " failed with: " + e.getMessage());
             }
         } else if (Pattern.matches("CM_ SG_.*", line)) {
             parseSignalComment(line);
@@ -372,7 +465,8 @@ public class DbcReader {
     }
 
     /**
-     * Handling method for message transmitter starting by a line that begins with BO_TX_BU_.
+     * Handling method for message transmitter starting by a line that begins with
+     * BO_TX_BU_.
      *
      * @param line line from dbc-file to handle.
      *
@@ -382,12 +476,119 @@ public class DbcReader {
     }
 
     /**
-     * Handling method for message transmitter starting by a line that begins with CM_.
+     * Handling method for message transmitter starting by a line that begins with
+     * CM_.
      *
      * @param line line from dbc-file to handle.
      */
     private static void parseComment(StringBuilder line) {
         // ignore
+    }
+
+    private void parseAttributeDefinition(StringBuilder line) {
+        String[] splitted = splitString(line.toString());
+        if (splitted[0].equals("BA_DEF_")) {
+            if (splitted.length < 3) {
+                // ignore unparsable lines
+                return;
+            }
+
+            AttributeDefinition.AttrTarget trgt = AttributeDefinition.getAttrTargetFromString(splitted[1]);
+
+            int attr_def_start = 2;
+            if (trgt == AttributeDefinition.AttrTarget.NETWORK) {
+                // since the target string is missing all the attribute values are one earlier
+                // in the following string array.
+                attr_def_start = 1;
+            }
+
+            if (trgt == null) {
+                // unrecognized attribute target.
+                return;
+            }
+            // attribute definition for messages
+            String name = unQuote(splitted[attr_def_start]);
+
+            AttributeDefinition.AttrType type = AttributeDefinition.getAttrTypeFromString(splitted[attr_def_start + 1]);
+
+            switch (type) {
+                case ENUM:
+                    List<String> evalues = new ArrayList<String>();
+                    for (int i = attr_def_start + 2; i < splitted.length; ++i) {
+                        evalues.add(unQuote(splitted[i]));
+                    }
+                    attribute_definitions.put(name, new AttributeDefinitionEnum(name, trgt, evalues));
+                    break;
+                case INT:
+                    if (splitted.length < 5) {
+                        return;
+                    }
+                    attribute_definitions.put(name,
+                            new AttributeDefinitionInt(name, trgt, Integer.parseInt(splitted[attr_def_start + 2]),
+                                Integer.parseInt(splitted[attr_def_start + 3])));
+                    break;
+                case FLOAT:
+                    if (splitted.length < 5) {
+                        return;
+                    }
+                    attribute_definitions.put(name,
+                            new AttributeDefinitionFloat(name, trgt, Float.parseFloat(splitted[attr_def_start + 2]),
+                                Float.parseFloat(splitted[attr_def_start + 3])));
+                    break;
+                case STRING:
+                    if (splitted.length < 3) {
+                        return;
+                    }
+                    attribute_definitions.put(name, new AttributeDefinitionString(name, trgt));
+                    break;
+                case HEX:
+                    if (splitted.length < 5) {
+                        return;
+                    }
+                    attribute_definitions.put(name,
+                            new AttributeDefinitionHex(name, trgt, Integer.parseInt(splitted[attr_def_start + 2]),
+                                Integer.parseInt(splitted[attr_def_start + 3])));
+                    break;
+            }
+
+            // logWriter.println("read attribute def for " + name + " is " + splitted[attr_def_start + 1]);
+        } else if (splitted[0].equals("BA_DEF_DEF_")) {
+            // attribute default value
+            if (splitted.length < 3) {
+                // ignore unparsable lines
+                return;
+            }
+
+            String name = unQuote(splitted[1]);
+
+            AttributeDefinition def = attribute_definitions.get(name);
+            if (def != null) {
+                switch (def.getType()) {
+                    case ENUM:
+                        ((AttributeDefinitionEnum) def).setDefault(unQuote(splitted[2]));
+                        break;
+                    case HEX:
+                        ((AttributeDefinitionHex) def).setDefault(Integer.parseInt(splitted[2]));
+                        break;
+                    case STRING:
+                        ((AttributeDefinitionString) def).setDefault(unQuote(splitted[2]));
+                        break;
+                    case INT:
+                        {
+                            int val = 0;
+                            // this is a DBC idiosyncrasy. some ints are written as float/double values.
+                            val = Double.valueOf(splitted[2]).intValue();
+                            ((AttributeDefinitionInt) def).setDefault(val);
+                        }
+                        break;
+                    case FLOAT:
+                        ((AttributeDefinitionFloat) def).setDefault(Float.parseFloat(splitted[2]));
+                        break;
+                }
+            } else {
+                logWriter.println("missing attribute definition for default value for: " + name);
+            }
+        }
     }
 
     /**
@@ -396,29 +597,68 @@ public class DbcReader {
      * @param line line from dbc-file to handle.
      */
     private void parseAttribute(StringBuilder line) {
-        
-        /* Find message with given id in GenMsgCycleTime and attach to message node */
-         if (Pattern.matches("BA_\\s+\"GenMsgCycleTime.*", line)) {
-             String[] splitted = splitString(line.toString());
-             if (splitted != null) {
-                List<Message> messages = bus.getMessage();
-                Message message =  findMessage(messages, getCanIdFromString(splitted[3]), isExtendedFrameFormat(splitted[3]) );
-                Float fval = Float.valueOf(splitted[4].substring(0, splitted[4].length()-1));
-                Integer ival = Math.round(fval);
-                // Omit default interval = 0
-                if (ival != 0) {
-                    message.setInterval(ival);
+        String[] splitted = splitString(line.toString());
+        if (splitted[0].equals("BA_")) {
+            String name = unQuote(splitted[1]);
+
+            AttributeDefinition def = attribute_definitions.get(name);
+
+            if (def != null) {
+                Attribute newattr = null;
+
+                int val_ind = 2;
+                switch (def.target) {
+                    case MESSAGE:
+                    case NODE:
+                        val_ind = 4;
+                        break;
+                    case SIGNAL:
+                        val_ind = 5;
+                        break;
+                    case NETWORK:
+                        break;
                 }
-             }
-         }
+
+                switch (def.type) {
+                    case STRING:
+                        newattr = new Attribute(def, unQuote(splitted[val_ind]));
+                        break;
+                    case INT:
+                    case HEX:
+                    case ENUM:
+                        newattr = new Attribute(def, Integer.parseInt(splitted[val_ind]));
+                        break;
+                    case FLOAT:
+                        newattr = new Attribute(def, Float.parseFloat(splitted[val_ind]));
+                        break;
+                }
+                switch (def.target) {
+                    case SIGNAL:
+                        newattr.setSignal(splitted[4]);
+                        // fall through
+                    case MESSAGE:
+                        newattr.setMessage(Long.parseLong(splitted[3]));
+                        break;
+                    case NODE:
+                        newattr.setNode(splitted[3]);
+                        break;
+                    case NETWORK:
+                        break;
+                }
+                attributes.add(newattr);
+            } else {
+                logWriter.write("missing attribute definition for attribute \"" + name + '\"');
+            }
+        }
     }
 
     /**
-     * Handling method for message definition starting by a line that begins with BO_ {decimal}.
+     * Handling method for message definition starting by a line that begins with
+     * BO_ {decimal}.
      *
-     * @param line passed over buffer of the line (starting with BO_ including
-     * all corresponding signals e.g.
-     * BO_ 2684354547 ExtMsgBig2: 8 Bob SG_ TestSigBigDouble1 : 7|64@0- (2,0) [0|0] "" Vector__XXX
+     * @param line passed over buffer of the line (starting with BO_ including all
+     *             corresponding signals e.g. BO_ 2684354547 ExtMsgBig2: 8 Bob SG_
+     *             TestSigBigDouble1 : 7|64@0- (2,0) [0|0] "" Vector__XXX
      */
     private void parseMessageDefinition(StringBuilder line) {
 
@@ -453,8 +693,8 @@ public class DbcReader {
             parseSignal(message, lineArray[i]);
         }
 
-        /* Check if we have to add a multiplex definition to the last
-         * message.
+        /*
+         * Check if we have to add a multiplex definition to the last message.
          */
         if (muxed != null && muxed.size() > 0) {
             if (message.getMultiplex().size() == 1) {
@@ -481,17 +721,19 @@ public class DbcReader {
     }
 
     /**
-     * Handling method for environment variable starting by a line that begins with EV_.
+     * Handling method for environment variable starting by a line that begins with
+     * EV_.
      *
      * @param line line from dbc-file to handle.
      *
      */
     private void parseEnvironmentVariable(StringBuilder line) {
-         // ignore
+        // ignore
     }
 
     /**
-     * Handling method for environment variable starting by a line that begins with VAL_ {string}.
+     * Handling method for environment variable starting by a line that begins with
+     * VAL_ {string}.
      *
      * @param line line from dbc-file to handle.
      *
@@ -519,14 +761,16 @@ public class DbcReader {
     };
 
     /**
-     * Parses a the part of a signal line that is same for plain, multiplexor
-     * or muxed signal.
+     * Parses a the part of a signal line that is same for plain, multiplexor or
+     * muxed signal.
      *
-     * @param message message object where the signal line belongs to and shall
-     *            append to.
+     * @param message    message object where the signal line belongs to and shall
+     *                   append to.
      * @param signalName name of the signal as parsed before the line string begins
-     * @param type signal type that is one of multiplexor, multiplex or plain signal.
-     * @param line signal line String to parse  e.g. "39|16@0+ (0.01,0) [0|655.35] "Km/h" ECU3"
+     * @param type       signal type that is one of multiplexor, multiplex or plain
+     *                   signal.
+     * @param line       signal line String to parse e.g. "39|16@0+ (0.01,0)
+     *                   [0|655.35] "Km/h" ECU3"
      */
     private Signal parseSignalLine(Message message, String signalName, SignalType type, String line) {
         Value value = null;
@@ -574,10 +818,7 @@ public class DbcReader {
                 tSignal.setConsumer(consumer);
             }
 
-            if ((intercept != 0.0)
-                    || (slope != 1.0)
-                    || !"".equals(splitted[8])
-                    || "-".equals(splitted[3])
+            if ((intercept != 0.0) || (slope != 1.0) || !"".equals(splitted[8]) || "-".equals(splitted[3])
                     || (min != 0.0) || (max != 1.0)) {
 
                 value = (Value) factory.createValue();
@@ -597,8 +838,11 @@ public class DbcReader {
                 }
 
                 // Omit empty units
-                if (!"".equals(splitted[8])) {
-                    value.setUnit(splitted[8]);
+                {
+                    String unit = unQuote(splitted[8]);
+                    if (!unit.isEmpty()) {
+                        value.setUnit(unit);
+                    }
                 }
 
                 // Omit default min = 0.0
@@ -610,9 +854,9 @@ public class DbcReader {
                 if (max != 1.0) {
                     value.setMax(max);
                 }
-            // End value part
-            }
-        // End line split
+                // End value part
+                    }
+            // End line split
         }
 
         if (type == SignalType.MULTIPLEXOR) {
@@ -643,7 +887,7 @@ public class DbcReader {
                 signal.setEndianess(tSignal.getEndianess());
             }
             signal.setValue(value);
-            if (type == SignalType.PLAIN){
+            if (type == SignalType.PLAIN) {
                 // Prevent from adding MULTIPLEX signals twice
                 message.getSignal().add(signal);
             }
@@ -655,11 +899,9 @@ public class DbcReader {
      * Parses a dbc file signal line without the SG_ header. Parses also signal
      * lines with multiplexed signals (e.g. m2) and multiplexors (M).
      *
-     * @param message
-     *            message object where the signal line belongs to and shall
-     *            append to.
-     * @param line
-     *            signal line String to parse
+     * @param message message object where the signal line belongs to and shall
+     *                append to.
+     * @param line    signal line String to parse
      */
     protected void parseSignal(Message message, String line) {
 
@@ -674,7 +916,8 @@ public class DbcReader {
                 /* signal type is multiplexor */
                 /* FIN_MUX M : 0|2@1+ (1,0) [0|255] "" Motor */
                 // Remove multiplex coding ' M' from name "Muxname M"
-                parseSignalLine(message, signalName.substring(0, signalName.length() - 2), SignalType.MULTIPLEXOR, lineArray[1]);
+                parseSignalLine(message, signalName.substring(0, signalName.length() - 2), SignalType.MULTIPLEXOR,
+                        lineArray[1]);
 
             } else {
                 /* signal type is multiplex */
@@ -690,8 +933,8 @@ public class DbcReader {
                 }
                 long muxcount = Long.parseLong(countstring);
 
-                Signal signal = parseSignalLine(message, lineArray[0].split(" ")[0], SignalType.MULTIPLEX, lineArray[1]);
-
+                Signal signal = parseSignalLine(message, lineArray[0].split(" ")[0], SignalType.MULTIPLEX,
+                        lineArray[1]);
 
                 /* Do we have a signal list for muxcount? */
                 Set<Signal> signalSet = muxed.get(muxcount);
@@ -714,21 +957,18 @@ public class DbcReader {
      * Check for character classes. Returns true if the checked character is a
      * devider.
      *
-     * @param c
-     *            Character to check
+     * @param c Character to check
      * @return True, if the character is a devider.
      */
     private static boolean isDivider(char c) {
-        return c == '[' || c == ']' || c == '(' || c == ')' || c == '|'
-                || c == ',' || c == '@' || c == ' ';
+        return c == '[' || c == ']' || c == '(' || c == ')' || c == '|' || c == ',' || c == '@' || c == ' ' || c == ';';
     }
 
     /**
      * Check for character classes. Returns true if the checked character is a
      * symbol.
      *
-     * @param c
-     *            Character to check
+     * @param c Character to check
      * @return True, if the character is a symbol.
      */
     private static boolean isSymbol(char c) {
@@ -739,12 +979,30 @@ public class DbcReader {
      * Check for character classes. Returns true if the checked character is a
      * quotation.
      *
-     * @param c
-     *            Character to check
+     * @param c Character to check
      * @return True, if the character is a quotation.
      */
     private static boolean isQuote(char c) {
         return c == '"';
+    }
+
+    /**
+     * returns a string with its quotes removed.
+     *
+     * if there is not starting quote, the string is returned as is. if there is no
+     * ending quote, only the starting quote is removed.
+     *
+     * @param quoted
+     * @return
+     */
+    private static String unQuote(String quoted) {
+        if (quoted.startsWith("\"")) {
+            int last_quote = quoted.lastIndexOf('\"');
+            if (0 != last_quote) {
+                return quoted.substring(1, last_quote);
+            }
+        }
+        return quoted;
     }
 
     /**
@@ -756,8 +1014,7 @@ public class DbcReader {
      *
      * {"56","8","1","1","0","0","255",""km/h"","Motor","Brake","Gearbox"}
      *
-     * @param s
-     *            String to split in fields
+     * @param s String to split in fields
      * @return String array containing the seperated value elements in ascending
      *         order.
      */
@@ -775,8 +1032,7 @@ public class DbcReader {
                 }
                 element = "";
                 /*
-                 * Inside a string + and - are ignored, outside they are
-                 * valid elements.
+                 * Inside a string + and - are ignored, outside they are valid elements.
                  */
             } else if (!inString && isSymbol(s.charAt(i))) {
                 /* Signed unsigned character */
@@ -784,13 +1040,13 @@ public class DbcReader {
                     elements.add(element);
                     element = "" + s.charAt(i);
                     /*
-                     * Otherwise symbol is either part of an exponential
-                     * or a negative number
+                     * Otherwise symbol is either part of an exponential or a negative number
                      */
                 } else {
                     element += s.charAt(i);
                 }
             } else if (isQuote(s.charAt(i))) {
+                element += s.charAt(i); // keep the quotation marks.
                 if (inString) {
                     elements.add(element);
                     element = "";
@@ -810,14 +1066,12 @@ public class DbcReader {
         return elements.toArray(new String[elements.size()]);
     }
 
-    private void setReadable(boolean isReadable) {
-        this.isReadable = isReadable;
-    }
-
     /**
-     * Handling method for value description starting by a line that begins with VAL_ {integer}.
+     * Handling method for value description starting by a line that begins with
+     * VAL_ {integer}.
      *
-     * @param line line from dbc-file to handle e.g. "VAL_ 1234 signalname 1 "on" 2 "off" ;".
+     * @param line line from dbc-file to handle e.g. "VAL_ 1234 signalname 1 "on" 2
+     *             "off" ;".
      *
      */
     private void parseValueDescription(StringBuilder line) {
@@ -844,11 +1098,13 @@ public class DbcReader {
     }
 
     /**
-     * Handling method for signal comments starting by a line that begins with CM_ SG_ {integer}.
-     * @param line line from dbc-file to handle e.g. "CM_ SG_ 1234 signalname 1 "comment";".
+     * Handling method for signal comments starting by a line that begins with CM_
+     * SG_ {integer}.
+     *
+     * @param line line from dbc-file to handle e.g. "CM_ SG_ 1234 signalname 1
+     *             "comment";".
      */
     private void parseSignalComment(StringBuilder line) {
-
         String[] splitted = splitString(line.toString());
         SignalComment comment = new SignalComment();
         comment.setExtended(isExtendedFrameFormat(splitted[2]));
@@ -861,11 +1117,12 @@ public class DbcReader {
 
     /**
      * Correct C long int values bigger than 2^31-1 to a BigInteger representation.
+     *
      * @param big BigInteger of C long int
      * @return Corrected value as BigInteger representation
      */
-    public static BigInteger int32ToBigInt(BigInteger big){
-        if ( big.signum() != -1 ){
+    public static BigInteger int32ToBigInt(BigInteger big) {
+        if (big.signum() != -1) {
             return big;
         } else {
             // negative because C long int value exceeds 2^31-1
@@ -875,23 +1132,24 @@ public class DbcReader {
 
     /**
      * Calculates the least significant bit offset for big endian byte order
-     * @param msb Most significant bit offset
+     *
+     * @param msb    Most significant bit offset
      * @param length signal length in bit
      * @return lsb Least significant bit offset
      */
-    public static int bigEndianLeastSignificantBitOffset(int msb, int length){
+    public static int bigEndianLeastSignificantBitOffset(int msb, int length) {
         int lsb;
         int pos;
         int cpos;
         int bytes;
         pos = 7 - (msb % 8) + (length - 1);
-        if (pos < 8){
+        if (pos < 8) {
             /* msb pass a byte order */
             lsb = msb - length + 1;
         } else {
             cpos = 7 - (pos % 8);
             bytes = pos / 8;
-            lsb = cpos + (bytes * 8) + (msb/8) * 8;
+            lsb = cpos + (bytes * 8) + (msb / 8) * 8;
         }
 
         return lsb;
