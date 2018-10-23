@@ -31,7 +31,6 @@ public class DbcReaderTest {
     private DbcReader dr = null;
     private File testFile = null;
 
-    
     public DbcReaderTest() {
     }
 
@@ -47,7 +46,7 @@ public class DbcReaderTest {
     public void setUp() {
         dr = new DbcReader();
         URL url = Thread.currentThread().getContextClassLoader().getResource("read_in_test.dbc");
-        testFile = new File(url.getPath());        
+        testFile = new File(url.getPath());
     }
 
     @After
@@ -68,7 +67,7 @@ public class DbcReaderTest {
         assertEquals(result[5], "0");
         assertEquals(result[6], "0");
         assertEquals(result[7], "255");
-        assertEquals(result[8], "km/h");
+        assertEquals(result[8], "\"km/h\"");
         assertEquals(result[9], "Motor");
         assertEquals(result[10], "Brake");
         assertEquals(result[11], "Gearbox");
@@ -88,14 +87,21 @@ public class DbcReaderTest {
         assertEquals("0", result[5]);
         assertEquals("0", result[6]);
         assertEquals("0", result[7]);
-        assertEquals("!#$%&'()*+,-./0123456789:foobar", result[8]);
+        assertEquals("\"!#$%&'()*+,-./0123456789:foobar\"", result[8]);
         assertEquals("Vector__XXX", result[9]);
     }
 
     @Test
-    public void testFindTestFileRessource() {
+    public void testUnQuote()
+    {
+        assertEquals("foobar", DbcReader.unQuote("\"foobar\""));
+        assertEquals("foobar", DbcReader.unQuote("foobar"));
+    }
 
-        assertTrue(testFile != null); 
+    @Test
+    public void testFindTestFileRessource()
+    {
+        assertTrue(testFile != null);
     }
 
     @Test
@@ -108,7 +114,7 @@ public class DbcReaderTest {
         /* Also Bit 31, 30 set and maximum id hex: 0x1FFFFFFF */
         assertTrue(DbcReader.getCanIdFromString("4294967295") == 536870911 );
         assertTrue(DbcReader.isExtendedFrameFormat("4294967295"));
-        
+
         /* Extended frame format and dec: 583, hex: 0x247 */
         assertTrue(DbcReader.getCanIdFromString("2147484231") == 583 );
         assertTrue(DbcReader.isExtendedFrameFormat("2147484231"));
@@ -119,6 +125,5 @@ public class DbcReaderTest {
         assertTrue(DbcReader.getCanIdFromString("3221225472") == 0 );
         assertTrue(DbcReader.isExtendedFrameFormat("3221225472"));
     }
-    
 
 }

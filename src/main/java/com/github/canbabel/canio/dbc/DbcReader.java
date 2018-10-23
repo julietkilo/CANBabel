@@ -995,7 +995,7 @@ public class DbcReader {
      * @param quoted
      * @return
      */
-    private static String unQuote(String quoted) {
+    protected static String unQuote(String quoted) {
         if (quoted.startsWith("\"")) {
             int last_quote = quoted.lastIndexOf('\"');
             if (0 != last_quote) {
