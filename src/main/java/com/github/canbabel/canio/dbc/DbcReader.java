@@ -1087,7 +1087,7 @@ public class DbcReader {
         for (int i = 3; i < (splitted.length - 1); i += 2) {
             Label label = new Label();
 
-            label.setName(splitted[i + 1]);
+            label.setName(unQuote(splitted[i + 1]));
             label.setValue(int32ToBigInt(new BigInteger(splitted[i])));
             labelSet.add(label);
         }
@@ -1110,7 +1110,7 @@ public class DbcReader {
         comment.setExtended(isExtendedFrameFormat(splitted[2]));
         comment.setId(getCanIdFromString(splitted[2]));
         comment.setSignalName(splitted[3]);
-        comment.setComment(splitted[4]);
+        comment.setComment(unQuote(splitted[4]));
 
         signalComments.add(comment);
     }
