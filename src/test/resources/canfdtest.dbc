@@ -1,0 +1,626 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: THERXNODE THETXNODE
+
+
+BO_ 519 PLOP_FD_STD_7: 7 THETXNODE
+ SG_ Sig023 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig022 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig021 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig020 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig019 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig018 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig017 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 520 PLOP_FD_STD_8: 8 THETXNODE
+ SG_ Sig031 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig030 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig029 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig028 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig027 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig026 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig025 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig024 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 530 PLOP_FD_STD_12: 12 THETXNODE
+ SG_ Sig043 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig042 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig041 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig040 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig039 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig038 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig037 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig036 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig035 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig034 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig033 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig032 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 534 PLOP_FD_STD_16: 16 THETXNODE
+ SG_ Sig059 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig058 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig057 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig056 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig055 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig054 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig053 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig052 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig051 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig050 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig049 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig048 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig047 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig046 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig045 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig044 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 544 PLOP_FD_STD_20: 20 THETXNODE
+ SG_ Sig079 : 152|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig078 : 144|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig077 : 136|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig076 : 128|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig075 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig074 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig073 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig072 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig071 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig070 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig069 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig068 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig067 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig066 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig065 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig064 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig063 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig062 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig061 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig060 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 548 PLOP_FD_STD_24: 24 THETXNODE
+ SG_ Sig103 : 184|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig102 : 176|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig101 : 168|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig100 : 160|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig099 : 152|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig098 : 144|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig097 : 136|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig096 : 128|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig095 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig094 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig093 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig092 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig091 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig090 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig089 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig088 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig087 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig086 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig085 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig084 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig083 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig082 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig081 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig080 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 562 PLOP_FD_STD_32: 32 THETXNODE
+ SG_ Sig135 : 248|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig134 : 240|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig133 : 232|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig132 : 224|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig131 : 216|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig130 : 208|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig129 : 200|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig128 : 192|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig127 : 184|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig126 : 176|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig125 : 168|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig124 : 160|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig123 : 152|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig122 : 144|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig121 : 136|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig120 : 128|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig119 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig118 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig117 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig116 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig115 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig114 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig113 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig112 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig111 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig110 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig109 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig108 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig107 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig106 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig105 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig104 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 584 PLOP_FD_STD_48: 48 THETXNODE
+ SG_ Sig183 : 376|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig182 : 368|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig181 : 360|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig180 : 352|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig179 : 344|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig178 : 336|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig177 : 328|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig176 : 320|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig175 : 312|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig174 : 304|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig173 : 296|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig172 : 288|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig171 : 280|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig170 : 272|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig169 : 264|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig168 : 256|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig167 : 248|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig166 : 240|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig165 : 232|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig164 : 224|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig163 : 216|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig162 : 208|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig161 : 200|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig160 : 192|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig159 : 184|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig158 : 176|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig157 : 168|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig156 : 160|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig155 : 152|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig154 : 144|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig153 : 136|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig152 : 128|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig151 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig150 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig149 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig148 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig147 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig146 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig145 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig144 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig143 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig142 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig141 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig140 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig139 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig138 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig137 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig136 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 2147483911 PLOP_FD_EXT_7: 7 THETXNODE
+ SG_ Sig254 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig253 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig252 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig251 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig250 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig249 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig248 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 2147483912 PLOP_FD_EXT_8: 8 THETXNODE
+ SG_ Sig262 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig261 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig260 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig259 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig258 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig257 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig256 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig255 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 2147483922 PLOP_FD_EXT_12: 12 THETXNODE
+ SG_ Sig274 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig273 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig272 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig271 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig270 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig269 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig268 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig267 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig266 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig265 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig264 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig263 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 2147483926 PLOP_FD_EXT_16: 16 THETXNODE
+ SG_ Sig290 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig289 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig288 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig287 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig286 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig285 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig284 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig283 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig282 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig281 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig280 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig279 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig278 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig277 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig276 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig275 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 2147483936 PLOP_FD_EXT_20: 20 THETXNODE
+ SG_ Sig310 : 152|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig309 : 144|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig308 : 136|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig307 : 128|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig306 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig305 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig304 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig303 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig302 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig301 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig300 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig299 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig298 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig297 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig296 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig295 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig294 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig293 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig292 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig291 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 2147483940 PLOP_FD_EXT_24: 24 THETXNODE
+ SG_ Sig334 : 184|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig333 : 176|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig332 : 168|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig331 : 160|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig330 : 152|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig329 : 144|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig328 : 136|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig327 : 128|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig326 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig325 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig324 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig323 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig322 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig321 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig320 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig319 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig318 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig317 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig316 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig315 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig314 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig313 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig312 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig311 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 2147483954 PLOP_FD_EXT_32: 32 THETXNODE
+ SG_ Sig366 : 248|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig365 : 240|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig364 : 232|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig363 : 224|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig362 : 216|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig361 : 208|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig360 : 200|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig359 : 192|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig358 : 184|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig357 : 176|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig356 : 168|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig355 : 160|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig354 : 152|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig353 : 144|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig352 : 136|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig351 : 128|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig350 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig349 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig348 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig347 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig346 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig345 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig344 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig343 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig342 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig341 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig340 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig339 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig338 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig337 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig336 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig335 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 2147483976 PLOP_FD_EXT_48: 48 THETXNODE
+ SG_ Sig414 : 376|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig413 : 368|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig412 : 360|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig411 : 352|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig410 : 344|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig409 : 336|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig408 : 328|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig407 : 320|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig406 : 312|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig405 : 304|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig404 : 296|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig403 : 288|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig402 : 280|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig401 : 272|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig400 : 264|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig399 : 256|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig398 : 248|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig397 : 240|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig396 : 232|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig395 : 224|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig394 : 216|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig393 : 208|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig392 : 200|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig391 : 192|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig390 : 184|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig389 : 176|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig388 : 168|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig387 : 160|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig386 : 152|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig385 : 144|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig384 : 136|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig383 : 128|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig382 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig381 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig380 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig379 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig378 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig377 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig376 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig375 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig374 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig373 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig372 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig371 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig370 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig369 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig368 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig367 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 2147484004 PLOP_FD_EXT_64: 64 THETXNODE
+ SG_ Sig478 : 504|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig477 : 496|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig476 : 488|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig475 : 480|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig474 : 472|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig473 : 464|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig472 : 456|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig471 : 448|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig470 : 440|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig469 : 432|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig468 : 424|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig467 : 416|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig466 : 408|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig465 : 400|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig464 : 392|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig463 : 384|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig462 : 376|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig461 : 368|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig460 : 360|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig459 : 352|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig458 : 344|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig457 : 336|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig456 : 328|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig455 : 320|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig454 : 312|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig453 : 304|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig452 : 296|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig451 : 288|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig450 : 280|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig449 : 272|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig448 : 264|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig447 : 256|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig446 : 248|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig445 : 240|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig444 : 232|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig443 : 224|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig442 : 216|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig441 : 208|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig440 : 200|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig439 : 192|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig438 : 184|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig437 : 176|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig436 : 168|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig435 : 160|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig434 : 152|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig433 : 144|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig432 : 136|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig431 : 128|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig430 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig429 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig428 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig427 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig426 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig425 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig424 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig423 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig422 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig421 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig420 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig419 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig418 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig417 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig416 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig415 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 2147484416 PLOP_EXT_8: 8 THETXNODE
+ SG_ Sig016 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig015 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig014 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig013 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig012 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig011 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig010 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig009 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 1024 PLOP_STD_8: 8 THETXNODE
+ SG_ Sig008 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig007 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig006 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig005 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig004 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig003 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig002 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig001 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+BO_ 612 PLOP_FD_STD_64: 64 THETXNODE
+ SG_ Sig247 : 504|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig246 : 496|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig245 : 488|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig244 : 480|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig243 : 472|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig242 : 464|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig241 : 456|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig240 : 448|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig239 : 440|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig238 : 432|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig237 : 424|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig236 : 416|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig235 : 408|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig234 : 400|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig233 : 392|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig232 : 384|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig231 : 376|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig230 : 368|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig229 : 360|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig228 : 352|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig227 : 344|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig226 : 336|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig225 : 328|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig224 : 320|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig223 : 312|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig222 : 304|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig221 : 296|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig220 : 288|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig219 : 280|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig218 : 272|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig217 : 264|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig216 : 256|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig215 : 248|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig214 : 240|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig213 : 232|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig212 : 224|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig211 : 216|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig210 : 208|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig209 : 200|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig208 : 192|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig207 : 184|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig206 : 176|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig205 : 168|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig204 : 160|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig203 : 152|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig202 : 144|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig201 : 136|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig200 : 128|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig199 : 120|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig198 : 112|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig197 : 104|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig196 : 96|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig195 : 88|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig194 : 80|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig193 : 72|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig192 : 64|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig191 : 56|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig190 : 48|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig189 : 40|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig188 : 32|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig187 : 24|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig186 : 16|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig185 : 8|8@1+ (1,0) [0|0] ""  THERXNODE
+ SG_ Sig184 : 0|8@1+ (1,0) [0|0] ""  THERXNODE
+
+
+
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 0;
+BA_DEF_  "New_AttrDef_13" INT 0 0;
+BA_DEF_ BO_  "New_AttrDef_11" STRING ;
+BA_DEF_ BO_  "CANFD_BRS" ENUM  "0","1";
+BA_DEF_  "DBName" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "New_AttrDef_13" 0;
+BA_DEF_DEF_  "New_AttrDef_11" "fergsdf";
+BA_DEF_DEF_  "CANFD_BRS" "1";
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_DEF_DEF_  "VFrameFormat" "StandardCAN";
+BA_ "BusType" "CAN FD";
+BA_ "DBName" "canfdtest";
+BA_ "GenMsgCycleTime" BO_ 519 100;
+BA_ "VFrameFormat" BO_ 519 14;
+BA_ "GenMsgCycleTime" BO_ 520 100;
+BA_ "VFrameFormat" BO_ 520 14;
+BA_ "GenMsgCycleTime" BO_ 530 100;
+BA_ "VFrameFormat" BO_ 530 14;
+BA_ "GenMsgCycleTime" BO_ 534 100;
+BA_ "VFrameFormat" BO_ 534 14;
+BA_ "GenMsgCycleTime" BO_ 544 100;
+BA_ "VFrameFormat" BO_ 544 14;
+BA_ "GenMsgCycleTime" BO_ 548 100;
+BA_ "VFrameFormat" BO_ 548 14;
+BA_ "GenMsgCycleTime" BO_ 562 100;
+BA_ "VFrameFormat" BO_ 562 14;
+BA_ "GenMsgCycleTime" BO_ 584 100;
+BA_ "VFrameFormat" BO_ 584 14;
+BA_ "GenMsgCycleTime" BO_ 2147483911 100;
+BA_ "VFrameFormat" BO_ 2147483911 15;
+BA_ "GenMsgCycleTime" BO_ 2147483912 100;
+BA_ "VFrameFormat" BO_ 2147483912 15;
+BA_ "GenMsgCycleTime" BO_ 2147483922 100;
+BA_ "VFrameFormat" BO_ 2147483922 15;
+BA_ "GenMsgCycleTime" BO_ 2147483926 100;
+BA_ "VFrameFormat" BO_ 2147483926 15;
+BA_ "GenMsgCycleTime" BO_ 2147483936 100;
+BA_ "VFrameFormat" BO_ 2147483936 15;
+BA_ "GenMsgCycleTime" BO_ 2147483940 100;
+BA_ "VFrameFormat" BO_ 2147483940 15;
+BA_ "GenMsgCycleTime" BO_ 2147483954 100;
+BA_ "VFrameFormat" BO_ 2147483954 15;
+BA_ "GenMsgCycleTime" BO_ 2147483976 100;
+BA_ "VFrameFormat" BO_ 2147483976 15;
+BA_ "GenMsgCycleTime" BO_ 2147484004 100;
+BA_ "VFrameFormat" BO_ 2147484004 15;
+BA_ "GenMsgCycleTime" BO_ 2147484416 100;
+BA_ "VFrameFormat" BO_ 2147484416 1;
+BA_ "GenMsgCycleTime" BO_ 1024 100;
+BA_ "GenMsgCycleTime" BO_ 612 100;
+BA_ "VFrameFormat" BO_ 612 14;
+
