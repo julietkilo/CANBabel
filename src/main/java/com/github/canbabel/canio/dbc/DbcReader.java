@@ -62,6 +62,14 @@ public class DbcReader {
     public DbcReader() {
         this.bus = null;
     }
+    
+    public NetworkDefinition getNetwork() throws RuntimeException
+    {
+    	if (network == null) {
+    		throw new RuntimeException("no network read");
+    	}
+    	return network;
+    }
 
     Map<String, AttributeDefinition> attribute_definitions  = new HashMap<String, AttributeDefinition>();
     List<Attribute> attributes = new ArrayList<Attribute>();
