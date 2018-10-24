@@ -62,16 +62,15 @@ public class DbcReader {
     public DbcReader() {
         this.bus = null;
     }
-    
-    public NetworkDefinition getNetwork() throws RuntimeException
-    {
-    	if (network == null) {
-    		throw new RuntimeException("no network read");
-    	}
-    	return network;
+
+    public NetworkDefinition getNetwork() throws RuntimeException {
+        if (network == null) {
+            throw new RuntimeException("no network read");
+        }
+        return network;
     }
 
-    Map<String, AttributeDefinition> attribute_definitions  = new HashMap<String, AttributeDefinition>();
+    Map<String, AttributeDefinition> attribute_definitions = new HashMap<String, AttributeDefinition>();
     List<Attribute> attributes = new ArrayList<Attribute>();
 
     /**
@@ -330,7 +329,7 @@ public class DbcReader {
         Writer w = null;
         try {
             JAXBContext context = JAXBContext
-                .newInstance(new Class[] { com.github.canbabel.canio.kcd.NetworkDefinition.class });
+                    .newInstance(new Class[] { com.github.canbabel.canio.kcd.NetworkDefinition.class });
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_ENCODING, UTF8);
 
@@ -520,46 +519,47 @@ public class DbcReader {
             AttributeDefinition.AttrType type = AttributeDefinition.getAttrTypeFromString(splitted[attr_def_start + 1]);
 
             switch (type) {
-                case ENUM:
-                    List<String> evalues = new ArrayList<String>();
-                    for (int i = attr_def_start + 2; i < splitted.length; ++i) {
-                        evalues.add(unQuote(splitted[i]));
-                    }
-                    attribute_definitions.put(name, new AttributeDefinitionEnum(name, trgt, evalues));
-                    break;
-                case INT:
-                    if (splitted.length < 5) {
-                        return;
-                    }
-                    attribute_definitions.put(name,
-                            new AttributeDefinitionInt(name, trgt, Integer.parseInt(splitted[attr_def_start + 2]),
+            case ENUM:
+                List<String> evalues = new ArrayList<String>();
+                for (int i = attr_def_start + 2; i < splitted.length; ++i) {
+                    evalues.add(unQuote(splitted[i]));
+                }
+                attribute_definitions.put(name, new AttributeDefinitionEnum(name, trgt, evalues));
+                break;
+            case INT:
+                if (splitted.length < 5) {
+                    return;
+                }
+                attribute_definitions.put(name,
+                        new AttributeDefinitionInt(name, trgt, Integer.parseInt(splitted[attr_def_start + 2]),
                                 Integer.parseInt(splitted[attr_def_start + 3])));
-                    break;
-                case FLOAT:
-                    if (splitted.length < 5) {
-                        return;
-                    }
-                    attribute_definitions.put(name,
-                            new AttributeDefinitionFloat(name, trgt, Float.parseFloat(splitted[attr_def_start + 2]),
+                break;
+            case FLOAT:
+                if (splitted.length < 5) {
+                    return;
+                }
+                attribute_definitions.put(name,
+                        new AttributeDefinitionFloat(name, trgt, Float.parseFloat(splitted[attr_def_start + 2]),
                                 Float.parseFloat(splitted[attr_def_start + 3])));
-                    break;
-                case STRING:
-                    if (splitted.length < 3) {
-                        return;
-                    }
-                    attribute_definitions.put(name, new AttributeDefinitionString(name, trgt));
-                    break;
-                case HEX:
-                    if (splitted.length < 5) {
-                        return;
-                    }
-                    attribute_definitions.put(name,
-                            new AttributeDefinitionHex(name, trgt, Integer.parseInt(splitted[attr_def_start + 2]),
+                break;
+            case STRING:
+                if (splitted.length < 3) {
+                    return;
+                }
+                attribute_definitions.put(name, new AttributeDefinitionString(name, trgt));
+                break;
+            case HEX:
+                if (splitted.length < 5) {
+                    return;
+                }
+                attribute_definitions.put(name,
+                        new AttributeDefinitionHex(name, trgt, Integer.parseInt(splitted[attr_def_start + 2]),
                                 Integer.parseInt(splitted[attr_def_start + 3])));
-                    break;
+                break;
             }
 
-            // logWriter.println("read attribute def for " + name + " is " + splitted[attr_def_start + 1]);
+            // logWriter.println("read attribute def for " + name + " is " +
+            // splitted[attr_def_start + 1]);
         } else if (splitted[0].equals("BA_DEF_DEF_")) {
             // attribute default value
             if (splitted.length < 3) {
@@ -572,26 +572,25 @@ public class DbcReader {
             AttributeDefinition def = attribute_definitions.get(name);
             if (def != null) {
                 switch (def.getType()) {
-                    case ENUM:
-                        ((AttributeDefinitionEnum) def).setDefault(unQuote(splitted[2]));
-                        break;
-                    case HEX:
-                        ((AttributeDefinitionHex) def).setDefault(Integer.parseInt(splitted[2]));
-                        break;
-                    case STRING:
-                        ((AttributeDefinitionString) def).setDefault(unQuote(splitted[2]));
-                        break;
-                    case INT:
-                        {
-                            int val = 0;
-                            // this is a DBC idiosyncrasy. some ints are written as float/double values.
-                            val = Double.valueOf(splitted[2]).intValue();
-                            ((AttributeDefinitionInt) def).setDefault(val);
-                        }
-                        break;
-                    case FLOAT:
-                        ((AttributeDefinitionFloat) def).setDefault(Float.parseFloat(splitted[2]));
-                        break;
+                case ENUM:
+                    ((AttributeDefinitionEnum) def).setDefault(unQuote(splitted[2]));
+                    break;
+                case HEX:
+                    ((AttributeDefinitionHex) def).setDefault(Integer.parseInt(splitted[2]));
+                    break;
+                case STRING:
+                    ((AttributeDefinitionString) def).setDefault(unQuote(splitted[2]));
+                    break;
+                case INT: {
+                    int val = 0;
+                    // this is a DBC idiosyncrasy. some ints are written as float/double values.
+                    val = Double.valueOf(splitted[2]).intValue();
+                    ((AttributeDefinitionInt) def).setDefault(val);
+                }
+                    break;
+                case FLOAT:
+                    ((AttributeDefinitionFloat) def).setDefault(Float.parseFloat(splitted[2]));
+                    break;
                 }
             } else {
                 logWriter.println("missing attribute definition for default value for: " + name);
@@ -616,42 +615,42 @@ public class DbcReader {
 
                 int val_ind = 2;
                 switch (def.target) {
-                    case MESSAGE:
-                    case NODE:
-                        val_ind = 4;
-                        break;
-                    case SIGNAL:
-                        val_ind = 5;
-                        break;
-                    case NETWORK:
-                        break;
+                case MESSAGE:
+                case NODE:
+                    val_ind = 4;
+                    break;
+                case SIGNAL:
+                    val_ind = 5;
+                    break;
+                case NETWORK:
+                    break;
                 }
 
                 switch (def.type) {
-                    case STRING:
-                        newattr = new Attribute(def, unQuote(splitted[val_ind]));
-                        break;
-                    case INT:
-                    case HEX:
-                    case ENUM:
-                        newattr = new Attribute(def, Integer.parseInt(splitted[val_ind]));
-                        break;
-                    case FLOAT:
-                        newattr = new Attribute(def, Float.parseFloat(splitted[val_ind]));
-                        break;
+                case STRING:
+                    newattr = new Attribute(def, unQuote(splitted[val_ind]));
+                    break;
+                case INT:
+                case HEX:
+                case ENUM:
+                    newattr = new Attribute(def, Integer.parseInt(splitted[val_ind]));
+                    break;
+                case FLOAT:
+                    newattr = new Attribute(def, Float.parseFloat(splitted[val_ind]));
+                    break;
                 }
                 switch (def.target) {
-                    case SIGNAL:
-                        newattr.setSignal(splitted[4]);
-                        // fall through
-                    case MESSAGE:
-                        newattr.setMessage(Long.parseLong(splitted[3]));
-                        break;
-                    case NODE:
-                        newattr.setNode(splitted[3]);
-                        break;
-                    case NETWORK:
-                        break;
+                case SIGNAL:
+                    newattr.setSignal(splitted[4]);
+                    // fall through
+                case MESSAGE:
+                    newattr.setMessage(Long.parseLong(splitted[3]));
+                    break;
+                case NODE:
+                    newattr.setNode(splitted[3]);
+                    break;
+                case NETWORK:
+                    break;
                 }
                 attributes.add(newattr);
             } else {
@@ -863,7 +862,7 @@ public class DbcReader {
                     value.setMax(max);
                 }
                 // End value part
-                    }
+            }
             // End line split
         }
 
