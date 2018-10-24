@@ -56,6 +56,7 @@ public class DbcReader {
     private Map<Long, Set<Signal>> muxed = new TreeMap<Long, Set<Signal>>();
     private final Set<LabelDescription> labels = new HashSet<LabelDescription>();
     private final Set<SignalComment> signalComments = new HashSet<SignalComment>();
+    private final Set<MessageComment> messageComments = new HashSet<MessageComment>();
     private String version = "";
     private PrintWriter logWriter;
 
@@ -228,6 +229,13 @@ public class DbcReader {
             Signal signal = findSignal(messages, comment.getId(), comment.isExtended(), comment.getSignalName());
             if (signal != null) {
                 signal.setNotes(comment.getComment());
+            }
+        }
+
+        for (MessageComment comment : messageComments) {
+            Message m = findMessage(messages, comment.getId(), comment.isExtended());
+            if (m != null) {
+                m.setNotes(comment.getComment());
             }
         }
 
@@ -416,6 +424,8 @@ public class DbcReader {
             }
         } else if (Pattern.matches("CM_ SG_.*", line)) {
             parseSignalComment(line);
+        } else if (Pattern.matches("CM_ BO_.*", line)) {
+            parseMessageComment(line);
         } else if (Pattern.matches("CM.*", line)) {
             parseComment(line);
         } else if (Pattern.matches("BO_TX_BU_.*", line)) {
@@ -1120,6 +1130,17 @@ public class DbcReader {
         comment.setComment(unQuote(splitted[4]));
 
         signalComments.add(comment);
+    }
+
+    private void parseMessageComment(StringBuilder line) {
+        String[] splitted = splitString(line.toString());
+        MessageComment comment = new MessageComment();
+
+        comment.setExtended(isExtendedFrameFormat(splitted[2]));
+        comment.setId(getCanIdFromString(splitted[2]));
+        comment.setComment(unQuote(splitted[3]));
+
+        messageComments.add(comment);
     }
 
     /**

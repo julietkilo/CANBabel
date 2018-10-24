@@ -1,9 +1,8 @@
 package com.github.canbabel.canio.dbc;
 
-class SignalComment extends Comment {
+public class MessageComment extends Comment {
 
     private long id;
-    private String signalName;
     private boolean extended;
 
     public boolean isExtended() {
@@ -22,11 +21,4 @@ class SignalComment extends Comment {
         this.id = id;
     }
 
-    public String getSignalName() {
-        return signalName;
-    }
-
-    public void setSignalName(String signalName) {
-        this.signalName = signalName;
-    }
 }
