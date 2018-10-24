@@ -285,7 +285,7 @@ public class DbcReader {
                     if (attr.getEnumAsString().endsWith("_FD")) {
                         m.setFd(true);
                     } else {
-                        m.setFd(false);
+                        m.setFd(null);
                     }
                 } else if (attr.getName().equals("CANFD_BRS")) {
                     if (attr.getEnumAsString().equals("1")) {
@@ -316,9 +316,7 @@ public class DbcReader {
         // default attribute value.
         for (Message m : messages) {
             if (!m.isFd()) {
-                if (m.isBitrateswitch()) {
-                    m.setBitrateswitch(false);
-                }
+                m.setBitrateswitch(null);
             }
         }
 
