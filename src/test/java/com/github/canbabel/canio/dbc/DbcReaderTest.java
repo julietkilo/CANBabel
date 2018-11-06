@@ -28,7 +28,6 @@ import static org.junit.Assert.*;
  */
 public class DbcReaderTest {
 
-    private DbcReader dr = null;
     private File testFile = null;
 
     public DbcReaderTest() {
@@ -44,7 +43,6 @@ public class DbcReaderTest {
 
     @Before
     public void setUp() {
-        dr = new DbcReader();
         URL url = Thread.currentThread().getContextClassLoader().getResource("read_in_test.dbc");
         testFile = new File(url.getPath());
     }
