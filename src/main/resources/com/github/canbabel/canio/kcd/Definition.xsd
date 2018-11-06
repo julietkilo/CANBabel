@@ -502,7 +502,7 @@
       <xs:simpleType>
         <xs:restriction base="xs:positiveInteger">
           <xs:minInclusive value="1"/>
-          <xs:maxInclusive value="64"/>
+          <xs:maxInclusive value="512"/>
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
