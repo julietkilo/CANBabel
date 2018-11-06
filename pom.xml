@@ -81,7 +81,7 @@
                     <!-- Usage: mvn org.jvnet.jaxb2.maven2:maven-jaxb2-plugin:generate -->
                     <groupId>org.jvnet.jaxb2.maven2</groupId>
                     <artifactId>maven-jaxb2-plugin</artifactId>
-                    <version>0.12.3</version>
+                    <version>0.14.0</version>
                     <configuration>
                         <schemaDirectory>src/main/resources/com/github/canbabel/canio/kcd</schemaDirectory>
                         <schemaIncludes>
