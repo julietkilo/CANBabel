@@ -8,7 +8,6 @@
     <!-- THE BASICS -->
     <groupId>com.github.canbabel</groupId>
     <artifactId>CANBabel</artifactId>
-    <version>1.3</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
@@ -147,6 +146,7 @@
     </licenses>
     <organization />
     <prerequisites />
+    <version>2.0</version>
 </project>
 
 <!-- vim: sw=4 expandtab tabstop=4 -->
