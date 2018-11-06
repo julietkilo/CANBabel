@@ -10,9 +10,6 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class CANFDTest {
 
