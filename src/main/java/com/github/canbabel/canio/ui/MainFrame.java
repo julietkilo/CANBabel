@@ -18,12 +18,10 @@
 package com.github.canbabel.canio.ui;
 // TODO Versionnumber(major.minor.build)
 import com.github.canbabel.canio.dbc.DbcReader;
-import com.github.canbabel.canio.kcd.NetworkDefinition;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -33,15 +31,7 @@ import java.util.prefs.*;
 import java.util.zip.GZIPInputStream;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * User interface
@@ -416,8 +406,18 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
             DbcReader reader = new DbcReader();
             if (reader.parseFile(dbcfile, System.out)) {
                 reader.writeKcdFile(kcdfile, true, false);
-            }            
-        }       
+
+                /* Validate the result */
+                StreamSource source;
+                source = new StreamSource(kcdfile);
+
+                SchemaValidator validator = new SchemaValidator(System.out);
+
+                if (validator.validate(source) != true) {
+                    System.out.println("Failed to validate output KCD. Continue at your own risk.");
+                }
+            }
+        }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -474,49 +474,7 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
             gzippedCheckbox.setEnabled(false);
             prettyprintCheckbox.setEnabled(false);
 
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            InputStream resourceAsStream = NetworkDefinition.class.getResourceAsStream("Definition.xsd");
-            Validator val = null;
-
-            if (resourceAsStream != null) {
-
-                Source s = new StreamSource(resourceAsStream);
-                Schema schema;
-
-                try {
-                    schema = schemaFactory.newSchema(s);
-                    val = schema.newValidator();
-                } catch (SAXException ex) {
-                    ex.printStackTrace(logWriter);
-                }
-
-                ErrorHandler handler = new ErrorHandler() {
-
-                    @Override
-                    public void warning(SAXParseException exception) throws SAXException {
-                        exception.printStackTrace(logWriter);
-                    }
-
-                    @Override
-                    public void error(SAXParseException exception) throws SAXException {
-                        exception.printStackTrace(logWriter);
-                    }
-
-                    @Override
-                    public void fatalError(SAXParseException exception) throws SAXException {
-                        exception.printStackTrace(logWriter);
-                    }
-                };
-                try {
-                    val.setErrorHandler(handler);
-                } catch (Exception e) {
-                    e.printStackTrace(logWriter);
-                }
-
-            } else {
-                // if schema can't be found skip validation part
-                logWriter.print("Network definition schema can't be found in jar. Started from commandline?\n");
-            }
+            SchemaValidator schema_validator = new SchemaValidator(logOutput);
 
             for (File f : list.getFiles()) {
 
@@ -563,8 +521,8 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
                         } else {
                             source = new StreamSource(newFile);
                         }
-                        if (val != null) {
-                            val.validate(source);
+                        if (schema_validator.validate(source) != true) {
+                            logWriter.println("Failed to validate output KCD.");
                         }
 
                     }
@@ -573,8 +531,6 @@ private void closeButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:eve
                         break;
                     }
                 } catch (IOException ex) {
-                    ex.printStackTrace(logWriter);
-                } catch (SAXException ex) {
                     ex.printStackTrace(logWriter);
                 }
 
