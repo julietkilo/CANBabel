@@ -4,7 +4,7 @@ class Attribute {
 
 	private final AttributeDefinition definition;
 
-	private int intval;
+	private long intval;
 	private float floatval;
 	private String stringval;
 	
@@ -19,7 +19,7 @@ class Attribute {
 	private String signal;
 	private String node;
 
-	public Attribute(AttributeDefinition def, int intval)
+	public Attribute(AttributeDefinition def, long intval)
 	{
 		if (def.type != AttributeDefinition.AttrType.INT && def.type != AttributeDefinition.AttrType.HEX && def.type != AttributeDefinition.AttrType.ENUM) {
 			throw new NumberFormatException("cannot create int attribute from non int/hex attribute definition.");
@@ -46,7 +46,7 @@ class Attribute {
 		this.stringval = stringval;
 	}
 
-	int getInt()
+	long getInt()
 	{
 		if (definition.type != AttributeDefinition.AttrType.INT && definition.type != AttributeDefinition.AttrType.HEX) {
 			throw new NumberFormatException("cannot get int type, if type is not int or hex");
@@ -70,7 +70,7 @@ class Attribute {
 		return stringval;
 	}
 
-	int getEnumAsInt()
+	long getEnumAsInt()
 	{
 		if (definition.type != AttributeDefinition.AttrType.ENUM) {
 			throw new NumberFormatException("cannot get enum type, if type is not enum");

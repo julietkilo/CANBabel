@@ -280,7 +280,7 @@ public class DbcReader {
                 long mid = attr.getMessage();
                 Message m = findMessage(messages, mid & 0x1FFFFFFF, ((mid & 0x80000000) > 0) ? true : false);
                 if (attr.getName().equals("GenMsgCycleTime")) {
-                    m.setInterval(attr.getInt());
+                    m.setInterval((int)attr.getInt());
                 } else if (attr.getName().equals("VFrameFormat")) {
                     if (attr.getEnumAsString().endsWith("_FD")) {
                         m.setFd(true);

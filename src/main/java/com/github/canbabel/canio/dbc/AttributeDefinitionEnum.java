@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 class AttributeDefinitionEnum extends AttributeDefinition {
-	private Map<Integer, String> enumval_int;
-	private Map<String, Integer> enumval_str;
-	private int def;
+	private Map<Long, String> enumval_int;
+	private Map<String, Long> enumval_str;
+	private long def;
 
 	public AttributeDefinitionEnum(String name, AttrTarget target, List<String> values)
 	{
 		super(name, target, AttrType.ENUM);
-		enumval_int = new HashMap<Integer, String>();
-		enumval_str = new HashMap<String, Integer>();
-		int cnt = 0;
+		enumval_int = new HashMap<Long, String>();
+		enumval_str = new HashMap<String, Long>();
+		long cnt = 0;
 		for (Iterator<String> it = values.iterator(); it.hasNext();) {
 			String aname = it.next();
 			enumval_int.put(cnt, aname);
@@ -24,17 +24,17 @@ class AttributeDefinitionEnum extends AttributeDefinition {
 		}
 	}
 
-	public String getEnum_int(int v)
+	public String getEnum_int(long v)
 	{
 		return enumval_int.get(v);
 	}
 	
-	public int getEnum_String(String v)
+	public long getEnum_String(String v)
 	{
 		return enumval_str.get(v);
 	}
 
-	public void setDefault(int def)
+	public void setDefault(long def)
 	{
 		this.def = def;
 	}
@@ -49,7 +49,7 @@ class AttributeDefinitionEnum extends AttributeDefinition {
 		return enumval_int.get(def);
 	}
 	
-	public int getDefaultAsInt()
+	public long getDefaultAsInt()
 	{
 		return def;
 	}
