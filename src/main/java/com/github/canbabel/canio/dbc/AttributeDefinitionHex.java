@@ -1,11 +1,11 @@
 package com.github.canbabel.canio.dbc;
 
 class AttributeDefinitionHex extends AttributeDefinition {
-	private final int min;
-	private final int max;
-	private int def;
+	private final long min;
+	private final long max;
+	private long def;
 
-	public AttributeDefinitionHex(String name, AttrTarget target, int min, int max)
+	public AttributeDefinitionHex(String name, AttrTarget target, long min, long max)
 	{
 		super(name, target, AttrType.HEX);
 		this.min = min;
@@ -13,22 +13,22 @@ class AttributeDefinitionHex extends AttributeDefinition {
 		def = 0;
 	}
 
-	void setDefault(int def)
+	void setDefault(long def)
 	{
 		this.def = def;
 	}
 	
-	int getDefault()
+	long getDefault()
 	{
 		return def;
 	}
 
-	int getMax()
+	long getMax()
 	{
 		return max;
 	}
 	
-	int getMin()
+	long getMin()
 	{
 		return min;
 	}

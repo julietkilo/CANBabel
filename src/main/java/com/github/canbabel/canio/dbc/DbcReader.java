@@ -539,8 +539,9 @@ public class DbcReader {
                     return;
                 }
                 attribute_definitions.put(name,
-                        new AttributeDefinitionInt(name, trgt, Integer.parseInt(splitted[attr_def_start + 2]),
-                                Integer.parseInt(splitted[attr_def_start + 3])));
+                        new AttributeDefinitionInt(name, trgt, Long.parseLong
+                             (splitted[attr_def_start + 2]),
+                                Long.parseLong(splitted[attr_def_start + 3])));
                 break;
             case FLOAT:
                 if (splitted.length < 5) {
@@ -561,8 +562,8 @@ public class DbcReader {
                     return;
                 }
                 attribute_definitions.put(name,
-                        new AttributeDefinitionHex(name, trgt, Integer.parseInt(splitted[attr_def_start + 2]),
-                                Integer.parseInt(splitted[attr_def_start + 3])));
+                        new AttributeDefinitionHex(name, trgt, Long.parseLong(splitted[attr_def_start + 2]),
+                                Long.parseLong(splitted[attr_def_start + 3])));
                 break;
             }
 
@@ -584,15 +585,15 @@ public class DbcReader {
                     ((AttributeDefinitionEnum) def).setDefault(unQuote(splitted[2]));
                     break;
                 case HEX:
-                    ((AttributeDefinitionHex) def).setDefault(Integer.parseInt(splitted[2]));
+                    ((AttributeDefinitionHex) def).setDefault(Long.parseLong(splitted[2]));
                     break;
                 case STRING:
                     ((AttributeDefinitionString) def).setDefault(unQuote(splitted[2]));
                     break;
                 case INT: {
-                    int val = 0;
+                    long val = 0;
                     // this is a DBC idiosyncrasy. some ints are written as float/double values.
-                    val = Double.valueOf(splitted[2]).intValue();
+                    val = Double.valueOf(splitted[2]).longValue();
                     ((AttributeDefinitionInt) def).setDefault(val);
                 }
                     break;
@@ -641,7 +642,7 @@ public class DbcReader {
                 case INT:
                 case HEX:
                 case ENUM:
-                    newattr = new Attribute(def, Integer.parseInt(splitted[val_ind]));
+                    newattr = new Attribute(def, Long.parseLong(splitted[val_ind]));
                     break;
                 case FLOAT:
                     newattr = new Attribute(def, Float.parseFloat(splitted[val_ind]));
