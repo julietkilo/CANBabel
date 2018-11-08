@@ -630,30 +630,37 @@ public class DbcReader {
             if (def != null) {
                 Attribute newattr = null;
 
-                int val_ind = 2;
+                String attr_val;
                 switch (def.target) {
                 case MESSAGE:
                 case NODE:
-                    val_ind = 4;
+                    attr_val = unQuote(splitted[4]);
                     break;
                 case SIGNAL:
-                    val_ind = 5;
+                    attr_val = unQuote(splitted[5]);
                     break;
                 case NETWORK:
+                default:
+                    attr_val = unQuote(splitted[2]);
                     break;
+                }
+
+                if (attr_val.equals("null")) {
+                    logWriter.println("ignoring \"null\" attribute value " + name);
+                    return;
                 }
 
                 switch (def.type) {
                 case STRING:
-                    newattr = new Attribute(def, unQuote(splitted[val_ind]));
+                    newattr = new Attribute(def, attr_val);
                     break;
                 case INT:
                 case HEX:
                 case ENUM:
-                    newattr = new Attribute(def, Long.parseLong(splitted[val_ind]));
+                    newattr = new Attribute(def, Long.parseLong(attr_val));
                     break;
                 case FLOAT:
-                    newattr = new Attribute(def, Float.parseFloat(splitted[val_ind]));
+                    newattr = new Attribute(def, Float.parseFloat(attr_val));
                     break;
                 }
                 switch (def.target) {
