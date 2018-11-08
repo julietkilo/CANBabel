@@ -52,6 +52,21 @@ public class DbcReaderTest {
     }
 
     @Test
+    public void testunQuote()
+    {
+        String[][] teststrings = {
+            { "\"test\"", "test" },
+            { "test\"", "test\"" },
+            { "\"test", "\"test" },
+            { "test", "test" },
+            { "", "" },
+            { "\"test\";", "test"}
+        };
+        for (int i = 0; i < teststrings.length; ++i) {
+            assertEquals(teststrings[i][1], DbcReader.unQuote(teststrings[i][0]));
+        }
+    }
+    @Test
     public void testSplitString() {
         String[] result = DbcReader.splitString("56|8@1+ (1,0) [0|255] \"km/h\" Motor Brake Gearbox");
 
