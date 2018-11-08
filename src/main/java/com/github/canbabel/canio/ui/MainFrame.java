@@ -299,7 +299,7 @@ public class MainFrame extends javax.swing.JFrame {
         int returnVal = fc.showOpenDialog(this);
         /** new code */
         String path = fc.getCurrentDirectory().getAbsolutePath();
-        System.out.println(path);
+        // System.out.println(path);
         prefs.put("user.dir", path);
         /** end new code */
         if (returnVal == JFileChooser.APPROVE_OPTION) {
