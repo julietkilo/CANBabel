@@ -1005,8 +1005,7 @@ public class DbcReader {
     /**
      * returns a string with its quotes removed.
      *
-     * if there is not starting quote, the string is returned as is. if there is no
-     * ending quote, only the starting quote is removed.
+     * If the start or end quote is missing, nothing is done.
      *
      * @param quoted
      * @return
