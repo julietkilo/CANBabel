@@ -410,19 +410,19 @@ public class DbcReader {
             try {
                 parseValueDescription(line);
             } catch (Exception e) {
-                System.err.println(line + " FAIL: " + e.getMessage());
+                logWriter.println(line + " FAIL: " + e.getMessage());
             }
         } else if (Pattern.matches("BA_DEF_.+\".*", line)) {
             try {
                 parseAttributeDefinition(line);
             } catch (Exception e) {
-                System.err.println(line + " FAIL: " + e.getMessage());
+                logWriter.println(line + " FAIL: " + e.getMessage());
             }
         } else if (Pattern.matches("BA_\\s+\".*", line)) {
             try {
                 parseAttribute(line);
             } catch (Exception e) {
-                System.err.println(line + " failed with: " + e.getMessage());
+                logWriter.println(line + " failed with: " + e.getMessage());
             }
         } else if (Pattern.matches("CM_ SG_.*", line)) {
             parseSignalComment(line);
