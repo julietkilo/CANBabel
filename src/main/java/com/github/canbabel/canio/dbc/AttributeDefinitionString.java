@@ -7,6 +7,7 @@ class AttributeDefinitionString extends AttributeDefinition {
 	public AttributeDefinitionString(String name, AttrTarget target)
 	{
 		super(name, target, AttrType.STRING);
+		def = ""; // we need to set an empty default here.
 	}
 
 	public void setDefault(String def)

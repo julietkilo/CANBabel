@@ -584,26 +584,30 @@ public class DbcReader {
 
             AttributeDefinition def = attribute_definitions.get(name);
             if (def != null) {
-                switch (def.getType()) {
-                case ENUM:
-                    ((AttributeDefinitionEnum) def).setDefault(unQuote(splitted[2]));
-                    break;
-                case HEX:
-                    ((AttributeDefinitionHex) def).setDefault(Long.parseLong(splitted[2]));
-                    break;
-                case STRING:
-                    ((AttributeDefinitionString) def).setDefault(unQuote(splitted[2]));
-                    break;
-                case INT: {
-                    long val = 0;
-                    // this is a DBC idiosyncrasy. some ints are written as float/double values.
-                    val = Double.valueOf(splitted[2]).longValue();
-                    ((AttributeDefinitionInt) def).setDefault(val);
-                }
-                    break;
-                case FLOAT:
-                    ((AttributeDefinitionFloat) def).setDefault(Float.parseFloat(splitted[2]));
-                    break;
+                String attr_val = unQuote(splitted[2]);
+                // DBCs like to set empty default values as empty strings, even if the attribute type is not a string
+                if (!attr_val.isEmpty()) {
+                    switch (def.getType()) {
+                    case ENUM:
+                        ((AttributeDefinitionEnum) def).setDefault(attr_val);
+                        break;
+                    case HEX:
+                        ((AttributeDefinitionHex) def).setDefault(Long.parseLong(attr_val));
+                        break;
+                    case STRING:
+                        ((AttributeDefinitionString) def).setDefault(attr_val);
+                        break;
+                    case INT: {
+                        long lval = 0;
+                        // this is a DBC idiosyncrasy. some ints are written as float/double values.
+                        lval = Double.valueOf(attr_val).longValue();
+                        ((AttributeDefinitionInt) def).setDefault(lval);
+                    }
+                        break;
+                    case FLOAT:
+                        ((AttributeDefinitionFloat) def).setDefault(Float.parseFloat(attr_val));
+                        break;
+                    }
                 }
             } else {
                 logWriter.println("missing attribute definition for default value for: " + name);
