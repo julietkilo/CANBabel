@@ -634,14 +634,14 @@ public class DbcReader {
                 switch (def.target) {
                 case MESSAGE:
                 case NODE:
-                    attr_val = unQuote(splitted[4]);
+                    attr_val = splitted[4];
                     break;
                 case SIGNAL:
-                    attr_val = unQuote(splitted[5]);
+                    attr_val = splitted[5];
                     break;
                 case NETWORK:
                 default:
-                    attr_val = unQuote(splitted[2]);
+                    attr_val = splitted[2];
                     break;
                 }
 
@@ -649,6 +649,8 @@ public class DbcReader {
                     logWriter.println("ignoring \"null\" attribute value " + name);
                     return;
                 }
+
+                attr_val = unQuote(attr_val);
 
                 switch (def.type) {
                 case STRING:
