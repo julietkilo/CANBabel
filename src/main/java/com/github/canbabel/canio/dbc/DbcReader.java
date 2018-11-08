@@ -279,21 +279,25 @@ public class DbcReader {
             case MESSAGE:
                 long mid = attr.getMessage();
                 Message m = findMessage(messages, mid & 0x1FFFFFFF, ((mid & 0x80000000) > 0) ? true : false);
-                if (attr.getName().equals("GenMsgCycleTime")) {
-                    m.setInterval((int)attr.getInt());
-                } else if (attr.getName().equals("VFrameFormat")) {
-                    if (attr.getEnumAsString().endsWith("_FD")) {
-                        m.setFd(true);
-                    } else {
-                        m.setFd(null);
+                if (m != null) {
+                    if (attr.getName().equals("GenMsgCycleTime")) {
+                        m.setInterval((int) attr.getInt());
+                    } else if (attr.getName().equals("VFrameFormat")) {
+                        if (attr.getEnumAsString().endsWith("_FD")) {
+                            m.setFd(true);
+                        } else {
+                            m.setFd(null);
+                        }
+                    } else if (attr.getName().equals("CANFD_BRS")) {
+                        if (attr.getEnumAsString().equals("1")) {
+                            m.setBitrateswitch(true);
+                        } else {
+                            // Explicitly set BRS appears in the KCD, even if it is the default value.
+                            m.setBitrateswitch(false);
+                        }
                     }
-                } else if (attr.getName().equals("CANFD_BRS")) {
-                    if (attr.getEnumAsString().equals("1")) {
-                        m.setBitrateswitch(true);
-                    } else {
-                        // Explicitly set BRS appears in the KCD, even if it is the default value.
-                        m.setBitrateswitch(false);
-                    }
+                } else {
+                    logWriter.println("Attribute " + attr.getName() + " found for not-found message. This looks like a bug in the DBC.");
                 }
                 break;
             case SIGNAL:
