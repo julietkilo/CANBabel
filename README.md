@@ -3,8 +3,10 @@
 ## Overview
 
 CANBabel is a conversion tool for CAN database files. It was created because most CAN databases are stored in proprietary formats that are not documented and can not be used for free.
-The open source CAN analysis tool [**Kayak**](https://github.com/dschanoeh/Kayak/ "Kayak is an application for CAN bus diagnosis and monitoring") introduced a new and well documented XML based format: KCD (file suffix .kcd). KCD is the acronym for Kayak CAN definition.
+The open source CAN analysis tool [**Kayak**](https://github.com/dschanoeh/Kayak/ "Kayak is an application for CAN bus diagnosis and monitoring") introduced a new and well documented XML based format: KCD (file suffix .kcd). [**KCD**](https://github.com/julietkilo/kcd) is the acronym for Kayak CAN definition.
 Initially **CANBabel** supported only conversion from the .dbc format to the .kcd format but the goal is to provide a tool that supports many formats.
+
+In 2018 CANBabel has been completely revised to support databases containing CAN-FD messages.
 
 ## Supported formats
 Currently the following formats are supported (Read/Write):
@@ -18,7 +20,7 @@ You will need a current Java JDK and Maven to build **CANBabel**. After cloning 
 and maven will fetch all dependencies and build a **CANBabel** jar-file in the /target folder of your workspace. You can also just add the repository in your favorite Java IDE as a new _maven project_.
 
 ## Run CANBabel
-In most environments it's simply required to doubleclick the jar-file in a file browser. If not try the commandline <code>java -jar CANBabel-1.3.jar</code>
+In most environments it's simply required to doubleclick the jar-file in a file browser. If not try the commandline <code>java -jar CANBabel-{version}-jar-with-dependencies.jar</code>
 
 ## KCD Example
 
