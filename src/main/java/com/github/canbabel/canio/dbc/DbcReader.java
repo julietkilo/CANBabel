@@ -840,8 +840,9 @@ public class DbcReader {
             double intercept = Double.valueOf(splitted[5]);
             double min = Double.valueOf(splitted[6]);
             double max = Double.valueOf(splitted[7]);
-
-            if (sConsumers.length > 0) {
+            
+            // omit entry with NOT_DEFINED consumers
+            if (sConsumers.length != 1 || !NOT_DEFINED.equals(sConsumers[0])) {
                 Consumer consumer = (Consumer) factory.createConsumer();
                 for (String sConsumer : sConsumers) {
                     NodeRef ref = (NodeRef) factory.createNodeRef();
