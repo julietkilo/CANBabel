@@ -1,6 +1,6 @@
 /**
  *  CANBabel - Translator for Controller Area Network description formats
- *  Copyright (C) 2011-2013 julietkilo and Jan-Niklas Meier
+ *  Copyright (C) 2011-2020 julietkilo and Jan-Niklas Meier
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -120,7 +120,8 @@ public class MainFrame extends javax.swing.JFrame {
         settingsPanel = new javax.swing.JPanel();
         gzippedCheckbox = new javax.swing.JCheckBox();
         prettyprintCheckbox = new javax.swing.JCheckBox();
-        OverwriteCheckbox = new javax.swing.JCheckBox();
+        overwriteCheckbox = new javax.swing.JCheckBox();
+        uselessCheckbox = new javax.swing.JCheckBox();
         informationPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         debugInfoArea = new javax.swing.JTextArea();
@@ -163,13 +164,24 @@ public class MainFrame extends javax.swing.JFrame {
         prettyprintCheckbox.setText("Pretty print XML");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 0.2;
         settingsPanel.add(prettyprintCheckbox, gridBagConstraints);
 
-        OverwriteCheckbox.setText("Overwrite all");
-        settingsPanel.add(OverwriteCheckbox, new java.awt.GridBagConstraints());
+        overwriteCheckbox.setText("Overwrite all");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.weightx = 0.2;
+        settingsPanel.add(overwriteCheckbox, gridBagConstraints);
 
+        uselessCheckbox.setText("Omit signals w/o consumer");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.weightx = 0.2;
+        settingsPanel.add(uselessCheckbox, gridBagConstraints);
+ 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -284,16 +296,6 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-//    void outputDirectoryButton_actionPerformed(ActionEvent e)
-//    {
-//      int status = getDirectoryFromUser(jFileChooser,mostRecentOutputDirectory);
-//      if ( status == JFileChooser.APPROVE_OPTION )
-//      {
-//        mostRecentOutputDirectory = jFileChooser.getSelectedFile();
-//        jspOutputDirectoryTextField.setText(mostRecentOutputDirectory.getAbsolutePath());
-//        prefs.put("LAST_OUTPUT_DIR", mostRecentOutputDirectory.getAbsolutePath());
-//      }
-//    }
 
     private void addFilesOrFoldersButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_addFilesOrFoldersButtonActionPerformed
         int returnVal = fc.showOpenDialog(this);
@@ -424,7 +426,8 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox OverwriteCheckbox;
+    private javax.swing.JCheckBox overwriteCheckbox;
+    private javax.swing.JCheckBox uselessCheckbox;
     private javax.swing.JButton addFilesOrFoldersButton;
     private javax.swing.JButton closeButton;
     private javax.swing.JButton convertButton;
@@ -476,6 +479,7 @@ public class MainFrame extends javax.swing.JFrame {
 
             gzippedCheckbox.setEnabled(false);
             prettyprintCheckbox.setEnabled(false);
+            uselessCheckbox.setEnabled(false);
 
             SchemaValidator schema_validator = new SchemaValidator(logOutput);
 
@@ -491,7 +495,7 @@ public class MainFrame extends javax.swing.JFrame {
 
                 File newFile = new File(filename);
 
-                if (newFile.exists() && !OverwriteCheckbox.isSelected()) {
+                if (newFile.exists() && !overwriteCheckbox.isSelected()) {
                     int answer = JOptionPane.showConfirmDialog(addFilesOrFoldersButton,
                             "File " + filename + " already exists. Overwrite?");
 
@@ -515,6 +519,7 @@ public class MainFrame extends javax.swing.JFrame {
                 logWriter.flush();
                 try {
                     DbcReader reader = new DbcReader();
+                    reader.omitUnconsumedSignals(uselessCheckbox.isSelected());
                     if (reader.parseFile(f, logOutput)) {
                         reader.writeKcdFile(newFile, prettyprintCheckbox.isSelected(), gzippedCheckbox.isSelected());
 

@@ -1,6 +1,6 @@
 /**
  *  CANBabel - Translator for Controller Area Network description formats
- *  Copyright (C) 2011-2015 julietkilo and Jan-Niklas Meier
+ *  Copyright (C) 2011-2020 julietkilo and Jan-Niklas Meier
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@ public class DbcReader {
     private final Set<MessageComment> messageComments = new HashSet<MessageComment>();
     private String version = "";
     private PrintWriter logWriter;
+    private boolean omitUnconsumedSignals = false;
 
     public DbcReader() {
         this.bus = null;
@@ -840,7 +841,7 @@ public class DbcReader {
             double intercept = Double.valueOf(splitted[5]);
             double min = Double.valueOf(splitted[6]);
             double max = Double.valueOf(splitted[7]);
-            
+
             // omit entry with NOT_DEFINED consumers
             if (sConsumers.length != 1 || !NOT_DEFINED.equals(sConsumers[0])) {
                 Consumer consumer = (Consumer) factory.createConsumer();
@@ -923,7 +924,10 @@ public class DbcReader {
             signal.setValue(value);
             if (type == SignalType.PLAIN) {
                 // Prevent from adding MULTIPLEX signals twice
-                message.getSignal().add(signal);
+                if (!omitUnconsumedSignals || sConsumers.length != 1 || !NOT_DEFINED.equals(sConsumers[0])){
+                    // if option set, omit signals with undefined consumers
+                    message.getSignal().add(signal);
+                }
             }
             return signal;
         }
@@ -939,8 +943,8 @@ public class DbcReader {
      */
     protected void parseSignal(Message message, String line) {
 
-        // Split signalname and mux coding from rest of line
-        String[] lineArray = line.split(":");
+        // Split signalname and mux coding from rest of line, '2' limits split to first ':' occurence
+        String[] lineArray = line.split(":",2);
         String signalName = lineArray[0].trim();
         // Check if this is a multiplex
         if (Pattern.compile("\\w+\\s+\\w+").matcher(lineArray[0]).find()) {
@@ -1157,6 +1161,15 @@ public class DbcReader {
         comment.setComment(unQuote(splitted[3]));
 
         messageComments.add(comment);
+    }
+
+    /**
+     * Omit signals without defined consumers in the resulting KCD-file.
+     * This method has to be called before parseFile()
+     * @param True, if unused signals should be omitted
+     */
+    public void omitUnconsumedSignals(boolean o){
+        omitUnconsumedSignals = o;
     }
 
     /**
