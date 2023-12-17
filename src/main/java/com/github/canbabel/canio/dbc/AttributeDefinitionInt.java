@@ -9,7 +9,7 @@ class AttributeDefinitionInt extends AttributeDefinition {
 	{
 		super(name, target, AttrType.INT);
 		this.min = min;
-		this.max = min;
+		this.max = max;
 		def = 0;
 	}
 

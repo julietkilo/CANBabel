@@ -9,7 +9,7 @@ class AttributeDefinitionFloat extends AttributeDefinition {
 	{
 		super(name, target, AttrType.FLOAT);
 		this.min = min;
-		this.max = min;
+		this.max = max;
 		def = 0;
 	}
 
