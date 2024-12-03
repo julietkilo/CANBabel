@@ -17,19 +17,59 @@
  **/
 package com.github.canbabel.canio.dbc;
 
-import com.github.canbabel.canio.dbc.AttributeDefinition.AttrType;
-import com.github.canbabel.canio.kcd.*;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import com.github.canbabel.canio.dbc.AttributeDefinition.AttrType;
+import com.github.canbabel.canio.kcd.BasicLabelType;
+import com.github.canbabel.canio.kcd.Bus;
+import com.github.canbabel.canio.kcd.Consumer;
+import com.github.canbabel.canio.kcd.Document;
+import com.github.canbabel.canio.kcd.Label;
+import com.github.canbabel.canio.kcd.LabelSet;
+import com.github.canbabel.canio.kcd.Message;
+import com.github.canbabel.canio.kcd.Multiplex;
+import com.github.canbabel.canio.kcd.MuxGroup;
+import com.github.canbabel.canio.kcd.NetworkDefinition;
+import com.github.canbabel.canio.kcd.Node;
+import com.github.canbabel.canio.kcd.NodeRef;
+import com.github.canbabel.canio.kcd.ObjectFactory;
+import com.github.canbabel.canio.kcd.Producer;
+import com.github.canbabel.canio.kcd.Signal;
+import com.github.canbabel.canio.kcd.Value;
 
 /**
  * Reads industry widespread CAN database (*.dbc) format.
@@ -135,6 +175,14 @@ public class DbcReader {
         }
         return null;
     }
+    
+    public BufferedReader getFileReader(File file) throws UnsupportedEncodingException, FileNotFoundException {
+    	return new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
+    }
+    
+    public boolean parseString(String input) {
+    	return parseFile(null, System.out, new BufferedReader(new StringReader(input)));
+    }
 
     /**
      * Read in given CAN database file (*.dbc)
@@ -143,26 +191,28 @@ public class DbcReader {
      * @param logStream OutputStream to write out stack traces
      * @return true, if file has been successfully read.
      */
-    public boolean parseFile(File file, OutputStream logStream) {
+    public boolean parseFile(File file, OutputStream logStream, BufferedReader bufferedReader) {
         try {
             logWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(logStream, "ISO-8859-1")), true);
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(DbcReader.class.getName()).log(Level.FINE, null, ex);
         }
         factory = new ObjectFactory();
-        network = (NetworkDefinition) (factory.createNetworkDefinition());
-        document = (Document) (factory.createDocument());
+        network = (factory.createNetworkDefinition());
+        document = (factory.createDocument());
         document.setContent(DOC_CONTENT);
-        document.setName(file.getName());
+        if (file != null) {
+        	document.setName(file.getName());
+        }
         Date now = Calendar.getInstance().getTime();
         document.setDate(now.toString());
         network.setDocument(document);
 
-        bus = (Bus) (factory.createBus());
+        bus = (factory.createBus());
 
         bus.setName("Private");
 
-        if (!(file.canRead() && file.exists())) {
+        if (!(file != null && file.canRead() && file.exists()) && bufferedReader == null) {
             throw new RuntimeException("could not open file");
         }
 
@@ -170,8 +220,12 @@ public class DbcReader {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
-            String text;
+        	if (bufferedReader != null) {
+        		reader = bufferedReader;
+        	} else {
+        		reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
+        	}
+        	String text;
             boolean isFirstLine = true;
 
             while ((text = reader.readLine()) != null) {
@@ -365,8 +419,9 @@ public class DbcReader {
             return false;
         } finally {
             try {
-                if (w != null)
-                    w.close();
+                if (w != null) {
+					w.close();
+				}
             } catch (IOException e) {
                 e.printStackTrace(logWriter);
             }
@@ -477,7 +532,7 @@ public class DbcReader {
         nodes = Arrays.asList(lineArray);
 
         for (String nodeString : nodes) {
-            Node node = (Node) factory.createNode();
+            Node node = factory.createNode();
             node.setId(nodeString);
             node.setName(nodeString);
             network.getNode().add(node);
@@ -706,7 +761,7 @@ public class DbcReader {
         String[] lineArray = line.toString().split("\\s*SG_\\s+");
 
         String[] messageArray = lineArray[0].split("\\s+");
-        Message message = (Message) factory.createMessage();
+        Message message = factory.createMessage();
         int messageIdDecimal = getCanIdFromString(messageArray[0]);
 
         message.setId("0x" + Integer.toString(messageIdDecimal, 16).toUpperCase());
@@ -717,8 +772,8 @@ public class DbcReader {
         message.setName(messageArray[1].replace(":", ""));
         message.setLength(messageArray[2]);
         if (!messageArray[3].contains(NOT_DEFINED)) {
-            Producer producer = (Producer) factory.createProducer();
-            NodeRef ref = (NodeRef) factory.createNodeRef();
+            Producer producer = factory.createProducer();
+            NodeRef ref = factory.createNodeRef();
             ref.setId(messageArray[3]);
             producer.getNodeRef().add(ref);
             message.setProducer(producer);
@@ -792,7 +847,7 @@ public class DbcReader {
     private enum SignalType {
 
         MULTIPLEXOR, MULTIPLEX, PLAIN
-    };
+    }
 
     /**
      * Parses a the part of a signal line that is same for plain, multiplexor or
@@ -809,7 +864,7 @@ public class DbcReader {
     private Signal parseSignalLine(Message message, String signalName, SignalType type, String line) {
         Value value = null;
 
-        Signal tSignal = (Signal) factory.createSignal();
+        Signal tSignal = factory.createSignal();
 
         tSignal.setName(signalName);
         String[] splitted = splitString(line);
@@ -844,9 +899,9 @@ public class DbcReader {
 
             // omit entry with NOT_DEFINED consumers
             if (sConsumers.length != 1 || !NOT_DEFINED.equals(sConsumers[0])) {
-                Consumer consumer = (Consumer) factory.createConsumer();
+                Consumer consumer = factory.createConsumer();
                 for (String sConsumer : sConsumers) {
-                    NodeRef ref = (NodeRef) factory.createNodeRef();
+                    NodeRef ref = factory.createNodeRef();
                     consumer.getNodeRef().add(ref);
                     ref.setId(sConsumer);
                 }
@@ -856,7 +911,7 @@ public class DbcReader {
             if ((intercept != 0.0) || (slope != 1.0) || !"".equals(splitted[8]) || "-".equals(splitted[3])
                     || (min != 0.0) || (max != 1.0)) {
 
-                value = (Value) factory.createValue();
+                value = factory.createValue();
 
                 if ("-".equals(splitted[3])) {
                     value.setType("signed");
@@ -896,7 +951,7 @@ public class DbcReader {
 
         if (type == SignalType.MULTIPLEXOR) {
 
-            Multiplex mux = (Multiplex) factory.createMultiplex();
+            Multiplex mux = factory.createMultiplex();
             mux.setName(tSignal.getName());
             mux.setOffset(tSignal.getOffset());
             mux.setConsumer(tSignal.getConsumer());
@@ -911,7 +966,7 @@ public class DbcReader {
             return null;
 
         } else {
-            Signal signal = (Signal) factory.createSignal();
+            Signal signal = factory.createSignal();
             signal.setName(tSignal.getName());
             signal.setOffset(tSignal.getOffset());
             signal.setConsumer(tSignal.getConsumer());
@@ -1211,4 +1266,9 @@ public class DbcReader {
 
         return lsb;
     }
+
+	public Bus getBus() {
+		return bus;
+	}
+
 }

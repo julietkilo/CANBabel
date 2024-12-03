@@ -1,15 +1,17 @@
 package com.github.canbabel.canio.dbc;
 
-import org.junit.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.net.URL;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import com.github.canbabel.canio.kcd.Bus;
 import com.github.canbabel.canio.kcd.Message;
 import com.github.canbabel.canio.kcd.NetworkDefinition;
-
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.net.URL;
 
 public class CANFDTest {
 
@@ -23,7 +25,7 @@ public class CANFDTest {
         dr = new DbcReader();
         URL url = Thread.currentThread().getContextClassLoader().getResource("canfdtest.dbc");
         File testFile = new File(url.getPath());
-        dr.parseFile(testFile, System.out);
+        dr.parseFile(testFile, System.out, null);
     }
 
     /**
