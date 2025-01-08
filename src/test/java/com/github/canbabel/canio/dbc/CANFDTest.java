@@ -23,7 +23,7 @@ public class CANFDTest {
         dr = new DbcReader();
         URL url = Thread.currentThread().getContextClassLoader().getResource("canfdtest.dbc");
         File testFile = new File(url.getPath());
-        dr.parseFile(testFile, System.out);
+        dr.parseFile(testFile, System.out, null);
     }
 
     /**

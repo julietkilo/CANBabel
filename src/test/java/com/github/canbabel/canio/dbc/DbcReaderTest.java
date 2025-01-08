@@ -19,9 +19,12 @@ package com.github.canbabel.canio.dbc;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 import com.github.canbabel.canio.ui.SchemaValidator;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.*;
 
 import javax.xml.bind.JAXBContext;
@@ -153,10 +156,27 @@ public class DbcReaderTest {
         DbcReader reader = new DbcReader();
         File readInTestKcdFile = new File("read_in_test.kcd");
 
-        if (reader.parseFile(testFile, System.out)) {
+        if (reader.parseFile(testFile, System.out, null)) {
             reader.writeKcdFile(readInTestKcdFile, true, false);
 
             StreamSource source = new StreamSource(readInTestKcdFile);
+            SchemaValidator validator = new SchemaValidator(System.out);
+
+            assertTrue(validator.validate(source));
+        }
+    }
+    
+    @Test
+    public void testParseString() throws IOException {
+        DbcReader reader = new DbcReader();
+        File readInTestKcdFile = new File("read_in_test.kcd");
+        
+        String testFileContent = FileUtils.readFileToString(testFile, StandardCharsets.UTF_8);
+
+        if (reader.parseString(testFileContent)) {
+        	assertNotNull(reader.getBus());
+        	
+        	StreamSource source = new StreamSource(readInTestKcdFile);
             SchemaValidator validator = new SchemaValidator(System.out);
 
             assertTrue(validator.validate(source));

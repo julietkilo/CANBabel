@@ -409,7 +409,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         if (dbcfile.canRead()) {
             DbcReader reader = new DbcReader();
-            if (reader.parseFile(dbcfile, System.out)) {
+            if (reader.parseFile(dbcfile, System.out, null)) {
                 reader.writeKcdFile(kcdfile, true, false);
 
                 /* Validate the result */
@@ -520,7 +520,7 @@ public class MainFrame extends javax.swing.JFrame {
                 try {
                     DbcReader reader = new DbcReader();
                     reader.omitUnconsumedSignals(uselessCheckbox.isSelected());
-                    if (reader.parseFile(f, logOutput)) {
+                    if (reader.parseFile(f, logOutput, null)) {
                         reader.writeKcdFile(newFile, prettyprintCheckbox.isSelected(), gzippedCheckbox.isSelected());
 
                         /* Validate the result */

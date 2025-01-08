@@ -135,6 +135,14 @@ public class DbcReader {
         }
         return null;
     }
+    
+    public BufferedReader getFileReader(File file) throws UnsupportedEncodingException, FileNotFoundException {
+    	return new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
+    }
+
+    public boolean parseString(String input) {
+    	return parseFile(null, System.out, new BufferedReader(new StringReader(input)));
+    }
 
     /**
      * Read in given CAN database file (*.dbc)
@@ -143,7 +151,7 @@ public class DbcReader {
      * @param logStream OutputStream to write out stack traces
      * @return true, if file has been successfully read.
      */
-    public boolean parseFile(File file, OutputStream logStream) {
+    public boolean parseFile(File file, OutputStream logStream, BufferedReader bufferedReader) {
         try {
             logWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(logStream, "ISO-8859-1")), true);
         } catch (UnsupportedEncodingException ex) {
@@ -153,7 +161,9 @@ public class DbcReader {
         network = (NetworkDefinition) (factory.createNetworkDefinition());
         document = (Document) (factory.createDocument());
         document.setContent(DOC_CONTENT);
-        document.setName(file.getName());
+        if (file != null) {
+        	document.setName(file.getName());
+        }
         Date now = Calendar.getInstance().getTime();
         document.setDate(now.toString());
         network.setDocument(document);
@@ -162,7 +172,7 @@ public class DbcReader {
 
         bus.setName("Private");
 
-        if (!(file.canRead() && file.exists())) {
+        if (!(file != null && file.canRead() && file.exists()) && bufferedReader == null) {
             throw new RuntimeException("could not open file");
         }
 
@@ -170,7 +180,11 @@ public class DbcReader {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
+        	if (bufferedReader != null) {
+        		reader = bufferedReader;
+        	} else {
+        		reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
+        	}
             String text;
             boolean isFirstLine = true;
 
@@ -1211,4 +1225,9 @@ public class DbcReader {
 
         return lsb;
     }
+    
+    public Bus getBus() {
+		return bus;
+	}
+
 }
