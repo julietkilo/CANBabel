@@ -17,6 +17,8 @@
  **/
 package com.github.canbabel.canio.ui;
 
+// TODO Version number(major.minor.build)
+import com.github.canbabel.canio.dbc.DbcReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -26,15 +28,11 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.prefs.Preferences;
+import java.util.prefs.*;
 import java.util.zip.GZIPInputStream;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.xml.transform.stream.StreamSource;
-
-// TODO Version number(major.minor.build)
-import com.github.canbabel.canio.dbc.DbcReader;
 
 /**
  * User interface
@@ -142,8 +140,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         convertButton.setText("Convert");
         convertButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 convertButtonActionPerformed(evt);
             }
         });
@@ -220,8 +217,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         addFilesOrFoldersButton.setText("Add files or folders");
         addFilesOrFoldersButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addFilesOrFoldersButtonActionPerformed(evt);
             }
         });
@@ -247,8 +243,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         removeButton.setText("Remove");
         removeButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeButtonActionPerformed(evt);
             }
         });
@@ -288,8 +283,7 @@ public class MainFrame extends javax.swing.JFrame {
         closeButton.setMaximumSize(new java.awt.Dimension(68, 30));
         closeButton.setMinimumSize(new java.awt.Dimension(68, 30));
         closeButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeButtonHandler(evt);
             }
         });

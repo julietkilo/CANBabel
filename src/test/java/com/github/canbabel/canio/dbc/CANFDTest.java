@@ -1,17 +1,15 @@
 package com.github.canbabel.canio.dbc;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.net.URL;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import com.github.canbabel.canio.kcd.Bus;
 import com.github.canbabel.canio.kcd.Message;
 import com.github.canbabel.canio.kcd.NetworkDefinition;
+
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.net.URL;
 
 public class CANFDTest {
 
