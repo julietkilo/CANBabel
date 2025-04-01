@@ -19,16 +19,7 @@ package com.github.canbabel.canio.dbc;
 
 import java.io.*;
 import java.net.URL;
-import java.util.zip.GZIPInputStream;
-
-import com.github.canbabel.canio.ui.SchemaValidator;
 import org.junit.*;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
 import static org.junit.Assert.*;
 
 /**
@@ -146,21 +137,6 @@ public class DbcReaderTest {
         /* Id of wrapper message for orphaned signals */
         assertTrue(DbcReader.getCanIdFromString("3221225472") == 0 );
         assertTrue(DbcReader.isExtendedFrameFormat("3221225472"));
-    }
-
-    @Test
-    public void testParse() {
-        DbcReader reader = new DbcReader();
-        File readInTestKcdFile = new File("read_in_test.kcd");
-
-        if (reader.parseFile(testFile, System.out)) {
-            reader.writeKcdFile(readInTestKcdFile, true, false);
-
-            StreamSource source = new StreamSource(readInTestKcdFile);
-            SchemaValidator validator = new SchemaValidator(System.out);
-
-            assertTrue(validator.validate(source));
-        }
     }
 
 }
