@@ -1,5 +1,4 @@
 # CANBabel
-[![Build Status](https://travis-ci.com/julietkilo/CANBabel.svg?branch=master)](https://travis-ci.com/julietkilo/CANBabel)
 
 ## Overview
 
