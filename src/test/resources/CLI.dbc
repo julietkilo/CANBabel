@@ -1,0 +1,173 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Bob Alice
+VAL_TABLE_ Valuetable2 2147483647 "invalid" 2147483646 "init" -2147483647 "invalid" -2147483648 "invalid" ;
+VAL_TABLE_ Valuetable1 255 "error" 12 "jerry" 11 "tom" 10 "scratchy" 9 "itchy" 8 "strawberry" 7 "chocolate" 6 "vanilla" 5 "cherry" 4 "apple" 3 "cola" 2 "coca" 1 "bar" 0 "foo" ;
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ UnmappedSig : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1112 TestMsgBig3: 8 Bob
+ SG_ TestSigBigUnsigned2 : 0|32@1+ (0.001,0) [0|4294967.294] "s" Vector__XXX
+
+BO_ 2566861823 ExtMsgMuxLittle2: 6 Alice
+SG_ ExtSigLittleMuxedOne m1 : 8|8@1+ (1,0) [0|0] "" Vector__XXX
+SG_ ExtSigLittleMuxedNull m0 : 8|8@1+ (1,0) [0|0] "" Vector__XXX
+SG_ ExtSigLittleMuxedMinus2 m4294967294 : 8|8@1+ (1,0) [0|0] "" Vector__XXX
+SG_ ExtSigLittleMuxedMinus1 m4294967295 : 2|6@1+ (1,0) [0|0] "" Vector__XXX
+SG_ ExtSigLittleMux M : 0|2@1- (1,0) [0|0] ""  Bob
+
+BO_ 1383 TestMsgMuxLittle1: 8 Alice
+ SG_ TestSigLittleMuxed17 m1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleMuxed16 m1 : 6|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleMuxed15 m1 : 5|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleMuxed14 m1 : 4|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleMuxed13 m1 : 3|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleMuxed12 m1 : 2|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleMuxed11 m1 : 1|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleMuxed10 m1 : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleMuxed9 m0 : 56|5@1+ (1,0) [0|0] "|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼" Vector__XXX
+ SG_ TestSigLittleMuxed8 m0 : 48|8@1+ (1,0) [0|0] "ÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝ" Vector__XXX
+ SG_ TestSigBigMuxed1 m0 : 47|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleMuxed7 m0 : 39|1@1+ (1,0) [0|0] "Þßàáâãäåæçèéêëìíîïðñòóôõö÷øù"  Bob
+ SG_ TestSigLittleMuxed6 m0 : 38|1@1+ (1,0) [0|0] ""  Bob
+ SG_ TestSigLittleMuxed5 m0 : 37|1@1+ (1,0) [0|0] ""  Bob
+ SG_ TestSigLittleMuxed4 m0 : 36|1@1+ (1,0) [0|0] ""  Bob
+ SG_ TestSigLittleMuxed3 m0 : 35|1@1+ (1,0) [0|0] ""  Bob
+ SG_ TestSigLittleMuxed2 m0 : 34|1@1+ (1,0) [0|0] ""  Bob
+ SG_ TestSigLittleMuxed1 m0 : 32|2@1- (1,0) [0|0] "m"  Bob
+ SG_ TestSigLittleMuxed0 m0 : 0|32@1- (1,0) [0|0] ""  Bob
+ SG_ TestSigLittleMux M : 61|3@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1021 UnmappedMsg: 8 Vector__XXX
+ SG_ TestSigLittleUnsigned1 : 0|8@1+ (0.5,-40) [0|0] "[\]^_`abcdefghijklmnopqrstuvwxyz" Vector__XXX
+
+BO_ 1022 EmptyMsg: 8 Bob
+
+BO_ 1110 TestMsgBig2: 8 Bob
+ SG_ TestSigBigDouble1 : 7|64@0- (2,0) [0|0] "" Vector__XXX
+
+BO_ 837 TestMsgBig1: 8 Bob
+ SG_ TestSigBigFloat1 : 23|32@0- (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigBigSigned1 : 15|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigBigUnsigned1 : 7|8@0+ (0.625,30) [0|0] "" Vector__XXX
+
+BO_ 2684354547 ExtMsgBig2: 8 Bob
+ SG_ TestSigBigDouble1 : 7|64@0- (2,0) [0|0] "" Vector__XXX
+
+BO_ 2684354546 ExtMsgBig1: 6 Bob
+ SG_ TestSigBigFloat1 : 23|32@0- (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigBigSigned1 : 15|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigBigUnsigned1 : 7|8@0+ (0.625,30) [0|0] "" Vector__XXX
+
+BO_ 2684354545 ExtMsgLittle2: 8 Alice
+ SG_ TestSigLittleDouble1 : 0|64@1- (1,0) [0|0] "úûüýþÿ" Vector__XXX
+
+BO_ 2684354544 ExtMsgLittle1: 6 Alice
+ SG_ TestSigLittleFloat1 : 16|32@1- (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleSigned1 : 8|8@1- (1,0) [0|0] "!#$%&'()*+,-./0123456789:;<=>?@A" Vector__XXX
+ SG_ TestSigLittleUnsigned1 : 0|8@1+ (0.5,-40) [0|0] "[\]^_`abcdefghijklmnopqrstuvwxyz" Vector__XXX
+
+BO_ 564 TestMsgLittle2: 8 Alice
+ SG_ TestSigLittleDouble1 : 0|64@1- (1,0) [0|0] "úûüýþÿ" Vector__XXX
+
+BO_ 291 TestMsgLittle1: 6 Alice
+ SG_ TestSigLittleFloat1 : 16|32@1- (1,0) [0|0] "" Vector__XXX
+ SG_ TestSigLittleSigned1 : 8|8@1- (1,0) [0|0] "!#$%&'()*+,-./0123456789:;<=>?@A" Vector__XXX
+ SG_ TestSigLittleUnsigned1 : 0|8@1+ (1E-005,0) [0|0] "[\]^_`abcdefghijklmnopqrstuvwxyz" Vector__XXX
+
+
+
+EV_ EnvDataNotLimitedLength255: 0 [0|0] "" 0 1 DUMMY_NODE_VECTOR0  Bob;
+
+EV_ EnvStringNotLimited: 0 [0|0] "" 0 2 DUMMY_NODE_VECTOR8000 Vector__XXX;
+
+EV_ EnvFloatNotLimited: 1 [0|21] "" 0 3 DUMMY_NODE_VECTOR0  Bob;
+
+EV_ EnvIntegerNotLimited: 0 [0|4095] "meter" 0 4 DUMMY_NODE_VECTOR0  Alice;
+
+EV_ EnvIntegerReadWriteable: 0 [1|15] "" 1 5 DUMMY_NODE_VECTOR3  Alice;
+
+EV_ EnvIntegerWritable: 0 [0|255] "" 0 6 DUMMY_NODE_VECTOR2  Alice;
+
+EV_ EnvIntegerReadable: 0 [0|7] "" 0 7 DUMMY_NODE_VECTOR1  Alice;
+ENVVAR_DATA_ EnvDataNotLimitedLength255: 255;
+
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+CM_ SG_ 1021 TestSigLittleUnsigned1 "!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ
+[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁ
+ÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øù
+úûüýþÿ";
+CM_ SG_ 2684354544 TestSigLittleUnsigned1 "!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ
+[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁ
+ÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øù
+úûüýþÿ";
+CM_ SG_ 291 TestSigLittleUnsigned1 "!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ
+[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁ
+ÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øù
+úûüýþÿ";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 1000000;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_ "GenMsgCycleTime" BO_ 1110 20;
+BA_ "GenMsgCycleTime" BO_ 2566861823 500;
+VAL_ 1112 TestSigBigUnsigned2 2147483647 "invalid" 2147483646 "init" -2147483647 "invalid" -2147483648 "invalid" ;
+VAL_ 2566861823 ExtSigLittleMuxedOne 255 "error" 12 "jerry" 11 "tom" 10 "scratchy" 9 "itchy" 8 "strawberry" 7 "chocolate" 6 "vanilla" 5 "cherry" 4 "apple" 3 "cola" 2 "coca" 1 "bar" 0 "foo" ;
+VAL_ EnvIntegerWritable 255 "error" 12 "jerry" 11 "tom" 10 "scratchy" 9 "itchy" 8 "strawberry" 7 "chocolate" 6 "vanilla" 5 "cherry" 4 "apple" 3 "cola" 2 "coca" 1 "bar" 0 "foo" ;
+SIG_VALTYPE_ 1383 TestSigLittleMuxed0 : 1;
+SIG_VALTYPE_ 1110 TestSigBigDouble1 : 2;
+SIG_VALTYPE_ 837 TestSigBigFloat1 : 1;
+SIG_VALTYPE_ 2684354547 TestSigBigDouble1 : 2;
+SIG_VALTYPE_ 2684354546 TestSigBigFloat1 : 1;
+SIG_VALTYPE_ 2684354545 TestSigLittleDouble1 : 2;
+SIG_VALTYPE_ 2684354544 TestSigLittleFloat1 : 1;
+SIG_VALTYPE_ 564 TestSigLittleDouble1 : 2;
+SIG_VALTYPE_ 291 TestSigLittleFloat1 : 1;
+
